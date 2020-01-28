@@ -18,17 +18,17 @@ from typing import Any, Dict
 
 from boto3 import Session
 
-from ..app import Remediation
-from ..app.remediation_base import RemediationBase
+from .remediation import Remediation
+from .remediation_base import RemediationBase
 
 
 @Remediation
-class AwsRdsDisableSnapshotPublicAccess(RemediationBase):
-    """Remediation that disables public access for RDS instance snapshot"""
+class AwsKmsEnableKeyRotation(RemediationBase):
+    """Remediation that enables rotation for a KMS key"""
 
     @classmethod
     def _id(cls) -> str:
-        return 'RDS.DisableSnapshotPublicAccess'
+        return 'KMS.EnableKeyRotation'
 
     @classmethod
     def _parameters(cls) -> Dict[str, str]:
@@ -36,6 +36,4 @@ class AwsRdsDisableSnapshotPublicAccess(RemediationBase):
 
     @classmethod
     def _fix(cls, session: Session, resource: Dict[str, Any], parameters: Dict[str, str]) -> None:
-        client = session.client('rds')
-        for snapshot_attrs in resource['SnapshotAttributes']:
-            client.modify_db_snapshot_attribute(DBSnapshotIdentifier=snapshot_attrs['Id'], AttributeName='restore', ValuesToRemove=['all'])
+        session.client('kms').enable_key_rotation(KeyId=resource['Id'])

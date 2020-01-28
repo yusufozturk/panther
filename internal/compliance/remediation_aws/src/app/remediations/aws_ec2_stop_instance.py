@@ -18,17 +18,17 @@ from typing import Any, Dict
 
 from boto3 import Session
 
-from ..app import Remediation
-from ..app.remediation_base import RemediationBase
+from .remediation import Remediation
+from .remediation_base import RemediationBase
 
 
 @Remediation
-class AwsS3EnableBucketVersioning(RemediationBase):
-    """Remediation that enables versioning for an S3 bucket"""
+class AwsEc2StopInstance(RemediationBase):
+    """Remediation that stops an EC2 instance"""
 
     @classmethod
     def _id(cls) -> str:
-        return 'S3.EnableBucketVersioning'
+        return 'EC2.StopInstance'
 
     @classmethod
     def _parameters(cls) -> Dict[str, str]:
@@ -36,4 +36,6 @@ class AwsS3EnableBucketVersioning(RemediationBase):
 
     @classmethod
     def _fix(cls, session: Session, resource: Dict[str, Any], parameters: Dict[str, str]) -> None:
-        session.client('s3').put_bucket_versioning(Bucket=resource['Name'], VersioningConfiguration={'Status': 'Enabled'})
+        session.client('ec2').stop_instances(InstanceIds=[
+            resource['Id'],
+        ])

@@ -18,26 +18,30 @@ from typing import Any, Dict
 
 from boto3 import Session
 
-from ..app import Remediation
-from ..app.remediation_base import RemediationBase
+from .remediation import Remediation
+from .remediation_base import RemediationBase
 
 
 @Remediation
-class AwsRdsEnableAutoMinorVersionUpgrade(RemediationBase):
-    """Remediation that enables Auto Minor Version upgrade for RDS instances"""
+class AwsS3BlockBucketPublicAccess(RemediationBase):
+    """Remediation that puts an S3 bucket block public access configuration"""
 
     @classmethod
     def _id(cls) -> str:
-        return 'RDS.EnableAutoMinorVersionUpgrade'
+        return 'S3.BlockBucketPublicAccess'
 
     @classmethod
     def _parameters(cls) -> Dict[str, str]:
-        return {'ApplyImmediately': 'true'}
+        return {'BlockPublicAcls': 'true', 'IgnorePublicAcls': 'true', 'BlockPublicPolicy': 'true', 'RestrictPublicBuckets': 'true'}
 
     @classmethod
     def _fix(cls, session: Session, resource: Dict[str, Any], parameters: Dict[str, str]) -> None:
-        session.client('rds').modify_db_instance(
-            DBInstanceIdentifier=resource['Id'],
-            AutoMinorVersionUpgrade=True,
-            ApplyImmediately=parameters['ApplyImmediately'].lower() == 'true'
+        session.client('s3').put_public_access_block(
+            Bucket=resource['Name'],
+            PublicAccessBlockConfiguration={
+                'BlockPublicAcls': parameters['BlockPublicAcls'].lower() == 'true',
+                'IgnorePublicAcls': parameters['IgnorePublicAcls'].lower() == 'true',
+                'BlockPublicPolicy': parameters['BlockPublicPolicy'].lower() == 'true',
+                'RestrictPublicBuckets': parameters['RestrictPublicBuckets'].lower() == 'true',
+            },
         )

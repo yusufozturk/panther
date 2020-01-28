@@ -18,17 +18,17 @@ from typing import Any, Dict
 
 from boto3 import Session
 
-from ..app import Remediation
-from ..app.remediation_base import RemediationBase
+from .remediation import Remediation
+from .remediation_base import RemediationBase
 
 
 @Remediation
-class AwsRdsDisableInstancePublicAccess(RemediationBase):
-    """Remediation that disables public access for an RDS instance"""
+class AwsS3BlockBucketPublicACL(RemediationBase):
+    """Remediation that blocks public permissions for an S3 bucket"""
 
     @classmethod
     def _id(cls) -> str:
-        return 'RDS.DisableInstancePublicAccess'
+        return 'S3.BlockBucketPublicACL'
 
     @classmethod
     def _parameters(cls) -> Dict[str, str]:
@@ -36,4 +36,7 @@ class AwsRdsDisableInstancePublicAccess(RemediationBase):
 
     @classmethod
     def _fix(cls, session: Session, resource: Dict[str, Any], parameters: Dict[str, str]) -> None:
-        session.client('rds').modify_db_instance(DBInstanceIdentifier=resource['Id'], PubliclyAccessible=False)
+        session.client('s3').put_bucket_acl(
+            Bucket=resource['Name'],
+            ACL='private',
+        )

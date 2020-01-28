@@ -14,25 +14,26 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-AWSTemplateFormatVersion: 2010-09-09
-Transform: AWS::Serverless-2016-10-31
-Description: Deploys the latest Panther Remediation Roles from SAR
-Metadata:
-  Version: 1.0
+from typing import Any, Dict
 
-Parameters:
-  MasterAccountId:
-    Type: String
-    Description: The master account Id
+from boto3 import Session
 
-Resources:
-  PantherAWSRemediations:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location:
-        ApplicationId: arn:aws:serverlessrepo:us-east-1:349240696275:applications/aws-remediations
-        SemanticVersion: 0.1.2
-      Parameters:
-        IsMasterAccount: 'false'
-        CreateSSMDocument: 'false'
-        MasterAccountId: !Ref MasterAccountId
+from .remediation import Remediation
+from .remediation_base import RemediationBase
+
+
+@Remediation
+class AwsRdsDisableInstancePublicAccess(RemediationBase):
+    """Remediation that disables public access for an RDS instance"""
+
+    @classmethod
+    def _id(cls) -> str:
+        return 'RDS.DisableInstancePublicAccess'
+
+    @classmethod
+    def _parameters(cls) -> Dict[str, str]:
+        return {}
+
+    @classmethod
+    def _fix(cls, session: Session, resource: Dict[str, Any], parameters: Dict[str, str]) -> None:
+        session.client('rds').modify_db_instance(DBInstanceIdentifier=resource['Id'], PubliclyAccessible=False)

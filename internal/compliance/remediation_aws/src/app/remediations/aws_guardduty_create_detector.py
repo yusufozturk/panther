@@ -18,22 +18,22 @@ from typing import Any, Dict
 
 from boto3 import Session
 
-from ..app import Remediation
-from ..app.remediation_base import RemediationBase
+from .remediation import Remediation
+from .remediation_base import RemediationBase
 
 
 @Remediation
-class AwsKmsEnableKeyRotation(RemediationBase):
-    """Remediation that enables rotation for a KMS key"""
+class AwsGuardDutyCreateDetector(RemediationBase):
+    """Remediation that creates a GuardDuty detector if one doesn't exist"""
 
     @classmethod
     def _id(cls) -> str:
-        return 'KMS.EnableKeyRotation'
+        return 'GuardDuty.CreateDetector'
 
     @classmethod
     def _parameters(cls) -> Dict[str, str]:
-        return {}
+        return {'FindingPublishingFrequency': 'FIFTEEN_MINUTES'}
 
     @classmethod
     def _fix(cls, session: Session, resource: Dict[str, Any], parameters: Dict[str, str]) -> None:
-        session.client('kms').enable_key_rotation(KeyId=resource['Id'])
+        session.client("guardduty").create_detector(Enable=True, FindingPublishingFrequency=parameters['FindingPublishingFrequency'])

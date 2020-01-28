@@ -18,17 +18,17 @@ from typing import Any, Dict
 
 from boto3 import Session
 
-from ..app import Remediation
-from ..app.remediation_base import RemediationBase
+from .remediation import Remediation
+from .remediation_base import RemediationBase
 
 
 @Remediation
-class AwsS3BlockBucketPublicACL(RemediationBase):
-    """Remediation that blocks public permissions for an S3 bucket"""
+class AwsEc2TerminateInstance(RemediationBase):
+    """Remediation that terminates an EC2 instance"""
 
     @classmethod
     def _id(cls) -> str:
-        return 'S3.BlockBucketPublicACL'
+        return 'EC2.TerminateInstance'
 
     @classmethod
     def _parameters(cls) -> Dict[str, str]:
@@ -36,7 +36,6 @@ class AwsS3BlockBucketPublicACL(RemediationBase):
 
     @classmethod
     def _fix(cls, session: Session, resource: Dict[str, Any], parameters: Dict[str, str]) -> None:
-        session.client('s3').put_bucket_acl(
-            Bucket=resource['Name'],
-            ACL='private',
-        )
+        session.client('ec2').terminate_instances(InstanceIds=[
+            resource['Id'],
+        ])

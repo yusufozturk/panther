@@ -38,10 +38,12 @@ export type AddIntegrationInput = {
 export type AlertDetails = {
   __typename?: 'AlertDetails';
   alertId: Scalars['ID'];
-  rule?: Maybe<RuleDetails>;
-  creationTime?: Maybe<Scalars['AWSDateTime']>;
-  lastEventMatched?: Maybe<Scalars['AWSDateTime']>;
-  events?: Maybe<Array<Scalars['AWSJSON']>>;
+  ruleId?: Maybe<Scalars['ID']>;
+  creationTime: Scalars['AWSDateTime'];
+  lastEventMatched: Scalars['AWSDateTime'];
+  eventsMatched: Scalars['Int'];
+  events: Array<Scalars['AWSJSON']>;
+  eventsLastEvaluatedKey: Scalars['String'];
 };
 
 export enum AlertReportFrequencyEnum {
@@ -51,10 +53,10 @@ export enum AlertReportFrequencyEnum {
 
 export type AlertSummary = {
   __typename?: 'AlertSummary';
-  alertId?: Maybe<Scalars['String']>;
-  creationTime?: Maybe<Scalars['AWSDateTime']>;
-  eventsMatched?: Maybe<Scalars['Int']>;
-  lastEventMatched?: Maybe<Scalars['AWSDateTime']>;
+  alertId: Scalars['String'];
+  creationTime: Scalars['AWSDateTime'];
+  eventsMatched: Scalars['Int'];
+  lastEventMatched: Scalars['AWSDateTime'];
   ruleId?: Maybe<Scalars['String']>;
   severity?: Maybe<Scalars['String']>;
 };
@@ -189,8 +191,8 @@ export enum DestinationTypeEnum {
 
 export type GetAlertInput = {
   alertId: Scalars['ID'];
-  eventPageSize?: Maybe<Scalars['Int']>;
-  eventPage?: Maybe<Scalars['Int']>;
+  eventsPageSize?: Maybe<Scalars['Int']>;
+  eventsExclusiveStartKey?: Maybe<Scalars['String']>;
 };
 
 export type GetOrganizationResponse = {
@@ -284,7 +286,7 @@ export type ListAlertsInput = {
 
 export type ListAlertsResponse = {
   __typename?: 'ListAlertsResponse';
-  alertSummaries?: Maybe<Array<Maybe<AlertSummary>>>;
+  alertSummaries: Array<Maybe<AlertSummary>>;
   lastEvaluatedKey?: Maybe<Scalars['String']>;
 };
 

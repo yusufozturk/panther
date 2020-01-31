@@ -1,5 +1,16 @@
 package outputs
 
+import (
+	"testing"
+	"time"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/stretchr/testify/require"
+
+	outputmodels "github.com/panther-labs/panther/api/lambda/outputs/models"
+	alertmodels "github.com/panther-labs/panther/internal/core/alert_delivery/models"
+)
+
 /**
  * Panther is a scalable, powerful, cloud-native SIEM written in Golang/React.
  * Copyright (C) 2020 Panther Labs Inc
@@ -18,53 +29,44 @@ package outputs
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import (
-	"testing"
-	"time"
-
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/stretchr/testify/require"
-
-	outputmodels "github.com/panther-labs/panther/api/lambda/outputs/models"
-	alertmodels "github.com/panther-labs/panther/internal/core/alert_delivery/models"
-)
-
-var githubConfig = &outputmodels.GithubConfig{RepoName: aws.String("profile/reponame"), Token: aws.String("github-token")}
-
-func TestGithubAlert(t *testing.T) {
+func TestAsanaAlert(t *testing.T) {
 	httpWrapper := &mockHTTPWrapper{}
 	client := &OutputClient{httpWrapper: httpWrapper}
 
-	var createdAtTime, _ = time.Parse(time.RFC3339, "2019-08-03T11:40:13Z")
+	createdAtTime, err := time.Parse(time.RFC3339, "2019-08-03T11:40:13Z")
+	require.NoError(t, err)
 	alert := &alertmodels.Alert{
 		PolicyID:          aws.String("ruleId"),
 		CreatedAt:         &createdAtTime,
 		OutputIDs:         aws.StringSlice([]string{"output-id"}),
 		PolicyDescription: aws.String("description"),
-		PolicyName:        aws.String("rule_name"),
+		PolicyName:        aws.String("policy_name"),
 		Severity:          aws.String("INFO"),
 	}
 
-	githubRequest := map[string]interface{}{
-		"title": "Policy Failure: rule_name",
-		"body": "**Description:** description\n " +
-			"[Click here to view in the Panther UI](https://panther.io/policies/ruleId)\n" +
-			" **Runbook:** \n **Severity:** INFO\n **Tags:** ",
+	asanaConfig := &outputmodels.AsanaConfig{PersonalAccessToken: aws.String("token"), ProjectGids: aws.StringSlice([]string{"projectGid"})}
+
+	asanaRequest := map[string]interface{}{
+		"data": map[string]interface{}{
+			"name": "Policy Failure: policy_name",
+			"notes": "policy_name failed on new resources\n" +
+				"For more details please visit: https://panther.io/policies/ruleId\nSeverity: INFO\nRunbook: \nDescription:description",
+			"projects": aws.StringSlice([]string{"projectGid"}),
+		},
 	}
 
-	authorization := "token " + *githubConfig.Token
+	authorization := "Bearer " + *asanaConfig.PersonalAccessToken
 	requestHeader := map[string]string{
 		AuthorizationHTTPHeader: authorization,
 	}
-	requestEndpoint := "https://api.github.com/repos/profile/reponame/issues"
 	expectedPostInput := &PostInput{
-		url:     requestEndpoint,
-		body:    githubRequest,
+		url:     asanaCreateTaskURL,
+		body:    asanaRequest,
 		headers: requestHeader,
 	}
 
 	httpWrapper.On("post", expectedPostInput).Return((*AlertDeliveryError)(nil))
 
-	require.Nil(t, client.Github(alert, githubConfig))
+	require.Nil(t, client.Asana(alert, asanaConfig))
 	httpWrapper.AssertExpectations(t)
 }

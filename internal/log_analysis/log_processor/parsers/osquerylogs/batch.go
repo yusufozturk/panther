@@ -52,6 +52,10 @@ type BatchDiffResults struct {
 // BatchParser parses OsQuery Batch logs
 type BatchParser struct{}
 
+func (p *BatchParser) New() parsers.LogParser {
+	return &BatchParser{}
+}
+
 // Parse returns the parsed events or nil if parsing failed
 func (p *BatchParser) Parse(log string) []interface{} {
 	event := &Batch{}

@@ -67,6 +67,10 @@ type GuardDutyService struct {
 // VPCFlowParser parses AWS VPC Flow Parser logs
 type GuardDutyParser struct{}
 
+func (p *GuardDutyParser) New() parsers.LogParser {
+	return &GuardDutyParser{}
+}
+
 // Parse returns the parsed events or nil if parsing failed
 func (p *GuardDutyParser) Parse(log string) []interface{} {
 	event := &GuardDuty{}

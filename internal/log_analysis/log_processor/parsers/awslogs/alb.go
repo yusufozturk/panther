@@ -75,6 +75,10 @@ type ALB struct {
 // ALBParser parses AWS Application Load Balancer logs
 type ALBParser struct{}
 
+func (p *ALBParser) New() parsers.LogParser {
+	return &ALBParser{}
+}
+
 // Parse returns the parsed events or nil if parsing failed
 func (p *ALBParser) Parse(log string) []interface{} {
 	reader := csv.NewReader(strings.NewReader(log))

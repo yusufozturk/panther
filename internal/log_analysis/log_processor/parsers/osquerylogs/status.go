@@ -50,6 +50,10 @@ type Status struct { // FIXME: field descriptions need updating!
 // StatusParser parses OsQuery Status logs
 type StatusParser struct{}
 
+func (p *StatusParser) New() parsers.LogParser {
+	return &StatusParser{}
+}
+
 // Parse returns the parsed events or nil if parsing failed
 func (p *StatusParser) Parse(log string) []interface{} {
 	event := &Status{}

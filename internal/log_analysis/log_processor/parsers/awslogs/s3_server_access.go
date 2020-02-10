@@ -70,6 +70,10 @@ type S3ServerAccess struct {
 // S3ServerAccessParser parses AWS S3 Server Access logs
 type S3ServerAccessParser struct{}
 
+func (p *S3ServerAccessParser) New() parsers.LogParser {
+	return &S3ServerAccessParser{}
+}
+
 // Parse returns the parsed events or nil if parsing failed
 func (p *S3ServerAccessParser) Parse(log string) []interface{} {
 	reader := csv.NewReader(strings.NewReader(log))

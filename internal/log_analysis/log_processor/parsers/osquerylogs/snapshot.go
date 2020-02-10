@@ -48,6 +48,10 @@ type Snapshot struct { // FIXME: field descriptions need updating!
 // SnapshotParser parses OsQuery snapshot logs
 type SnapshotParser struct{}
 
+func (p *SnapshotParser) New() parsers.LogParser {
+	return &SnapshotParser{}
+}
+
 // Parse returns the parsed events or nil if parsing failed
 func (p *SnapshotParser) Parse(log string) []interface{} {
 	event := &Snapshot{}

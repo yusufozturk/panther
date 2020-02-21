@@ -135,7 +135,7 @@ func uploadFileToS3(
 	})
 }
 
-func invokeLambda(awsSession *session.Session, functionName string, input interface{}) error {
+func invokeLambda(awsSession *session.Session, functionName string, input interface{}, output interface{}) error {
 	payload, err := jsoniter.Marshal(input)
 	if err != nil {
 		return fmt.Errorf("failed to json marshal input to %s: %v", functionName, err)
@@ -153,6 +153,12 @@ func invokeLambda(awsSession *session.Session, functionName string, input interf
 		return fmt.Errorf("%s responded with %s error: %s",
 			functionName, *response.FunctionError, string(response.Payload))
 	}
+
+	if output != nil {
+		if err = jsoniter.Unmarshal(response.Payload, output); err != nil {
+			return fmt.Errorf("failed to json unmarshal response from %s: %v", functionName, err)
+		}
+	}
 	return nil
 }
 
@@ -168,9 +174,11 @@ func promptUser(prompt string, validator func(string) error) string {
 		}
 
 		result = strings.TrimSpace(result)
-		if err := validator(result); err != nil {
-			fmt.Println(err)
-			continue
+		if validator != nil {
+			if err := validator(result); err != nil {
+				fmt.Println(err)
+				continue
+			}
 		}
 
 		return result

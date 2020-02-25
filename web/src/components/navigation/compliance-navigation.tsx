@@ -17,28 +17,32 @@
  */
 
 import React from 'react';
-import { Box, Button, Flex, Heading, Text } from 'pouncejs';
-import BlankCanvasImg from 'Assets/illustrations/blank-canvas.svg';
+import { Box, Flex, Heading } from 'pouncejs';
 import urls from 'Source/urls';
-import { Link } from 'react-router-dom';
+import NavLink from './nav-link';
 
-const ListResourcesPageEmptyDataFallback: React.FC = () => {
+const ComplianceNavigation: React.FC = () => {
   return (
-    <Flex justifyContent="center" alignItems="center" flexDirection="column">
-      <Box my={10}>
-        <img alt="Black Canvas Illustration" src={BlankCanvasImg} width="auto" height={300} />
-      </Box>
-      <Heading size="medium" color="grey300" mb={6}>
-        No resources found
+    <Box>
+      <Heading size="medium" textAlign="center" mt={10} mb={5}>
+        <b>CLOUD SECURITY</b>
       </Heading>
-      <Text size="large" color="grey200" textAlign="center" mb={10}>
-        You don{"'"}t have any resources connected to your Panther account
-      </Text>
-      <Button size="large" variant="primary" to={urls.compliance.sources.create()} is={Link}>
-        Get started
-      </Button>
-    </Flex>
+      <Flex flexDirection="column" is="ul">
+        <Flex is="li">
+          <NavLink icon="dashboard-alt" to={urls.compliance.overview()} label="Overview" />
+        </Flex>
+        <Flex is="li">
+          <NavLink icon="policy" to={urls.compliance.policies.list()} label="Policies" />
+        </Flex>
+        <Flex is="li">
+          <NavLink icon="resource" to={urls.compliance.resources.list()} label="Resources" />
+        </Flex>
+        <Flex is="li">
+          <NavLink icon="infra-source" to={urls.compliance.sources.list()} label="Sources" />
+        </Flex>
+      </Flex>
+    </Box>
   );
 };
 
-export default ListResourcesPageEmptyDataFallback;
+export default ComplianceNavigation;

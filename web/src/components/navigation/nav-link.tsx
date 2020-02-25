@@ -16,29 +16,40 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { Flex, Icon, IconButtonProps, IconProps, MenuItem } from 'pouncejs';
 import React from 'react';
-import { Box, Button, Flex, Heading, Text } from 'pouncejs';
-import BlankCanvasImg from 'Assets/illustrations/blank-canvas.svg';
-import urls from 'Source/urls';
+import useRouter from 'Hooks/useRouter';
 import { Link } from 'react-router-dom';
+import { css } from '@emotion/core';
 
-const ListResourcesPageEmptyDataFallback: React.FC = () => {
+type NavLinkProps = Omit<IconButtonProps, 'variant'> & {
+  icon: IconProps['type'];
+  label: string;
+  to: string;
+};
+
+const NavLink: React.FC<NavLinkProps> = ({ icon, label, to }) => {
+  const { location } = useRouter();
+
   return (
-    <Flex justifyContent="center" alignItems="center" flexDirection="column">
-      <Box my={10}>
-        <img alt="Black Canvas Illustration" src={BlankCanvasImg} width="auto" height={300} />
-      </Box>
-      <Heading size="medium" color="grey300" mb={6}>
-        No resources found
-      </Heading>
-      <Text size="large" color="grey200" textAlign="center" mb={10}>
-        You don{"'"}t have any resources connected to your Panther account
-      </Text>
-      <Button size="large" variant="primary" to={urls.compliance.sources.create()} is={Link}>
-        Get started
-      </Button>
-    </Flex>
+    <MenuItem
+      width={1}
+      variant="primary"
+      selected={location.pathname === to}
+      my={2}
+      is={Link}
+      to={to}
+      css={css`
+        text-decoration: none;
+      `}
+      aria-label={label}
+    >
+      <Flex alignItems="center" px={4}>
+        <Icon type={icon} size="small" mr={6} />
+        {label}
+      </Flex>
+    </MenuItem>
   );
 };
 
-export default ListResourcesPageEmptyDataFallback;
+export default NavLink;

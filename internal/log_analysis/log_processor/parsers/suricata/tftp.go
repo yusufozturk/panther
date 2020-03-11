@@ -28,18 +28,41 @@ import (
 	"github.com/panther-labs/panther/internal/log_analysis/log_processor/parsers/timestamp"
 )
 
-var EveDesc = `Suricata Eve alert parser.`
+var TFTPDesc = `Suricata parser for the TFTP event type in the EVE JSON output.
+Reference: https://suricata.readthedocs.io/en/suricata-5.0.2/output/eve/eve-json-output.html`
 
-// EveParser parses Suricata Eve alerts in the JSON format
-type EveParser struct{}
+type TFTP struct {
+	DestIP       *string      `json:"dest_ip" validate:"required"`
+	DestPort     *int         `json:"dest_port" validate:"required"`
+	EventType    *string      `json:"event_type" validate:"required"`
+	FlowID       *int         `json:"flow_id" validate:"required"`
+	PcapCnt      *int         `json:"pcap_cnt" validate:"required"`
+	PcapFilename *string      `json:"pcap_filename" validate:"required"`
+	Proto        *string      `json:"proto" validate:"required"`
+	SrcIP        *string      `json:"src_ip" validate:"required"`
+	SrcPort      *int         `json:"src_port" validate:"required"`
+	TFTP         *TFTPDetails `json:"tftp" validate:"required,dive"`
+	Timestamp    *string      `json:"timestamp" validate:"required"`
 
-func (p *EveParser) New() parsers.LogParser {
-	return &EveParser{}
+	parsers.PantherLog
+}
+
+type TFTPDetails struct {
+	File   *string `json:"file" validate:"required"`
+	Mode   *string `json:"mode" validate:"required"`
+	Packet *string `json:"packet" validate:"required"`
+}
+
+// TFTPParser parses Suricata TFTP alerts in the JSON format
+type TFTPParser struct{}
+
+func (p *TFTPParser) New() parsers.LogParser {
+	return &TFTPParser{}
 }
 
 // Parse returns the parsed events or nil if parsing failed
-func (p *EveParser) Parse(log string) []interface{} {
-	event := &Eve{}
+func (p *TFTPParser) Parse(log string) []interface{} {
+	event := &TFTP{}
 
 	err := jsoniter.UnmarshalFromString(log, event)
 	if err != nil {
@@ -58,11 +81,11 @@ func (p *EveParser) Parse(log string) []interface{} {
 }
 
 // LogType returns the log type supported by this parser
-func (p *EveParser) LogType() string {
-	return "Suricata.Eve"
+func (p *TFTPParser) LogType() string {
+	return "Suricata.TFTP"
 }
 
-func (event *Eve) updatePantherFields(p *EveParser) {
+func (event *TFTP) updatePantherFields(p *TFTPParser) {
 	eventTime, _ := timestamp.Parse(time.RFC3339Nano, *event.Timestamp)
 	event.SetCoreFields(p.LogType(), &eventTime)
 	event.AppendAnyIPAddressPtrs(event.SrcIP, event.DestIP)

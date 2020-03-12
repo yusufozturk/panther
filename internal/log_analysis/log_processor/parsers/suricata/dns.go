@@ -31,62 +31,67 @@ import (
 var DNSDesc = `Suricata parser for the DNS event type in the EVE JSON output.
 Reference: https://suricata.readthedocs.io/en/suricata-5.0.2/output/eve/eve-json-output.html`
 
+//nolint:lll
 type DNS struct {
-	CommunityID  *string     `json:"community_id" validate:"required"`
-	DNS          *DNSDetails `json:"dns" validate:"required,dive"`
-	DestIP       *string     `json:"dest_ip" validate:"required"`
-	DestPort     *int        `json:"dest_port" validate:"required"`
-	EventType    *string     `json:"event_type" validate:"required"`
-	FlowID       *int        `json:"flow_id" validate:"required"`
-	PcapCnt      *int        `json:"pcap_cnt,omitempty"`
-	PcapFilename *string     `json:"pcap_filename" validate:"required"`
-	Proto        *string     `json:"proto" validate:"required"`
-	SrcIP        *string     `json:"src_ip" validate:"required"`
-	SrcPort      *int        `json:"src_port" validate:"required"`
-	Timestamp    *string     `json:"timestamp" validate:"required"`
-	Vlan         []int       `json:"vlan,omitempty"`
+	CommunityID  *string     `json:"community_id,omitempty" description:"Suricata DNS CommunityID"`
+	DNS          *DNSDetails `json:"dns" validate:"required,dive" description:"Suricata DNS DNS"`
+	DestIP       *string     `json:"dest_ip" validate:"required" description:"Suricata DNS DestIP"`
+	DestPort     *int        `json:"dest_port,omitempty" description:"Suricata DNS DestPort"`
+	EventType    *string     `json:"event_type" validate:"required" description:"Suricata DNS EventType"`
+	FlowID       *int        `json:"flow_id,omitempty" description:"Suricata DNS FlowID"`
+	PcapCnt      *int        `json:"pcap_cnt,omitempty" description:"Suricata DNS PcapCnt"`
+	PcapFilename *string     `json:"pcap_filename,omitempty" description:"Suricata DNS PcapFilename"`
+	Proto        *string     `json:"proto" validate:"required" description:"Suricata DNS Proto"`
+	SrcIP        *string     `json:"src_ip" validate:"required" description:"Suricata DNS SrcIP"`
+	SrcPort      *int        `json:"src_port,omitempty" description:"Suricata DNS SrcPort"`
+	Timestamp    *string     `json:"timestamp" validate:"required" description:"Suricata DNS Timestamp"`
+	Vlan         []int       `json:"vlan,omitempty" description:"Suricata DNS Vlan"`
 
 	parsers.PantherLog
 }
 
+//nolint:lll
 type DNSDetails struct {
-	Aa          *bool                   `json:"aa,omitempty"`
-	Answers     []DNSDetailsAnswers     `json:"answers,omitempty" validate:"omitempty,dive"`
-	Authorities []DNSDetailsAuthorities `json:"authorities,omitempty" validate:"omitempty,dive"`
-	Flags       *string                 `json:"flags,omitempty"`
-	Grouped     *DNSDetailsGrouped      `json:"grouped,omitempty" validate:"omitempty,dive"`
-	ID          *int                    `json:"id" validate:"required"`
-	Qr          *bool                   `json:"qr,omitempty"`
-	Ra          *bool                   `json:"ra,omitempty"`
-	Rcode       *string                 `json:"rcode,omitempty"`
-	Rd          *bool                   `json:"rd,omitempty"`
-	Rrname      *string                 `json:"rrname" validate:"required"`
-	Rrtype      *string                 `json:"rrtype" validate:"required"`
-	TxID        *int                    `json:"tx_id,omitempty"`
-	Type        *string                 `json:"type" validate:"required"`
-	Version     *int                    `json:"version,omitempty"`
+	Aa          *bool                   `json:"aa,omitempty" description:"Suricata DNSDetails Aa"`
+	Answers     []DNSDetailsAnswers     `json:"answers,omitempty" validate:"omitempty,dive" description:"Suricata DNSDetails Answers"`
+	Authorities []DNSDetailsAuthorities `json:"authorities,omitempty" validate:"omitempty,dive" description:"Suricata DNSDetails Authorities"`
+	Flags       *string                 `json:"flags,omitempty" description:"Suricata DNSDetails Flags"`
+	Grouped     *DNSDetailsGrouped      `json:"grouped,omitempty" validate:"omitempty,dive" description:"Suricata DNSDetails Grouped"`
+	ID          *int                    `json:"id,omitempty" description:"Suricata DNSDetails ID"`
+	Qr          *bool                   `json:"qr,omitempty" description:"Suricata DNSDetails Qr"`
+	Ra          *bool                   `json:"ra,omitempty" description:"Suricata DNSDetails Ra"`
+	Rcode       *string                 `json:"rcode,omitempty" description:"Suricata DNSDetails Rcode"`
+	Rd          *bool                   `json:"rd,omitempty" description:"Suricata DNSDetails Rd"`
+	Rrname      *string                 `json:"rrname,omitempty" description:"Suricata DNSDetails Rrname"`
+	Rrtype      *string                 `json:"rrtype,omitempty" description:"Suricata DNSDetails Rrtype"`
+	TxID        *int                    `json:"tx_id,omitempty" description:"Suricata DNSDetails TxID"`
+	Type        *string                 `json:"type,omitempty" description:"Suricata DNSDetails Type"`
+	Version     *int                    `json:"version,omitempty" description:"Suricata DNSDetails Version"`
 }
 
+//nolint:lll
 type DNSDetailsAnswers struct {
-	Rdata  *string `json:"rdata,omitempty"`
-	Rrname *string `json:"rrname" validate:"required"`
-	Rrtype *string `json:"rrtype" validate:"required"`
-	TTL    *int    `json:"ttl" validate:"required"`
+	Rdata  *string `json:"rdata,omitempty" description:"Suricata DNSDetailsAnswers Rdata"`
+	Rrname *string `json:"rrname,omitempty" description:"Suricata DNSDetailsAnswers Rrname"`
+	Rrtype *string `json:"rrtype,omitempty" description:"Suricata DNSDetailsAnswers Rrtype"`
+	TTL    *int    `json:"ttl,omitempty" description:"Suricata DNSDetailsAnswers TTL"`
 }
 
+//nolint:lll
 type DNSDetailsGrouped struct {
-	A     []string `json:"A,omitempty"`
-	Aaaa  []string `json:"AAAA,omitempty"`
-	Cname []string `json:"CNAME,omitempty"`
-	Mx    []string `json:"MX,omitempty"`
-	Ptr   []string `json:"PTR,omitempty"`
-	Txt   []string `json:"TXT,omitempty"`
+	A     []string `json:"A,omitempty" description:"Suricata DNSDetailsGrouped A"`
+	Aaaa  []string `json:"AAAA,omitempty" description:"Suricata DNSDetailsGrouped Aaaa"`
+	Cname []string `json:"CNAME,omitempty" description:"Suricata DNSDetailsGrouped Cname"`
+	Mx    []string `json:"MX,omitempty" description:"Suricata DNSDetailsGrouped Mx"`
+	Ptr   []string `json:"PTR,omitempty" description:"Suricata DNSDetailsGrouped Ptr"`
+	Txt   []string `json:"TXT,omitempty" description:"Suricata DNSDetailsGrouped Txt"`
 }
 
+//nolint:lll
 type DNSDetailsAuthorities struct {
-	Rrname *string `json:"rrname" validate:"required"`
-	Rrtype *string `json:"rrtype" validate:"required"`
-	TTL    *int    `json:"ttl" validate:"required"`
+	Rrname *string `json:"rrname,omitempty" description:"Suricata DNSDetailsAuthorities Rrname"`
+	Rrtype *string `json:"rrtype,omitempty" description:"Suricata DNSDetailsAuthorities Rrtype"`
+	TTL    *int    `json:"ttl,omitempty" description:"Suricata DNSDetailsAuthorities TTL"`
 }
 
 // DNSParser parses Suricata DNS alerts in the JSON format

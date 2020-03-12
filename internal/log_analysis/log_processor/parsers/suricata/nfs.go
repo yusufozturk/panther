@@ -31,52 +31,57 @@ import (
 var NfsDesc = `Suricata parser for the Nfs event type in the EVE JSON output.
 Reference: https://suricata.readthedocs.io/en/suricata-5.0.2/output/eve/eve-json-output.html`
 
+//nolint:lll
 type Nfs struct {
-	CommunityID  *string     `json:"community_id" validate:"required"`
-	DestIP       *string     `json:"dest_ip" validate:"required"`
-	DestPort     *int        `json:"dest_port" validate:"required"`
-	EventType    *string     `json:"event_type" validate:"required"`
-	FlowID       *int        `json:"flow_id" validate:"required"`
-	Nfs          *NfsDetails `json:"nfs" validate:"required,dive"`
-	PcapCnt      *int        `json:"pcap_cnt,omitempty"`
-	PcapFilename *string     `json:"pcap_filename" validate:"required"`
-	Proto        *string     `json:"proto" validate:"required"`
-	RPC          *NfsRPC     `json:"rpc" validate:"required,dive"`
-	SrcIP        *string     `json:"src_ip" validate:"required"`
-	SrcPort      *int        `json:"src_port" validate:"required"`
-	Timestamp    *string     `json:"timestamp" validate:"required"`
+	CommunityID  *string     `json:"community_id,omitempty" description:"Suricata Nfs CommunityID"`
+	DestIP       *string     `json:"dest_ip" validate:"required" description:"Suricata Nfs DestIP"`
+	DestPort     *int        `json:"dest_port,omitempty" description:"Suricata Nfs DestPort"`
+	EventType    *string     `json:"event_type" validate:"required" description:"Suricata Nfs EventType"`
+	FlowID       *int        `json:"flow_id,omitempty" description:"Suricata Nfs FlowID"`
+	Nfs          *NfsDetails `json:"nfs" validate:"required,dive" description:"Suricata Nfs Nfs"`
+	PcapCnt      *int        `json:"pcap_cnt,omitempty" description:"Suricata Nfs PcapCnt"`
+	PcapFilename *string     `json:"pcap_filename,omitempty" description:"Suricata Nfs PcapFilename"`
+	Proto        *string     `json:"proto" validate:"required" description:"Suricata Nfs Proto"`
+	RPC          *NfsRPC     `json:"rpc,omitempty" validate:"omitempty,dive" description:"Suricata Nfs RPC"`
+	SrcIP        *string     `json:"src_ip" validate:"required" description:"Suricata Nfs SrcIP"`
+	SrcPort      *int        `json:"src_port,omitempty" description:"Suricata Nfs SrcPort"`
+	Timestamp    *string     `json:"timestamp" validate:"required" description:"Suricata Nfs Timestamp"`
 
 	parsers.PantherLog
 }
 
+//nolint:lll
 type NfsRPC struct {
-	AuthType *string      `json:"auth_type" validate:"required"`
-	Creds    *NfsRPCCreds `json:"creds,omitempty" validate:"omitempty,dive"`
-	Status   *string      `json:"status" validate:"required"`
-	Xid      *int         `json:"xid" validate:"required"`
+	AuthType *string      `json:"auth_type,omitempty" description:"Suricata NfsRPC AuthType"`
+	Creds    *NfsRPCCreds `json:"creds,omitempty" validate:"omitempty,dive" description:"Suricata NfsRPC Creds"`
+	Status   *string      `json:"status,omitempty" description:"Suricata NfsRPC Status"`
+	Xid      *int         `json:"xid,omitempty" description:"Suricata NfsRPC Xid"`
 }
 
+//nolint:lll
 type NfsRPCCreds struct {
-	GID         *int    `json:"gid" validate:"required"`
-	MachineName *string `json:"machine_name" validate:"required"`
-	UID         *int    `json:"uid" validate:"required"`
+	GID         *int    `json:"gid,omitempty" description:"Suricata NfsRPCCreds GID"`
+	MachineName *string `json:"machine_name,omitempty" description:"Suricata NfsRPCCreds MachineName"`
+	UID         *int    `json:"uid,omitempty" description:"Suricata NfsRPCCreds UID"`
 }
 
+//nolint:lll
 type NfsDetails struct {
-	FileTx    *bool             `json:"file_tx" validate:"required"`
-	Filename  *string           `json:"filename" validate:"required"`
-	Hhash     *string           `json:"hhash,omitempty"`
-	ID        *int              `json:"id" validate:"required"`
-	Procedure *string           `json:"procedure" validate:"required"`
-	Rename    *NfsDetailsRename `json:"rename,omitempty" validate:"omitempty,dive"`
-	Status    *string           `json:"status" validate:"required"`
-	Type      *string           `json:"type" validate:"required"`
-	Version   *int              `json:"version" validate:"required"`
+	FileTx    *bool             `json:"file_tx,omitempty" description:"Suricata NfsDetails FileTx"`
+	Filename  *string           `json:"filename,omitempty" description:"Suricata NfsDetails Filename"`
+	Hhash     *string           `json:"hhash,omitempty" description:"Suricata NfsDetails Hhash"`
+	ID        *int              `json:"id,omitempty" description:"Suricata NfsDetails ID"`
+	Procedure *string           `json:"procedure,omitempty" description:"Suricata NfsDetails Procedure"`
+	Rename    *NfsDetailsRename `json:"rename,omitempty" validate:"omitempty,dive" description:"Suricata NfsDetails Rename"`
+	Status    *string           `json:"status,omitempty" description:"Suricata NfsDetails Status"`
+	Type      *string           `json:"type,omitempty" description:"Suricata NfsDetails Type"`
+	Version   *int              `json:"version,omitempty" description:"Suricata NfsDetails Version"`
 }
 
+//nolint:lll
 type NfsDetailsRename struct {
-	From *string `json:"from" validate:"required"`
-	To   *string `json:"to" validate:"required"`
+	From *string `json:"from,omitempty" description:"Suricata NfsDetailsRename From"`
+	To   *string `json:"to,omitempty" description:"Suricata NfsDetailsRename To"`
 }
 
 // NfsParser parses Suricata Nfs alerts in the JSON format

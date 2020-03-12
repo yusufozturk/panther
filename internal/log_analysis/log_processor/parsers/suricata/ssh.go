@@ -31,45 +31,51 @@ import (
 var SSHDesc = `Suricata parser for the SSH event type in the EVE JSON output.
 Reference: https://suricata.readthedocs.io/en/suricata-5.0.2/output/eve/eve-json-output.html`
 
+//nolint:lll
 type SSH struct {
-	CommunityID  *string      `json:"community_id" validate:"required"`
-	DestIP       *string      `json:"dest_ip" validate:"required"`
-	DestPort     *int         `json:"dest_port" validate:"required"`
-	EventType    *string      `json:"event_type" validate:"required"`
-	FlowID       *int         `json:"flow_id" validate:"required"`
-	Metadata     *SSHMetadata `json:"metadata,omitempty" validate:"omitempty,dive"`
-	PcapCnt      *int         `json:"pcap_cnt,omitempty"`
-	PcapFilename *string      `json:"pcap_filename" validate:"required"`
-	Proto        *string      `json:"proto" validate:"required"`
-	SSH          *SSHDetails  `json:"ssh" validate:"required,dive"`
-	SrcIP        *string      `json:"src_ip" validate:"required"`
-	SrcPort      *int         `json:"src_port" validate:"required"`
-	Timestamp    *string      `json:"timestamp" validate:"required"`
+	CommunityID  *string      `json:"community_id,omitempty" description:"Suricata SSH CommunityID"`
+	DestIP       *string      `json:"dest_ip" validate:"required" description:"Suricata SSH DestIP"`
+	DestPort     *int         `json:"dest_port,omitempty" description:"Suricata SSH DestPort"`
+	EventType    *string      `json:"event_type" validate:"required" description:"Suricata SSH EventType"`
+	FlowID       *int         `json:"flow_id,omitempty" description:"Suricata SSH FlowID"`
+	Metadata     *SSHMetadata `json:"metadata,omitempty" validate:"omitempty,dive" description:"Suricata SSH Metadata"`
+	PcapCnt      *int         `json:"pcap_cnt,omitempty" description:"Suricata SSH PcapCnt"`
+	PcapFilename *string      `json:"pcap_filename,omitempty" description:"Suricata SSH PcapFilename"`
+	Proto        *string      `json:"proto" validate:"required" description:"Suricata SSH Proto"`
+	SSH          *SSHDetails  `json:"ssh" validate:"required,dive" description:"Suricata SSH SSH"`
+	SrcIP        *string      `json:"src_ip" validate:"required" description:"Suricata SSH SrcIP"`
+	SrcPort      *int         `json:"src_port,omitempty" description:"Suricata SSH SrcPort"`
+	Timestamp    *string      `json:"timestamp" validate:"required" description:"Suricata SSH Timestamp"`
 
 	parsers.PantherLog
 }
 
+//nolint:lll
 type SSHDetails struct {
-	Client *SSHDetailsClient `json:"client" validate:"required,dive"`
-	Server *SSHDetailsServer `json:"server" validate:"required,dive"`
+	Client *SSHDetailsClient `json:"client,omitempty" validate:"omitempty,dive" description:"Suricata SSHDetails Client"`
+	Server *SSHDetailsServer `json:"server,omitempty" validate:"omitempty,dive" description:"Suricata SSHDetails Server"`
 }
 
+//nolint:lll
 type SSHDetailsClient struct {
-	ProtoVersion    *string `json:"proto_version" validate:"required"`
-	SoftwareVersion *string `json:"software_version" validate:"required"`
+	ProtoVersion    *string `json:"proto_version,omitempty" description:"Suricata SSHDetailsClient ProtoVersion"`
+	SoftwareVersion *string `json:"software_version,omitempty" description:"Suricata SSHDetailsClient SoftwareVersion"`
 }
 
+//nolint:lll
 type SSHDetailsServer struct {
-	ProtoVersion    *string `json:"proto_version" validate:"required"`
-	SoftwareVersion *string `json:"software_version" validate:"required"`
+	ProtoVersion    *string `json:"proto_version,omitempty" description:"Suricata SSHDetailsServer ProtoVersion"`
+	SoftwareVersion *string `json:"software_version,omitempty" description:"Suricata SSHDetailsServer SoftwareVersion"`
 }
 
+//nolint:lll
 type SSHMetadata struct {
-	Flowints *SSHMetadataFlowints `json:"flowints" validate:"required,dive"`
+	Flowints *SSHMetadataFlowints `json:"flowints,omitempty" validate:"omitempty,dive" description:"Suricata SSHMetadata Flowints"`
 }
 
+//nolint:lll
 type SSHMetadataFlowints struct {
-	TCPRetransmissionCount *int `json:"tcp.retransmission.count" validate:"required"`
+	TCPRetransmissionCount *int `json:"tcp.retransmission.count,omitempty" description:"Suricata SSHMetadataFlowints TCPRetransmissionCount"`
 }
 
 // SSHParser parses Suricata SSH alerts in the JSON format

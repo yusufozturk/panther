@@ -31,31 +31,33 @@ import (
 var SIPDesc = `Suricata parser for the SIP event type in the EVE JSON output.
 Reference: https://suricata.readthedocs.io/en/suricata-5.0.2/output/eve/eve-json-output.html`
 
+//nolint:lll
 type SIP struct {
-	CommunityID  *string     `json:"community_id" validate:"required"`
-	DestIP       *string     `json:"dest_ip" validate:"required"`
-	DestPort     *int        `json:"dest_port" validate:"required"`
-	EventType    *string     `json:"event_type" validate:"required"`
-	FlowID       *int        `json:"flow_id" validate:"required"`
-	PcapCnt      *int        `json:"pcap_cnt" validate:"required"`
-	PcapFilename *string     `json:"pcap_filename" validate:"required"`
-	Proto        *string     `json:"proto" validate:"required"`
-	SIP          *SIPDetails `json:"sip" validate:"required,dive"`
-	SrcIP        *string     `json:"src_ip" validate:"required"`
-	SrcPort      *int        `json:"src_port" validate:"required"`
-	Timestamp    *string     `json:"timestamp" validate:"required"`
+	CommunityID  *string     `json:"community_id,omitempty" description:"Suricata SIP CommunityID"`
+	DestIP       *string     `json:"dest_ip" validate:"required" description:"Suricata SIP DestIP"`
+	DestPort     *int        `json:"dest_port,omitempty" description:"Suricata SIP DestPort"`
+	EventType    *string     `json:"event_type" validate:"required" description:"Suricata SIP EventType"`
+	FlowID       *int        `json:"flow_id,omitempty" description:"Suricata SIP FlowID"`
+	PcapCnt      *int        `json:"pcap_cnt,omitempty" description:"Suricata SIP PcapCnt"`
+	PcapFilename *string     `json:"pcap_filename,omitempty" description:"Suricata SIP PcapFilename"`
+	Proto        *string     `json:"proto" validate:"required" description:"Suricata SIP Proto"`
+	SIP          *SIPDetails `json:"sip" validate:"required,dive" description:"Suricata SIP SIP"`
+	SrcIP        *string     `json:"src_ip" validate:"required" description:"Suricata SIP SrcIP"`
+	SrcPort      *int        `json:"src_port,omitempty" description:"Suricata SIP SrcPort"`
+	Timestamp    *string     `json:"timestamp" validate:"required" description:"Suricata SIP Timestamp"`
 
 	parsers.PantherLog
 }
 
+//nolint:lll
 type SIPDetails struct {
-	Code         *string `json:"code,omitempty"`
-	Method       *string `json:"method,omitempty"`
-	Reason       *string `json:"reason,omitempty"`
-	RequestLine  *string `json:"request_line,omitempty"`
-	ResponseLine *string `json:"response_line,omitempty"`
-	URI          *string `json:"uri,omitempty"`
-	Version      *string `json:"version" validate:"required"`
+	Code         *string `json:"code,omitempty" description:"Suricata SIPDetails Code"`
+	Method       *string `json:"method,omitempty" description:"Suricata SIPDetails Method"`
+	Reason       *string `json:"reason,omitempty" description:"Suricata SIPDetails Reason"`
+	RequestLine  *string `json:"request_line,omitempty" description:"Suricata SIPDetails RequestLine"`
+	ResponseLine *string `json:"response_line,omitempty" description:"Suricata SIPDetails ResponseLine"`
+	URI          *string `json:"uri,omitempty" description:"Suricata SIPDetails URI"`
+	Version      *string `json:"version,omitempty" description:"Suricata SIPDetails Version"`
 }
 
 // SIPParser parses Suricata SIP alerts in the JSON format

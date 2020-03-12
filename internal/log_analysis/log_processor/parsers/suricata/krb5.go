@@ -31,41 +31,45 @@ import (
 var Krb5Desc = `Suricata parser for the Krb5 event type in the EVE JSON output.
 Reference: https://suricata.readthedocs.io/en/suricata-5.0.2/output/eve/eve-json-output.html`
 
+//nolint:lll
 type Krb5 struct {
-	CommunityID  *string       `json:"community_id" validate:"required"`
-	DestIP       *string       `json:"dest_ip" validate:"required"`
-	DestPort     *int          `json:"dest_port" validate:"required"`
-	EventType    *string       `json:"event_type" validate:"required"`
-	FlowID       *int          `json:"flow_id" validate:"required"`
-	Krb5         *Krb5Details  `json:"krb5" validate:"required,dive"`
-	Metadata     *Krb5Metadata `json:"metadata,omitempty" validate:"omitempty,dive"`
-	PcapCnt      *int          `json:"pcap_cnt" validate:"required"`
-	PcapFilename *string       `json:"pcap_filename" validate:"required"`
-	Proto        *string       `json:"proto" validate:"required"`
-	SrcIP        *string       `json:"src_ip" validate:"required"`
-	SrcPort      *int          `json:"src_port" validate:"required"`
-	Timestamp    *string       `json:"timestamp" validate:"required"`
+	CommunityID  *string       `json:"community_id,omitempty" description:"Suricata Krb5 CommunityID"`
+	DestIP       *string       `json:"dest_ip" validate:"required" description:"Suricata Krb5 DestIP"`
+	DestPort     *int          `json:"dest_port,omitempty" description:"Suricata Krb5 DestPort"`
+	EventType    *string       `json:"event_type" validate:"required" description:"Suricata Krb5 EventType"`
+	FlowID       *int          `json:"flow_id,omitempty" description:"Suricata Krb5 FlowID"`
+	Krb5         *Krb5Details  `json:"krb5" validate:"required,dive" description:"Suricata Krb5 Krb5"`
+	Metadata     *Krb5Metadata `json:"metadata,omitempty" validate:"omitempty,dive" description:"Suricata Krb5 Metadata"`
+	PcapCnt      *int          `json:"pcap_cnt,omitempty" description:"Suricata Krb5 PcapCnt"`
+	PcapFilename *string       `json:"pcap_filename,omitempty" description:"Suricata Krb5 PcapFilename"`
+	Proto        *string       `json:"proto" validate:"required" description:"Suricata Krb5 Proto"`
+	SrcIP        *string       `json:"src_ip" validate:"required" description:"Suricata Krb5 SrcIP"`
+	SrcPort      *int          `json:"src_port,omitempty" description:"Suricata Krb5 SrcPort"`
+	Timestamp    *string       `json:"timestamp" validate:"required" description:"Suricata Krb5 Timestamp"`
 
 	parsers.PantherLog
 }
 
+//nolint:lll
 type Krb5Details struct {
-	Cname          *string `json:"cname" validate:"required"`
-	Encryption     *string `json:"encryption" validate:"required"`
-	ErrorCode      *string `json:"error_code,omitempty"`
-	FailedRequest  *string `json:"failed_request,omitempty"`
-	MsgType        *string `json:"msg_type" validate:"required"`
-	Realm          *string `json:"realm" validate:"required"`
-	Sname          *string `json:"sname" validate:"required"`
-	WeakEncryption *bool   `json:"weak_encryption" validate:"required"`
+	Cname          *string `json:"cname,omitempty" description:"Suricata Krb5Details Cname"`
+	Encryption     *string `json:"encryption,omitempty" description:"Suricata Krb5Details Encryption"`
+	ErrorCode      *string `json:"error_code,omitempty" description:"Suricata Krb5Details ErrorCode"`
+	FailedRequest  *string `json:"failed_request,omitempty" description:"Suricata Krb5Details FailedRequest"`
+	MsgType        *string `json:"msg_type,omitempty" description:"Suricata Krb5Details MsgType"`
+	Realm          *string `json:"realm,omitempty" description:"Suricata Krb5Details Realm"`
+	Sname          *string `json:"sname,omitempty" description:"Suricata Krb5Details Sname"`
+	WeakEncryption *bool   `json:"weak_encryption,omitempty" description:"Suricata Krb5Details WeakEncryption"`
 }
 
+//nolint:lll
 type Krb5Metadata struct {
-	Flowints *Krb5MetadataFlowints `json:"flowints" validate:"required,dive"`
+	Flowints *Krb5MetadataFlowints `json:"flowints,omitempty" validate:"omitempty,dive" description:"Suricata Krb5Metadata Flowints"`
 }
 
+//nolint:lll
 type Krb5MetadataFlowints struct {
-	ApplayerAnomalyCount *int `json:"applayer.anomaly.count" validate:"required"`
+	ApplayerAnomalyCount *int `json:"applayer.anomaly.count,omitempty" description:"Suricata Krb5MetadataFlowints ApplayerAnomalyCount"`
 }
 
 // Krb5Parser parses Suricata Krb5 alerts in the JSON format

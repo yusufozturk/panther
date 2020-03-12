@@ -31,41 +31,43 @@ import (
 var DHCPDesc = `Suricata parser for the DHCP event type in the EVE JSON output.
 Reference: https://suricata.readthedocs.io/en/suricata-5.0.2/output/eve/eve-json-output.html`
 
+//nolint:lll
 type DHCP struct {
-	DHCP         *DHCPDetails `json:"dhcp" validate:"required,dive"`
-	DestIP       *string      `json:"dest_ip" validate:"required"`
-	DestPort     *int         `json:"dest_port" validate:"required"`
-	EventType    *string      `json:"event_type" validate:"required"`
-	FlowID       *int         `json:"flow_id" validate:"required"`
-	PcapCnt      *int         `json:"pcap_cnt" validate:"required"`
-	PcapFilename *string      `json:"pcap_filename" validate:"required"`
-	Proto        *string      `json:"proto" validate:"required"`
-	SrcIP        *string      `json:"src_ip" validate:"required"`
-	SrcPort      *int         `json:"src_port" validate:"required"`
-	Timestamp    *string      `json:"timestamp" validate:"required"`
+	DHCP         *DHCPDetails `json:"dhcp" validate:"required,dive" description:"Suricata DHCP DHCP"`
+	DestIP       *string      `json:"dest_ip" validate:"required" description:"Suricata DHCP DestIP"`
+	DestPort     *int         `json:"dest_port,omitempty" description:"Suricata DHCP DestPort"`
+	EventType    *string      `json:"event_type" validate:"required" description:"Suricata DHCP EventType"`
+	FlowID       *int         `json:"flow_id,omitempty" description:"Suricata DHCP FlowID"`
+	PcapCnt      *int         `json:"pcap_cnt,omitempty" description:"Suricata DHCP PcapCnt"`
+	PcapFilename *string      `json:"pcap_filename,omitempty" description:"Suricata DHCP PcapFilename"`
+	Proto        *string      `json:"proto" validate:"required" description:"Suricata DHCP Proto"`
+	SrcIP        *string      `json:"src_ip" validate:"required" description:"Suricata DHCP SrcIP"`
+	SrcPort      *int         `json:"src_port,omitempty" description:"Suricata DHCP SrcPort"`
+	Timestamp    *string      `json:"timestamp" validate:"required" description:"Suricata DHCP Timestamp"`
 
 	parsers.PantherLog
 }
 
+//nolint:lll
 type DHCPDetails struct {
-	AssignedIP    *string  `json:"assigned_ip" validate:"required"`
-	ClientID      *string  `json:"client_id,omitempty"`
-	ClientIP      *string  `json:"client_ip" validate:"required"`
-	ClientMac     *string  `json:"client_mac" validate:"required"`
-	DHCPType      *string  `json:"dhcp_type,omitempty"`
-	DNSServers    []string `json:"dns_servers,omitempty"`
-	Hostname      *string  `json:"hostname,omitempty"`
-	ID            *int     `json:"id" validate:"required"`
-	LeaseTime     *int     `json:"lease_time,omitempty"`
-	NextServerIP  *string  `json:"next_server_ip,omitempty"`
-	Params        []string `json:"params,omitempty"`
-	RebindingTime *int     `json:"rebinding_time,omitempty"`
-	RelayIP       *string  `json:"relay_ip,omitempty"`
-	RenewalTime   *int     `json:"renewal_time,omitempty"`
-	RequestedIP   *string  `json:"requested_ip,omitempty"`
-	Routers       []string `json:"routers,omitempty"`
-	SubnetMask    *string  `json:"subnet_mask,omitempty"`
-	Type          *string  `json:"type" validate:"required"`
+	AssignedIP    *string  `json:"assigned_ip,omitempty" description:"Suricata DHCPDetails AssignedIP"`
+	ClientID      *string  `json:"client_id,omitempty" description:"Suricata DHCPDetails ClientID"`
+	ClientIP      *string  `json:"client_ip,omitempty" description:"Suricata DHCPDetails ClientIP"`
+	ClientMac     *string  `json:"client_mac,omitempty" description:"Suricata DHCPDetails ClientMac"`
+	DHCPType      *string  `json:"dhcp_type,omitempty" description:"Suricata DHCPDetails DHCPType"`
+	DNSServers    []string `json:"dns_servers,omitempty" description:"Suricata DHCPDetails DNSServers"`
+	Hostname      *string  `json:"hostname,omitempty" description:"Suricata DHCPDetails Hostname"`
+	ID            *int     `json:"id,omitempty" description:"Suricata DHCPDetails ID"`
+	LeaseTime     *int     `json:"lease_time,omitempty" description:"Suricata DHCPDetails LeaseTime"`
+	NextServerIP  *string  `json:"next_server_ip,omitempty" description:"Suricata DHCPDetails NextServerIP"`
+	Params        []string `json:"params,omitempty" description:"Suricata DHCPDetails Params"`
+	RebindingTime *int     `json:"rebinding_time,omitempty" description:"Suricata DHCPDetails RebindingTime"`
+	RelayIP       *string  `json:"relay_ip,omitempty" description:"Suricata DHCPDetails RelayIP"`
+	RenewalTime   *int     `json:"renewal_time,omitempty" description:"Suricata DHCPDetails RenewalTime"`
+	RequestedIP   *string  `json:"requested_ip,omitempty" description:"Suricata DHCPDetails RequestedIP"`
+	Routers       []string `json:"routers,omitempty" description:"Suricata DHCPDetails Routers"`
+	SubnetMask    *string  `json:"subnet_mask,omitempty" description:"Suricata DHCPDetails SubnetMask"`
+	Type          *string  `json:"type,omitempty" description:"Suricata DHCPDetails Type"`
 }
 
 // DHCPParser parses Suricata DHCP alerts in the JSON format

@@ -31,26 +31,28 @@ import (
 var TFTPDesc = `Suricata parser for the TFTP event type in the EVE JSON output.
 Reference: https://suricata.readthedocs.io/en/suricata-5.0.2/output/eve/eve-json-output.html`
 
+//nolint:lll
 type TFTP struct {
-	DestIP       *string      `json:"dest_ip" validate:"required"`
-	DestPort     *int         `json:"dest_port" validate:"required"`
-	EventType    *string      `json:"event_type" validate:"required"`
-	FlowID       *int         `json:"flow_id" validate:"required"`
-	PcapCnt      *int         `json:"pcap_cnt" validate:"required"`
-	PcapFilename *string      `json:"pcap_filename" validate:"required"`
-	Proto        *string      `json:"proto" validate:"required"`
-	SrcIP        *string      `json:"src_ip" validate:"required"`
-	SrcPort      *int         `json:"src_port" validate:"required"`
-	TFTP         *TFTPDetails `json:"tftp" validate:"required,dive"`
-	Timestamp    *string      `json:"timestamp" validate:"required"`
+	DestIP       *string      `json:"dest_ip" validate:"required" description:"Suricata TFTP DestIP"`
+	DestPort     *int         `json:"dest_port,omitempty" description:"Suricata TFTP DestPort"`
+	EventType    *string      `json:"event_type" validate:"required" description:"Suricata TFTP EventType"`
+	FlowID       *int         `json:"flow_id,omitempty" description:"Suricata TFTP FlowID"`
+	PcapCnt      *int         `json:"pcap_cnt,omitempty" description:"Suricata TFTP PcapCnt"`
+	PcapFilename *string      `json:"pcap_filename,omitempty" description:"Suricata TFTP PcapFilename"`
+	Proto        *string      `json:"proto" validate:"required" description:"Suricata TFTP Proto"`
+	SrcIP        *string      `json:"src_ip" validate:"required" description:"Suricata TFTP SrcIP"`
+	SrcPort      *int         `json:"src_port,omitempty" description:"Suricata TFTP SrcPort"`
+	TFTP         *TFTPDetails `json:"tftp" validate:"required,dive" description:"Suricata TFTP TFTP"`
+	Timestamp    *string      `json:"timestamp" validate:"required" description:"Suricata TFTP Timestamp"`
 
 	parsers.PantherLog
 }
 
+//nolint:lll
 type TFTPDetails struct {
-	File   *string `json:"file" validate:"required"`
-	Mode   *string `json:"mode" validate:"required"`
-	Packet *string `json:"packet" validate:"required"`
+	File   *string `json:"file,omitempty" description:"Suricata TFTPDetails File"`
+	Mode   *string `json:"mode,omitempty" description:"Suricata TFTPDetails Mode"`
+	Packet *string `json:"packet,omitempty" description:"Suricata TFTPDetails Packet"`
 }
 
 // TFTPParser parses Suricata TFTP alerts in the JSON format

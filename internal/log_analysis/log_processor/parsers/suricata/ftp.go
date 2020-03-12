@@ -31,41 +31,45 @@ import (
 var FTPDesc = `Suricata parser for the FTP event type in the EVE JSON output.
 Reference: https://suricata.readthedocs.io/en/suricata-5.0.2/output/eve/eve-json-output.html`
 
+//nolint:lll
 type FTP struct {
-	CommunityID  *string      `json:"community_id" validate:"required"`
-	DestIP       *string      `json:"dest_ip" validate:"required"`
-	DestPort     *int         `json:"dest_port" validate:"required"`
-	EventType    *string      `json:"event_type" validate:"required"`
-	FTP          *FTPDetails  `json:"ftp" validate:"required,dive"`
-	FlowID       *int         `json:"flow_id" validate:"required"`
-	Metadata     *FTPMetadata `json:"metadata" validate:"required,dive"`
-	PcapCnt      *int         `json:"pcap_cnt,omitempty"`
-	PcapFilename *string      `json:"pcap_filename" validate:"required"`
-	Proto        *string      `json:"proto" validate:"required"`
-	SrcIP        *string      `json:"src_ip" validate:"required"`
-	SrcPort      *int         `json:"src_port" validate:"required"`
-	Timestamp    *string      `json:"timestamp" validate:"required"`
-	TxID         *int         `json:"tx_id" validate:"required"`
+	CommunityID  *string      `json:"community_id,omitempty" description:"Suricata FTP CommunityID"`
+	DestIP       *string      `json:"dest_ip" validate:"required" description:"Suricata FTP DestIP"`
+	DestPort     *int         `json:"dest_port,omitempty" description:"Suricata FTP DestPort"`
+	EventType    *string      `json:"event_type" validate:"required" description:"Suricata FTP EventType"`
+	FTP          *FTPDetails  `json:"ftp" validate:"required,dive" description:"Suricata FTP FTP"`
+	FlowID       *int         `json:"flow_id,omitempty" description:"Suricata FTP FlowID"`
+	Metadata     *FTPMetadata `json:"metadata,omitempty" validate:"omitempty,dive" description:"Suricata FTP Metadata"`
+	PcapCnt      *int         `json:"pcap_cnt,omitempty" description:"Suricata FTP PcapCnt"`
+	PcapFilename *string      `json:"pcap_filename,omitempty" description:"Suricata FTP PcapFilename"`
+	Proto        *string      `json:"proto" validate:"required" description:"Suricata FTP Proto"`
+	SrcIP        *string      `json:"src_ip" validate:"required" description:"Suricata FTP SrcIP"`
+	SrcPort      *int         `json:"src_port,omitempty" description:"Suricata FTP SrcPort"`
+	Timestamp    *string      `json:"timestamp" validate:"required" description:"Suricata FTP Timestamp"`
+	TxID         *int         `json:"tx_id,omitempty" description:"Suricata FTP TxID"`
 
 	parsers.PantherLog
 }
 
+//nolint:lll
 type FTPMetadata struct {
-	Flowbits []string             `json:"flowbits,omitempty"`
-	Flowints *FTPMetadataFlowints `json:"flowints,omitempty" validate:"omitempty,dive"`
+	Flowbits []string             `json:"flowbits,omitempty" description:"Suricata FTPMetadata Flowbits"`
+	Flowints *FTPMetadataFlowints `json:"flowints,omitempty" validate:"omitempty,dive" description:"Suricata FTPMetadata Flowints"`
 }
 
+//nolint:lll
 type FTPMetadataFlowints struct {
-	ApplayerAnomalyCount *int `json:"applayer.anomaly.count" validate:"required"`
+	ApplayerAnomalyCount *int `json:"applayer.anomaly.count,omitempty" description:"Suricata FTPMetadataFlowints ApplayerAnomalyCount"`
 }
 
+//nolint:lll
 type FTPDetails struct {
-	Command        *string  `json:"command,omitempty"`
-	CommandData    *string  `json:"command_data,omitempty"`
-	CompletionCode []string `json:"completion_code,omitempty"`
-	DynamicPort    *int     `json:"dynamic_port,omitempty"`
-	Reply          []string `json:"reply,omitempty"`
-	ReplyReceived  *string  `json:"reply_received" validate:"required"`
+	Command        *string  `json:"command,omitempty" description:"Suricata FTPDetails Command"`
+	CommandData    *string  `json:"command_data,omitempty" description:"Suricata FTPDetails CommandData"`
+	CompletionCode []string `json:"completion_code,omitempty" description:"Suricata FTPDetails CompletionCode"`
+	DynamicPort    *int     `json:"dynamic_port,omitempty" description:"Suricata FTPDetails DynamicPort"`
+	Reply          []string `json:"reply,omitempty" description:"Suricata FTPDetails Reply"`
+	ReplyReceived  *string  `json:"reply_received,omitempty" description:"Suricata FTPDetails ReplyReceived"`
 }
 
 // FTPParser parses Suricata FTP alerts in the JSON format

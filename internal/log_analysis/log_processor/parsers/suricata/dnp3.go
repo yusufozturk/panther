@@ -31,121 +31,54 @@ import (
 var Dnp3Desc = `Suricata parser for the Dnp3 event type in the EVE JSON output.
 Reference: https://suricata.readthedocs.io/en/suricata-5.0.2/output/eve/eve-json-output.html`
 
+//nolint:lll
 type Dnp3 struct {
-	CommunityID  *string      `json:"community_id" validate:"required"`
-	DestIP       *string      `json:"dest_ip" validate:"required"`
-	DestPort     *int         `json:"dest_port" validate:"required"`
-	Dnp3         *Dnp3Details `json:"dnp3" validate:"required,dive"`
-	EventType    *string      `json:"event_type" validate:"required"`
-	FlowID       *int         `json:"flow_id" validate:"required"`
-	PcapCnt      *int         `json:"pcap_cnt" validate:"required"`
-	PcapFilename *string      `json:"pcap_filename" validate:"required"`
-	Proto        *string      `json:"proto" validate:"required"`
-	SrcIP        *string      `json:"src_ip" validate:"required"`
-	SrcPort      *int         `json:"src_port" validate:"required"`
-	Timestamp    *string      `json:"timestamp" validate:"required"`
+	CommunityID  *string      `json:"community_id,omitempty" description:"Suricata Dnp3 CommunityID"`
+	DestIP       *string      `json:"dest_ip" validate:"required" description:"Suricata Dnp3 DestIP"`
+	DestPort     *int         `json:"dest_port,omitempty" description:"Suricata Dnp3 DestPort"`
+	Dnp3         *Dnp3Details `json:"dnp3" validate:"required,dive" description:"Suricata Dnp3 Dnp3"`
+	EventType    *string      `json:"event_type" validate:"required" description:"Suricata Dnp3 EventType"`
+	FlowID       *int         `json:"flow_id,omitempty" description:"Suricata Dnp3 FlowID"`
+	PcapCnt      *int         `json:"pcap_cnt,omitempty" description:"Suricata Dnp3 PcapCnt"`
+	PcapFilename *string      `json:"pcap_filename,omitempty" description:"Suricata Dnp3 PcapFilename"`
+	Proto        *string      `json:"proto" validate:"required" description:"Suricata Dnp3 Proto"`
+	SrcIP        *string      `json:"src_ip" validate:"required" description:"Suricata Dnp3 SrcIP"`
+	SrcPort      *int         `json:"src_port,omitempty" description:"Suricata Dnp3 SrcPort"`
+	Timestamp    *string      `json:"timestamp" validate:"required" description:"Suricata Dnp3 Timestamp"`
 
 	parsers.PantherLog
 }
 
+//nolint:lll
 type Dnp3Details struct {
-	Application *Dnp3DetailsApplication `json:"application" validate:"required,dive"`
-	Control     *Dnp3DetailsControl     `json:"control" validate:"required,dive"`
-	Dst         *int                    `json:"dst" validate:"required"`
-	Iin         *Dnp3DetailsIin         `json:"iin,omitempty" validate:"omitempty,dive"`
-	Src         *int                    `json:"src" validate:"required"`
-	Type        *string                 `json:"type" validate:"required"`
+	Application *Dnp3DetailsApplication `json:"application,omitempty" validate:"omitempty,dive" description:"Suricata Dnp3Details Application"`
+	Control     *Dnp3DetailsControl     `json:"control,omitempty" validate:"omitempty,dive" description:"Suricata Dnp3Details Control"`
+	Dst         *int                    `json:"dst,omitempty" description:"Suricata Dnp3Details Dst"`
+	Iin         *Dnp3DetailsIin         `json:"iin,omitempty" validate:"omitempty,dive" description:"Suricata Dnp3Details Iin"`
+	Src         *int                    `json:"src,omitempty" description:"Suricata Dnp3Details Src"`
+	Type        *string                 `json:"type,omitempty" description:"Suricata Dnp3Details Type"`
 }
 
+//nolint:lll
 type Dnp3DetailsControl struct {
-	Dir          *bool `json:"dir" validate:"required"`
-	Fcb          *bool `json:"fcb" validate:"required"`
-	Fcv          *bool `json:"fcv" validate:"required"`
-	FunctionCode *int  `json:"function_code" validate:"required"`
-	Pri          *bool `json:"pri" validate:"required"`
+	Dir          *bool `json:"dir,omitempty" description:"Suricata Dnp3DetailsControl Dir"`
+	Fcb          *bool `json:"fcb,omitempty" description:"Suricata Dnp3DetailsControl Fcb"`
+	Fcv          *bool `json:"fcv,omitempty" description:"Suricata Dnp3DetailsControl Fcv"`
+	FunctionCode *int  `json:"function_code,omitempty" description:"Suricata Dnp3DetailsControl FunctionCode"`
+	Pri          *bool `json:"pri,omitempty" description:"Suricata Dnp3DetailsControl Pri"`
 }
 
+//nolint:lll
 type Dnp3DetailsApplication struct {
-	Complete     *bool                           `json:"complete" validate:"required"`
-	Control      *Dnp3DetailsApplicationControl  `json:"control" validate:"required,dive"`
-	FunctionCode *int                            `json:"function_code" validate:"required"`
-	Objects      []Dnp3DetailsApplicationObjects `json:"objects" validate:"required,dive"`
+	Complete     *bool                `json:"complete,omitempty" description:"Suricata Dnp3DetailsApplication Complete"`
+	Control      *jsoniter.RawMessage `json:"control,omitempty" description:"Suricata Dnp3DetailsApplication Control"`
+	FunctionCode *int                 `json:"function_code,omitempty" description:"Suricata Dnp3DetailsApplication FunctionCode"`
+	Objects      *jsoniter.RawMessage `json:"objects,omitempty" description:"Suricata Dnp3DetailsApplication Objects"`
 }
 
-type Dnp3DetailsApplicationControl struct {
-	Con      *bool `json:"con" validate:"required"`
-	Fin      *bool `json:"fin" validate:"required"`
-	Fir      *bool `json:"fir" validate:"required"`
-	Sequence *int  `json:"sequence" validate:"required"`
-	Uns      *bool `json:"uns" validate:"required"`
-}
-
-type Dnp3DetailsApplicationObjects struct {
-	Count      *int                                  `json:"count" validate:"required"`
-	Group      *int                                  `json:"group" validate:"required"`
-	Points     []Dnp3DetailsApplicationObjectsPoints `json:"points,omitempty" validate:"omitempty,dive"`
-	PrefixCode *int                                  `json:"prefix_code" validate:"required"`
-	Qualifier  *int                                  `json:"qualifier" validate:"required"`
-	RangeCode  *int                                  `json:"range_code" validate:"required"`
-	Start      *int                                  `json:"start" validate:"required"`
-	Stop       *int                                  `json:"stop" validate:"required"`
-	Variation  *int                                  `json:"variation" validate:"required"`
-}
-
-type Dnp3DetailsApplicationObjectsPoints struct {
-	AuthenticationKey  *int    `json:"authentication_key,omitempty"`
-	BlockNumber        *int    `json:"block_number,omitempty"`
-	ChallengeDataLen   *int    `json:"challenge_data_len,omitempty"`
-	ChatterFilter      *int    `json:"chatter_filter,omitempty"`
-	CommLost           *int    `json:"comm_lost,omitempty"`
-	Count              *int    `json:"count,omitempty"`
-	Cr                 *int    `json:"cr,omitempty"`
-	Created            *int    `json:"created,omitempty"`
-	DataMacValue       *string `json:"data->mac_value,omitempty"`
-	DataWrappedKeyData *string `json:"data->wrapped_key_data,omitempty"`
-	DelayMs            *int    `json:"delay_ms,omitempty"`
-	FileData           *string `json:"file_data,omitempty"`
-	FileHandle         *int    `json:"file_handle,omitempty"`
-	FileSize           *int    `json:"file_size,omitempty"`
-	Filename           *string `json:"filename,omitempty"`
-	FilenameOffset     *int    `json:"filename_offset,omitempty"`
-	FilenameSize       *int    `json:"filename_size,omitempty"`
-	Index              *int    `json:"index" validate:"required"`
-	KeyStatus          *int    `json:"key_status,omitempty"`
-	KeyWrapAlg         *int    `json:"key_wrap_alg,omitempty"`
-	Ksq                *int    `json:"ksq,omitempty"`
-	LocalForced        *int    `json:"local_forced,omitempty"`
-	Mal                *int    `json:"mal,omitempty"`
-	MaximumBlockSize   *int    `json:"maximum_block_size,omitempty"`
-	Offtime            *int    `json:"offtime,omitempty"`
-	Online             *int    `json:"online,omitempty"`
-	Ontime             *int    `json:"ontime,omitempty"`
-	OpType             *int    `json:"op_type,omitempty"`
-	OperationalMode    *int    `json:"operational_mode,omitempty"`
-	OptionalText       *string `json:"optional_text,omitempty"`
-	OverRange          *int    `json:"over_range,omitempty"`
-	Permissions        *int    `json:"permissions,omitempty"`
-	Prefix             *int    `json:"prefix" validate:"required"`
-	Qu                 *int    `json:"qu,omitempty"`
-	ReferenceErr       *int    `json:"reference_err,omitempty"`
-	RemoteForced       *int    `json:"remote_forced,omitempty"`
-	RequestID          *int    `json:"request_id,omitempty"`
-	Reserved           *int    `json:"reserved,omitempty"`
-	Reserved0          *int    `json:"reserved0,omitempty"`
-	Reserved1          *int    `json:"reserved1,omitempty"`
-	Restart            *int    `json:"restart,omitempty"`
-	Size               *int    `json:"size,omitempty"`
-	State              *int    `json:"state,omitempty"`
-	StatusCode         *int    `json:"status_code,omitempty"`
-	Tcc                *int    `json:"tcc,omitempty"`
-	Timestamp          *int    `json:"timestamp,omitempty"`
-	UserNumber         *int    `json:"user_number,omitempty"`
-	Usr                *int    `json:"usr,omitempty"`
-	Value              *int    `json:"value,omitempty"`
-}
-
+//nolint:lll
 type Dnp3DetailsIin struct {
-	Indicators []string `json:"indicators" validate:"required"`
+	Indicators []string `json:"indicators,omitempty" description:"Suricata Dnp3DetailsIin Indicators"`
 }
 
 // Dnp3Parser parses Suricata Dnp3 alerts in the JSON format

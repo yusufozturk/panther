@@ -31,39 +31,41 @@ import (
 var Ikev2Desc = `Suricata parser for the Ikev2 event type in the EVE JSON output.
 Reference: https://suricata.readthedocs.io/en/suricata-5.0.2/output/eve/eve-json-output.html`
 
+//nolint:lll
 type Ikev2 struct {
-	CommunityID  *string       `json:"community_id" validate:"required"`
-	DestIP       *string       `json:"dest_ip" validate:"required"`
-	DestPort     *int          `json:"dest_port" validate:"required"`
-	EventType    *string       `json:"event_type" validate:"required"`
-	FlowID       *int          `json:"flow_id" validate:"required"`
-	Ikev2        *Ikev2Details `json:"ikev2" validate:"required,dive"`
-	PcapCnt      *int          `json:"pcap_cnt" validate:"required"`
-	PcapFilename *string       `json:"pcap_filename" validate:"required"`
-	Proto        *string       `json:"proto" validate:"required"`
-	SrcIP        *string       `json:"src_ip" validate:"required"`
-	SrcPort      *int          `json:"src_port" validate:"required"`
-	Timestamp    *string       `json:"timestamp" validate:"required"`
+	CommunityID  *string       `json:"community_id,omitempty" description:"Suricata Ikev2 CommunityID"`
+	DestIP       *string       `json:"dest_ip" validate:"required" description:"Suricata Ikev2 DestIP"`
+	DestPort     *int          `json:"dest_port,omitempty" description:"Suricata Ikev2 DestPort"`
+	EventType    *string       `json:"event_type" validate:"required" description:"Suricata Ikev2 EventType"`
+	FlowID       *int          `json:"flow_id,omitempty" description:"Suricata Ikev2 FlowID"`
+	Ikev2        *Ikev2Details `json:"ikev2" validate:"required,dive" description:"Suricata Ikev2 Ikev2"`
+	PcapCnt      *int          `json:"pcap_cnt,omitempty" description:"Suricata Ikev2 PcapCnt"`
+	PcapFilename *string       `json:"pcap_filename,omitempty" description:"Suricata Ikev2 PcapFilename"`
+	Proto        *string       `json:"proto" validate:"required" description:"Suricata Ikev2 Proto"`
+	SrcIP        *string       `json:"src_ip" validate:"required" description:"Suricata Ikev2 SrcIP"`
+	SrcPort      *int          `json:"src_port,omitempty" description:"Suricata Ikev2 SrcPort"`
+	Timestamp    *string       `json:"timestamp" validate:"required" description:"Suricata Ikev2 Timestamp"`
 
 	parsers.PantherLog
 }
 
+//nolint:lll
 type Ikev2Details struct {
-	AlgAuth      *string  `json:"alg_auth,omitempty"`
-	AlgDh        *string  `json:"alg_dh,omitempty"`
-	AlgEnc       *string  `json:"alg_enc,omitempty"`
-	AlgEsn       *string  `json:"alg_esn,omitempty"`
-	AlgPrf       *string  `json:"alg_prf,omitempty"`
-	Errors       *int     `json:"errors" validate:"required"`
-	ExchangeType *int     `json:"exchange_type" validate:"required"`
-	InitSpi      *string  `json:"init_spi" validate:"required"`
-	MessageID    *int     `json:"message_id" validate:"required"`
-	Notify       []string `json:"notify" validate:"required"`
-	Payload      []string `json:"payload" validate:"required"`
-	RespSpi      *string  `json:"resp_spi" validate:"required"`
-	Role         *string  `json:"role" validate:"required"`
-	VersionMajor *int     `json:"version_major" validate:"required"`
-	VersionMinor *int     `json:"version_minor" validate:"required"`
+	AlgAuth      *string  `json:"alg_auth,omitempty" description:"Suricata Ikev2Details AlgAuth"`
+	AlgDh        *string  `json:"alg_dh,omitempty" description:"Suricata Ikev2Details AlgDh"`
+	AlgEnc       *string  `json:"alg_enc,omitempty" description:"Suricata Ikev2Details AlgEnc"`
+	AlgEsn       *string  `json:"alg_esn,omitempty" description:"Suricata Ikev2Details AlgEsn"`
+	AlgPrf       *string  `json:"alg_prf,omitempty" description:"Suricata Ikev2Details AlgPrf"`
+	Errors       *int     `json:"errors,omitempty" description:"Suricata Ikev2Details Errors"`
+	ExchangeType *int     `json:"exchange_type,omitempty" description:"Suricata Ikev2Details ExchangeType"`
+	InitSpi      *string  `json:"init_spi,omitempty" description:"Suricata Ikev2Details InitSpi"`
+	MessageID    *int     `json:"message_id,omitempty" description:"Suricata Ikev2Details MessageID"`
+	Notify       []string `json:"notify,omitempty" description:"Suricata Ikev2Details Notify"`
+	Payload      []string `json:"payload,omitempty" description:"Suricata Ikev2Details Payload"`
+	RespSpi      *string  `json:"resp_spi,omitempty" description:"Suricata Ikev2Details RespSpi"`
+	Role         *string  `json:"role,omitempty" description:"Suricata Ikev2Details Role"`
+	VersionMajor *int     `json:"version_major,omitempty" description:"Suricata Ikev2Details VersionMajor"`
+	VersionMinor *int     `json:"version_minor,omitempty" description:"Suricata Ikev2Details VersionMinor"`
 }
 
 // Ikev2Parser parses Suricata Ikev2 alerts in the JSON format

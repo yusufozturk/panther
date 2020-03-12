@@ -31,72 +31,77 @@ import (
 var FlowDesc = `Suricata parser for the Flow event type in the EVE JSON output.
 Reference: https://suricata.readthedocs.io/en/suricata-5.0.2/output/eve/eve-json-output.html`
 
+//nolint:lll
 type Flow struct {
-	AppProto         *string       `json:"app_proto,omitempty"`
-	AppProtoOrig     *string       `json:"app_proto_orig,omitempty"`
-	AppProtoTc       *string       `json:"app_proto_tc,omitempty"`
-	AppProtoTs       *string       `json:"app_proto_ts,omitempty"`
-	CommunityID      *string       `json:"community_id" validate:"required"`
-	DestIP           *string       `json:"dest_ip" validate:"required"`
-	DestPort         *int          `json:"dest_port,omitempty"`
-	EventType        *string       `json:"event_type" validate:"required"`
-	Flow             *FlowDetails  `json:"flow" validate:"required,dive"`
-	FlowID           *int          `json:"flow_id" validate:"required"`
-	IcmpCode         *int          `json:"icmp_code,omitempty"`
-	IcmpType         *int          `json:"icmp_type,omitempty"`
-	Metadata         *FlowMetadata `json:"metadata,omitempty" validate:"omitempty,dive"`
-	PcapFilename     *string       `json:"pcap_filename" validate:"required"`
-	Proto            *string       `json:"proto" validate:"required"`
-	ResponseIcmpCode *int          `json:"response_icmp_code,omitempty"`
-	ResponseIcmpType *int          `json:"response_icmp_type,omitempty"`
-	SrcIP            *string       `json:"src_ip" validate:"required"`
-	SrcPort          *int          `json:"src_port,omitempty"`
-	TCP              *FlowTCP      `json:"tcp,omitempty" validate:"omitempty,dive"`
-	Timestamp        *string       `json:"timestamp" validate:"required"`
-	Vlan             []int         `json:"vlan,omitempty"`
+	AppProto         *string       `json:"app_proto,omitempty" description:"Suricata Flow AppProto"`
+	AppProtoOrig     *string       `json:"app_proto_orig,omitempty" description:"Suricata Flow AppProtoOrig"`
+	AppProtoTc       *string       `json:"app_proto_tc,omitempty" description:"Suricata Flow AppProtoTc"`
+	AppProtoTs       *string       `json:"app_proto_ts,omitempty" description:"Suricata Flow AppProtoTs"`
+	CommunityID      *string       `json:"community_id,omitempty" description:"Suricata Flow CommunityID"`
+	DestIP           *string       `json:"dest_ip" validate:"required" description:"Suricata Flow DestIP"`
+	DestPort         *int          `json:"dest_port,omitempty" description:"Suricata Flow DestPort"`
+	EventType        *string       `json:"event_type" validate:"required" description:"Suricata Flow EventType"`
+	Flow             *FlowDetails  `json:"flow" validate:"required,dive" description:"Suricata Flow Flow"`
+	FlowID           *int          `json:"flow_id,omitempty" description:"Suricata Flow FlowID"`
+	IcmpCode         *int          `json:"icmp_code,omitempty" description:"Suricata Flow IcmpCode"`
+	IcmpType         *int          `json:"icmp_type,omitempty" description:"Suricata Flow IcmpType"`
+	Metadata         *FlowMetadata `json:"metadata,omitempty" validate:"omitempty,dive" description:"Suricata Flow Metadata"`
+	PcapFilename     *string       `json:"pcap_filename,omitempty" description:"Suricata Flow PcapFilename"`
+	Proto            *string       `json:"proto" validate:"required" description:"Suricata Flow Proto"`
+	ResponseIcmpCode *int          `json:"response_icmp_code,omitempty" description:"Suricata Flow ResponseIcmpCode"`
+	ResponseIcmpType *int          `json:"response_icmp_type,omitempty" description:"Suricata Flow ResponseIcmpType"`
+	SrcIP            *string       `json:"src_ip" validate:"required" description:"Suricata Flow SrcIP"`
+	SrcPort          *int          `json:"src_port,omitempty" description:"Suricata Flow SrcPort"`
+	TCP              *FlowTCP      `json:"tcp,omitempty" validate:"omitempty,dive" description:"Suricata Flow TCP"`
+	Timestamp        *string       `json:"timestamp" validate:"required" description:"Suricata Flow Timestamp"`
+	Vlan             []int         `json:"vlan,omitempty" description:"Suricata Flow Vlan"`
 
 	parsers.PantherLog
 }
 
+//nolint:lll
 type FlowDetails struct {
-	Age           *int    `json:"age" validate:"required"`
-	Alerted       *bool   `json:"alerted" validate:"required"`
-	BytesToclient *int    `json:"bytes_toclient" validate:"required"`
-	BytesToserver *int    `json:"bytes_toserver" validate:"required"`
-	Emergency     *bool   `json:"emergency,omitempty"`
-	End           *string `json:"end" validate:"required"`
-	PktsToclient  *int    `json:"pkts_toclient" validate:"required"`
-	PktsToserver  *int    `json:"pkts_toserver" validate:"required"`
-	Reason        *string `json:"reason" validate:"required"`
-	Start         *string `json:"start" validate:"required"`
-	State         *string `json:"state" validate:"required"`
+	Age           *int    `json:"age,omitempty" description:"Suricata FlowDetails Age"`
+	Alerted       *bool   `json:"alerted,omitempty" description:"Suricata FlowDetails Alerted"`
+	BytesToclient *int    `json:"bytes_toclient,omitempty" description:"Suricata FlowDetails BytesToclient"`
+	BytesToserver *int    `json:"bytes_toserver,omitempty" description:"Suricata FlowDetails BytesToserver"`
+	Emergency     *bool   `json:"emergency,omitempty" description:"Suricata FlowDetails Emergency"`
+	End           *string `json:"end,omitempty" description:"Suricata FlowDetails End"`
+	PktsToclient  *int    `json:"pkts_toclient,omitempty" description:"Suricata FlowDetails PktsToclient"`
+	PktsToserver  *int    `json:"pkts_toserver,omitempty" description:"Suricata FlowDetails PktsToserver"`
+	Reason        *string `json:"reason,omitempty" description:"Suricata FlowDetails Reason"`
+	Start         *string `json:"start,omitempty" description:"Suricata FlowDetails Start"`
+	State         *string `json:"state,omitempty" description:"Suricata FlowDetails State"`
 }
 
+//nolint:lll
 type FlowTCP struct {
-	Ack        *bool   `json:"ack,omitempty"`
-	Cwr        *bool   `json:"cwr,omitempty"`
-	Ecn        *bool   `json:"ecn,omitempty"`
-	Fin        *bool   `json:"fin,omitempty"`
-	Psh        *bool   `json:"psh,omitempty"`
-	Rst        *bool   `json:"rst,omitempty"`
-	State      *string `json:"state,omitempty"`
-	Syn        *bool   `json:"syn,omitempty"`
-	TCPFlags   *string `json:"tcp_flags" validate:"required"`
-	TCPFlagsTc *string `json:"tcp_flags_tc" validate:"required"`
-	TCPFlagsTs *string `json:"tcp_flags_ts" validate:"required"`
-	Urg        *bool   `json:"urg,omitempty"`
+	Ack        *bool   `json:"ack,omitempty" description:"Suricata FlowTCP Ack"`
+	Cwr        *bool   `json:"cwr,omitempty" description:"Suricata FlowTCP Cwr"`
+	Ecn        *bool   `json:"ecn,omitempty" description:"Suricata FlowTCP Ecn"`
+	Fin        *bool   `json:"fin,omitempty" description:"Suricata FlowTCP Fin"`
+	Psh        *bool   `json:"psh,omitempty" description:"Suricata FlowTCP Psh"`
+	Rst        *bool   `json:"rst,omitempty" description:"Suricata FlowTCP Rst"`
+	State      *string `json:"state,omitempty" description:"Suricata FlowTCP State"`
+	Syn        *bool   `json:"syn,omitempty" description:"Suricata FlowTCP Syn"`
+	TCPFlags   *string `json:"tcp_flags,omitempty" description:"Suricata FlowTCP TCPFlags"`
+	TCPFlagsTc *string `json:"tcp_flags_tc,omitempty" description:"Suricata FlowTCP TCPFlagsTc"`
+	TCPFlagsTs *string `json:"tcp_flags_ts,omitempty" description:"Suricata FlowTCP TCPFlagsTs"`
+	Urg        *bool   `json:"urg,omitempty" description:"Suricata FlowTCP Urg"`
 }
 
+//nolint:lll
 type FlowMetadata struct {
-	Flowbits []string              `json:"flowbits,omitempty"`
-	Flowints *FlowMetadataFlowints `json:"flowints,omitempty" validate:"omitempty,dive"`
+	Flowbits []string              `json:"flowbits,omitempty" description:"Suricata FlowMetadata Flowbits"`
+	Flowints *FlowMetadataFlowints `json:"flowints,omitempty" validate:"omitempty,dive" description:"Suricata FlowMetadata Flowints"`
 }
 
+//nolint:lll
 type FlowMetadataFlowints struct {
-	ApplayerAnomalyCount   *int `json:"applayer.anomaly.count,omitempty"`
-	HTTPAnomalyCount       *int `json:"http.anomaly.count,omitempty"`
-	TCPRetransmissionCount *int `json:"tcp.retransmission.count,omitempty"`
-	TLSAnomalyCount        *int `json:"tls.anomaly.count,omitempty"`
+	ApplayerAnomalyCount   *int `json:"applayer.anomaly.count,omitempty" description:"Suricata FlowMetadataFlowints ApplayerAnomalyCount"`
+	HTTPAnomalyCount       *int `json:"http.anomaly.count,omitempty" description:"Suricata FlowMetadataFlowints HTTPAnomalyCount"`
+	TCPRetransmissionCount *int `json:"tcp.retransmission.count,omitempty" description:"Suricata FlowMetadataFlowints TCPRetransmissionCount"`
+	TLSAnomalyCount        *int `json:"tls.anomaly.count,omitempty" description:"Suricata FlowMetadataFlowints TLSAnomalyCount"`
 }
 
 // FlowParser parses Suricata Flow alerts in the JSON format

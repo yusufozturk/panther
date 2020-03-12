@@ -31,57 +31,63 @@ import (
 var TLSDesc = `Suricata parser for the TLS event type in the EVE JSON output.
 Reference: https://suricata.readthedocs.io/en/suricata-5.0.2/output/eve/eve-json-output.html`
 
+//nolint:lll
 type TLS struct {
-	CommunityID  *string      `json:"community_id" validate:"required"`
-	DestIP       *string      `json:"dest_ip" validate:"required"`
-	DestPort     *int         `json:"dest_port" validate:"required"`
-	EventType    *string      `json:"event_type" validate:"required"`
-	FlowID       *int         `json:"flow_id" validate:"required"`
-	Metadata     *TLSMetadata `json:"metadata,omitempty" validate:"omitempty,dive"`
-	PcapCnt      *int         `json:"pcap_cnt,omitempty"`
-	PcapFilename *string      `json:"pcap_filename" validate:"required"`
-	Proto        *string      `json:"proto" validate:"required"`
-	SrcIP        *string      `json:"src_ip" validate:"required"`
-	SrcPort      *int         `json:"src_port" validate:"required"`
-	TLS          *TLSDetails  `json:"tls" validate:"required,dive"`
-	Timestamp    *string      `json:"timestamp" validate:"required"`
-	Vlan         []int        `json:"vlan,omitempty"`
+	CommunityID  *string      `json:"community_id,omitempty" description:"Suricata TLS CommunityID"`
+	DestIP       *string      `json:"dest_ip" validate:"required" description:"Suricata TLS DestIP"`
+	DestPort     *int         `json:"dest_port,omitempty" description:"Suricata TLS DestPort"`
+	EventType    *string      `json:"event_type" validate:"required" description:"Suricata TLS EventType"`
+	FlowID       *int         `json:"flow_id,omitempty" description:"Suricata TLS FlowID"`
+	Metadata     *TLSMetadata `json:"metadata,omitempty" validate:"omitempty,dive" description:"Suricata TLS Metadata"`
+	PcapCnt      *int         `json:"pcap_cnt,omitempty" description:"Suricata TLS PcapCnt"`
+	PcapFilename *string      `json:"pcap_filename,omitempty" description:"Suricata TLS PcapFilename"`
+	Proto        *string      `json:"proto" validate:"required" description:"Suricata TLS Proto"`
+	SrcIP        *string      `json:"src_ip" validate:"required" description:"Suricata TLS SrcIP"`
+	SrcPort      *int         `json:"src_port,omitempty" description:"Suricata TLS SrcPort"`
+	TLS          *TLSDetails  `json:"tls" validate:"required,dive" description:"Suricata TLS TLS"`
+	Timestamp    *string      `json:"timestamp" validate:"required" description:"Suricata TLS Timestamp"`
+	Vlan         []int        `json:"vlan,omitempty" description:"Suricata TLS Vlan"`
 
 	parsers.PantherLog
 }
 
+//nolint:lll
 type TLSDetails struct {
-	Fingerprint    *string         `json:"fingerprint,omitempty"`
-	FromProto      *string         `json:"from_proto,omitempty"`
-	Issuerdn       *string         `json:"issuerdn,omitempty"`
-	Ja3            *TLSDetailsJa3  `json:"ja3" validate:"required,dive"`
-	Ja3S           *TLSDetailsJa3S `json:"ja3s" validate:"required,dive"`
-	Notafter       *string         `json:"notafter,omitempty"`
-	Notbefore      *string         `json:"notbefore,omitempty"`
-	Serial         *string         `json:"serial,omitempty"`
-	SessionResumed *bool           `json:"session_resumed,omitempty"`
-	Sni            *string         `json:"sni,omitempty"`
-	Subject        *string         `json:"subject,omitempty"`
-	Version        *string         `json:"version" validate:"required"`
+	Fingerprint    *string         `json:"fingerprint,omitempty" description:"Suricata TLSDetails Fingerprint"`
+	FromProto      *string         `json:"from_proto,omitempty" description:"Suricata TLSDetails FromProto"`
+	Issuerdn       *string         `json:"issuerdn,omitempty" description:"Suricata TLSDetails Issuerdn"`
+	Ja3            *TLSDetailsJa3  `json:"ja3,omitempty" validate:"omitempty,dive" description:"Suricata TLSDetails Ja3"`
+	Ja3S           *TLSDetailsJa3S `json:"ja3s,omitempty" validate:"omitempty,dive" description:"Suricata TLSDetails Ja3S"`
+	Notafter       *string         `json:"notafter,omitempty" description:"Suricata TLSDetails Notafter"`
+	Notbefore      *string         `json:"notbefore,omitempty" description:"Suricata TLSDetails Notbefore"`
+	Serial         *string         `json:"serial,omitempty" description:"Suricata TLSDetails Serial"`
+	SessionResumed *bool           `json:"session_resumed,omitempty" description:"Suricata TLSDetails SessionResumed"`
+	Sni            *string         `json:"sni,omitempty" description:"Suricata TLSDetails Sni"`
+	Subject        *string         `json:"subject,omitempty" description:"Suricata TLSDetails Subject"`
+	Version        *string         `json:"version,omitempty" description:"Suricata TLSDetails Version"`
 }
 
+//nolint:lll
 type TLSDetailsJa3 struct {
-	Hash   *string `json:"hash,omitempty"`
-	String *string `json:"string,omitempty"`
+	Hash   *string `json:"hash,omitempty" description:"Suricata TLSDetailsJa3 Hash"`
+	String *string `json:"string,omitempty" description:"Suricata TLSDetailsJa3 String"`
 }
 
+//nolint:lll
 type TLSDetailsJa3S struct {
-	Hash   *string `json:"hash,omitempty"`
-	String *string `json:"string,omitempty"`
+	Hash   *string `json:"hash,omitempty" description:"Suricata TLSDetailsJa3S Hash"`
+	String *string `json:"string,omitempty" description:"Suricata TLSDetailsJa3S String"`
 }
 
+//nolint:lll
 type TLSMetadata struct {
-	Flowints *TLSMetadataFlowints `json:"flowints" validate:"required,dive"`
+	Flowints *TLSMetadataFlowints `json:"flowints,omitempty" validate:"omitempty,dive" description:"Suricata TLSMetadata Flowints"`
 }
 
+//nolint:lll
 type TLSMetadataFlowints struct {
-	ApplayerAnomalyCount *int `json:"applayer.anomaly.count,omitempty"`
-	TLSAnomalyCount      *int `json:"tls.anomaly.count,omitempty"`
+	ApplayerAnomalyCount *int `json:"applayer.anomaly.count,omitempty" description:"Suricata TLSMetadataFlowints ApplayerAnomalyCount"`
+	TLSAnomalyCount      *int `json:"tls.anomaly.count,omitempty" description:"Suricata TLSMetadataFlowints TLSAnomalyCount"`
 }
 
 // TLSParser parses Suricata TLS alerts in the JSON format

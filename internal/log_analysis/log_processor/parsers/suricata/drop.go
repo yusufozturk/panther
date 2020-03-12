@@ -31,50 +31,53 @@ import (
 var DropDesc = `Suricata parser for the Drop event type in the EVE JSON output.
 Reference: https://suricata.readthedocs.io/en/suricata-5.0.2/output/eve/eve-json-output.html`
 
+//nolint:lll
 type Drop struct {
-	Alert        *DropAlert   `json:"alert,omitempty" validate:"omitempty,dive"`
-	CommunityID  *string      `json:"community_id" validate:"required"`
-	DestIP       *string      `json:"dest_ip" validate:"required"`
-	DestPort     *int         `json:"dest_port" validate:"required"`
-	Drop         *DropDetails `json:"drop" validate:"required,dive"`
-	EventType    *string      `json:"event_type" validate:"required"`
-	FlowID       *int         `json:"flow_id" validate:"required"`
-	PcapCnt      *int         `json:"pcap_cnt" validate:"required"`
-	PcapFilename *string      `json:"pcap_filename" validate:"required"`
-	Proto        *string      `json:"proto" validate:"required"`
-	SrcIP        *string      `json:"src_ip" validate:"required"`
-	SrcPort      *int         `json:"src_port" validate:"required"`
-	Timestamp    *string      `json:"timestamp" validate:"required"`
+	Alert        *DropAlert   `json:"alert,omitempty" validate:"omitempty,dive" description:"Suricata Drop Alert"`
+	CommunityID  *string      `json:"community_id,omitempty" description:"Suricata Drop CommunityID"`
+	DestIP       *string      `json:"dest_ip" validate:"required" description:"Suricata Drop DestIP"`
+	DestPort     *int         `json:"dest_port,omitempty" description:"Suricata Drop DestPort"`
+	Drop         *DropDetails `json:"drop" validate:"required,dive" description:"Suricata Drop Drop"`
+	EventType    *string      `json:"event_type" validate:"required" description:"Suricata Drop EventType"`
+	FlowID       *int         `json:"flow_id,omitempty" description:"Suricata Drop FlowID"`
+	PcapCnt      *int         `json:"pcap_cnt,omitempty" description:"Suricata Drop PcapCnt"`
+	PcapFilename *string      `json:"pcap_filename,omitempty" description:"Suricata Drop PcapFilename"`
+	Proto        *string      `json:"proto" validate:"required" description:"Suricata Drop Proto"`
+	SrcIP        *string      `json:"src_ip" validate:"required" description:"Suricata Drop SrcIP"`
+	SrcPort      *int         `json:"src_port,omitempty" description:"Suricata Drop SrcPort"`
+	Timestamp    *string      `json:"timestamp" validate:"required" description:"Suricata Drop Timestamp"`
 
 	parsers.PantherLog
 }
 
+//nolint:lll
 type DropDetails struct {
-	Ack     *bool `json:"ack" validate:"required"`
-	Fin     *bool `json:"fin" validate:"required"`
-	Ipid    *int  `json:"ipid" validate:"required"`
-	Len     *int  `json:"len" validate:"required"`
-	Psh     *bool `json:"psh" validate:"required"`
-	Rst     *bool `json:"rst" validate:"required"`
-	Syn     *bool `json:"syn" validate:"required"`
-	TTL     *int  `json:"ttl" validate:"required"`
-	Tcpack  *int  `json:"tcpack" validate:"required"`
-	Tcpres  *int  `json:"tcpres" validate:"required"`
-	Tcpseq  *int  `json:"tcpseq" validate:"required"`
-	Tcpurgp *int  `json:"tcpurgp" validate:"required"`
-	Tcpwin  *int  `json:"tcpwin" validate:"required"`
-	Tos     *int  `json:"tos" validate:"required"`
-	Urg     *bool `json:"urg" validate:"required"`
+	Ack     *bool `json:"ack,omitempty" description:"Suricata DropDetails Ack"`
+	Fin     *bool `json:"fin,omitempty" description:"Suricata DropDetails Fin"`
+	Ipid    *int  `json:"ipid,omitempty" description:"Suricata DropDetails Ipid"`
+	Len     *int  `json:"len,omitempty" description:"Suricata DropDetails Len"`
+	Psh     *bool `json:"psh,omitempty" description:"Suricata DropDetails Psh"`
+	Rst     *bool `json:"rst,omitempty" description:"Suricata DropDetails Rst"`
+	Syn     *bool `json:"syn,omitempty" description:"Suricata DropDetails Syn"`
+	TTL     *int  `json:"ttl,omitempty" description:"Suricata DropDetails TTL"`
+	Tcpack  *int  `json:"tcpack,omitempty" description:"Suricata DropDetails Tcpack"`
+	Tcpres  *int  `json:"tcpres,omitempty" description:"Suricata DropDetails Tcpres"`
+	Tcpseq  *int  `json:"tcpseq,omitempty" description:"Suricata DropDetails Tcpseq"`
+	Tcpurgp *int  `json:"tcpurgp,omitempty" description:"Suricata DropDetails Tcpurgp"`
+	Tcpwin  *int  `json:"tcpwin,omitempty" description:"Suricata DropDetails Tcpwin"`
+	Tos     *int  `json:"tos,omitempty" description:"Suricata DropDetails Tos"`
+	Urg     *bool `json:"urg,omitempty" description:"Suricata DropDetails Urg"`
 }
 
+//nolint:lll
 type DropAlert struct {
-	Action      *string `json:"action" validate:"required"`
-	Category    *string `json:"category" validate:"required"`
-	GID         *int    `json:"gid" validate:"required"`
-	Rev         *int    `json:"rev" validate:"required"`
-	Severity    *int    `json:"severity" validate:"required"`
-	Signature   *string `json:"signature" validate:"required"`
-	SignatureID *int    `json:"signature_id" validate:"required"`
+	Action      *string `json:"action,omitempty" description:"Suricata DropAlert Action"`
+	Category    *string `json:"category,omitempty" description:"Suricata DropAlert Category"`
+	GID         *int    `json:"gid,omitempty" description:"Suricata DropAlert GID"`
+	Rev         *int    `json:"rev,omitempty" description:"Suricata DropAlert Rev"`
+	Severity    *int    `json:"severity,omitempty" description:"Suricata DropAlert Severity"`
+	Signature   *string `json:"signature,omitempty" description:"Suricata DropAlert Signature"`
+	SignatureID *int    `json:"signature_id,omitempty" description:"Suricata DropAlert SignatureID"`
 }
 
 // DropParser parses Suricata Drop alerts in the JSON format

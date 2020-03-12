@@ -31,49 +31,52 @@ import (
 var RdpDesc = `Suricata parser for the Rdp event type in the EVE JSON output.
 Reference: https://suricata.readthedocs.io/en/suricata-5.0.2/output/eve/eve-json-output.html`
 
+//nolint:lll
 type Rdp struct {
-	DestIP       *string     `json:"dest_ip" validate:"required"`
-	DestPort     *int        `json:"dest_port" validate:"required"`
-	EventType    *string     `json:"event_type" validate:"required"`
-	FlowID       *int        `json:"flow_id" validate:"required"`
-	PcapCnt      *int        `json:"pcap_cnt,omitempty"`
-	PcapFilename *string     `json:"pcap_filename" validate:"required"`
-	Proto        *string     `json:"proto" validate:"required"`
-	Rdp          *RdpDetails `json:"rdp" validate:"required,dive"`
-	SrcIP        *string     `json:"src_ip" validate:"required"`
-	SrcPort      *int        `json:"src_port" validate:"required"`
-	Timestamp    *string     `json:"timestamp" validate:"required"`
+	DestIP       *string     `json:"dest_ip" validate:"required" description:"Suricata Rdp DestIP"`
+	DestPort     *int        `json:"dest_port,omitempty" description:"Suricata Rdp DestPort"`
+	EventType    *string     `json:"event_type" validate:"required" description:"Suricata Rdp EventType"`
+	FlowID       *int        `json:"flow_id,omitempty" description:"Suricata Rdp FlowID"`
+	PcapCnt      *int        `json:"pcap_cnt,omitempty" description:"Suricata Rdp PcapCnt"`
+	PcapFilename *string     `json:"pcap_filename,omitempty" description:"Suricata Rdp PcapFilename"`
+	Proto        *string     `json:"proto" validate:"required" description:"Suricata Rdp Proto"`
+	Rdp          *RdpDetails `json:"rdp" validate:"required,dive" description:"Suricata Rdp Rdp"`
+	SrcIP        *string     `json:"src_ip" validate:"required" description:"Suricata Rdp SrcIP"`
+	SrcPort      *int        `json:"src_port,omitempty" description:"Suricata Rdp SrcPort"`
+	Timestamp    *string     `json:"timestamp" validate:"required" description:"Suricata Rdp Timestamp"`
 
 	parsers.PantherLog
 }
 
+//nolint:lll
 type RdpDetails struct {
-	Channels       []string          `json:"channels,omitempty"`
-	Client         *RdpDetailsClient `json:"client,omitempty" validate:"omitempty,dive"`
-	Cookie         *string           `json:"cookie,omitempty"`
-	ErrorCode      *int              `json:"error_code,omitempty"`
-	EventType      *string           `json:"event_type" validate:"required"`
-	Protocol       *string           `json:"protocol,omitempty"`
-	Reason         *string           `json:"reason,omitempty"`
-	ServerSupports []string          `json:"server_supports,omitempty"`
-	TxID           *int              `json:"tx_id" validate:"required"`
-	X509Serials    []string          `json:"x509_serials,omitempty"`
+	Channels       []string          `json:"channels,omitempty" description:"Suricata RdpDetails Channels"`
+	Client         *RdpDetailsClient `json:"client,omitempty" validate:"omitempty,dive" description:"Suricata RdpDetails Client"`
+	Cookie         *string           `json:"cookie,omitempty" description:"Suricata RdpDetails Cookie"`
+	ErrorCode      *int              `json:"error_code,omitempty" description:"Suricata RdpDetails ErrorCode"`
+	EventType      *string           `json:"event_type,omitempty" description:"Suricata RdpDetails EventType"`
+	Protocol       *string           `json:"protocol,omitempty" description:"Suricata RdpDetails Protocol"`
+	Reason         *string           `json:"reason,omitempty" description:"Suricata RdpDetails Reason"`
+	ServerSupports []string          `json:"server_supports,omitempty" description:"Suricata RdpDetails ServerSupports"`
+	TxID           *int              `json:"tx_id,omitempty" description:"Suricata RdpDetails TxID"`
+	X509Serials    []string          `json:"x509_serials,omitempty" description:"Suricata RdpDetails X509Serials"`
 }
 
+//nolint:lll
 type RdpDetailsClient struct {
-	Build          *string  `json:"build" validate:"required"`
-	Capabilities   []string `json:"capabilities" validate:"required"`
-	ClientName     *string  `json:"client_name" validate:"required"`
-	ColorDepth     *int     `json:"color_depth" validate:"required"`
-	ConnectionHint *string  `json:"connection_hint,omitempty"`
-	DesktopHeight  *int     `json:"desktop_height" validate:"required"`
-	DesktopWidth   *int     `json:"desktop_width" validate:"required"`
-	FunctionKeys   *int     `json:"function_keys" validate:"required"`
-	ID             *string  `json:"id,omitempty"`
-	KeyboardLayout *string  `json:"keyboard_layout" validate:"required"`
-	KeyboardType   *string  `json:"keyboard_type" validate:"required"`
-	ProductID      *int     `json:"product_id" validate:"required"`
-	Version        *string  `json:"version" validate:"required"`
+	Build          *string  `json:"build,omitempty" description:"Suricata RdpDetailsClient Build"`
+	Capabilities   []string `json:"capabilities,omitempty" description:"Suricata RdpDetailsClient Capabilities"`
+	ClientName     *string  `json:"client_name,omitempty" description:"Suricata RdpDetailsClient ClientName"`
+	ColorDepth     *int     `json:"color_depth,omitempty" description:"Suricata RdpDetailsClient ColorDepth"`
+	ConnectionHint *string  `json:"connection_hint,omitempty" description:"Suricata RdpDetailsClient ConnectionHint"`
+	DesktopHeight  *int     `json:"desktop_height,omitempty" description:"Suricata RdpDetailsClient DesktopHeight"`
+	DesktopWidth   *int     `json:"desktop_width,omitempty" description:"Suricata RdpDetailsClient DesktopWidth"`
+	FunctionKeys   *int     `json:"function_keys,omitempty" description:"Suricata RdpDetailsClient FunctionKeys"`
+	ID             *string  `json:"id,omitempty" description:"Suricata RdpDetailsClient ID"`
+	KeyboardLayout *string  `json:"keyboard_layout,omitempty" description:"Suricata RdpDetailsClient KeyboardLayout"`
+	KeyboardType   *string  `json:"keyboard_type,omitempty" description:"Suricata RdpDetailsClient KeyboardType"`
+	ProductID      *int     `json:"product_id,omitempty" description:"Suricata RdpDetailsClient ProductID"`
+	Version        *string  `json:"version,omitempty" description:"Suricata RdpDetailsClient Version"`
 }
 
 // RdpParser parses Suricata Rdp alerts in the JSON format

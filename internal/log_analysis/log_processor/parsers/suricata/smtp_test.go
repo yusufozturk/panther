@@ -19,7 +19,6 @@ package suricatalogs
  */
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -27,26 +26,26 @@ import (
 	"go.uber.org/zap/zaptest"
 )
 
+//nolint:lll
 func TestSMTP(t *testing.T) {
 	zap.ReplaceGlobals(zaptest.NewLogger(t))
 
-	//nolint:lll
-	logs := `{"timestamp": "2017-03-25T04:06:49.264648-0600", "flow_id": 2093638737172268, "pcap_cnt": 404753, "event_type": "smtp", "src_ip": "10.197.244.240", "src_port": 45452, "dest_ip": "10.10.3.6", "dest_port": 25, "proto": "TCP", "tx_id": 0, "smtp": {"helo": "debian.localdomain", "mail_from": "<tkauffman@mee3.seeks>", "rcpt_to": ["<rridley@mee3.seeks>"]}, "email": {"status": "PARSE_DONE", "from": "tkauffman@mee3.seeks", "to": ["rridley@mee3.seeks"]}}
-{"timestamp": "2017-03-24T17:23:55.883114-0600", "flow_id": 340898710094962, "pcap_cnt": 566241, "event_type": "smtp", "src_ip": "10.213.217.121", "src_port": 41289, "dest_ip": "172.16.37.6", "dest_port": 25, "proto": "TCP", "tx_id": 0, "smtp": {"helo": "sseclone5.wrccdc.secure", "mail_from": "<jgreer@spytellite7.com>", "rcpt_to": ["<jbenjamin@spytellite7.com>"]}, "email": {"status": "HEADER_READY"}}
-{"timestamp": "2017-03-25T10:08:44.430630-0600", "flow_id": 1513428733316743, "pcap_cnt": 568973, "event_type": "smtp", "src_ip": "10.223.33.105", "src_port": 33665, "dest_ip": "10.10.2.6", "dest_port": 25, "proto": "TCP", "tx_id": 0, "smtp": {"helo": "debian.localdomain", "mail_from": "<jroiland@mee2.seeks>", "rcpt_to": ["<rridley@mee2.seeks>"]}, "email": {"status": "PARSE_DONE", "from": "jroiland@mee2.seeks", "to": ["rridley@mee2.seeks"]}}
-{"timestamp": "2017-03-25T00:18:27.321305-0600", "flow_id": 1950823734156384, "pcap_cnt": 157226, "event_type": "smtp", "src_ip": "10.196.187.58", "src_port": 54106, "dest_ip": "10.10.6.6", "dest_port": 25, "proto": "TCP", "tx_id": 0, "smtp": {"helo": "debian.localdomain", "mail_from": "<rridley@mee6.seeks>", "rcpt_to": ["<jroiland@mee6.seeks>"]}, "email": {"status": "PARSE_DONE", "from": "rridley@mee6.seeks", "to": ["jroiland@mee6.seeks"]}}
-{"timestamp": "2017-03-24T20:08:07.654628-0600", "flow_id": 1742574818022377, "pcap_cnt": 1014187, "event_type": "smtp", "src_ip": "10.226.13.99", "src_port": 51347, "dest_ip": "10.10.7.6", "dest_port": 25, "proto": "TCP", "tx_id": 0, "smtp": {"helo": "debian.localdomain", "mail_from": "<jroiland@mee7.seeks>", "rcpt_to": ["<jroiland@mee7.seeks>"]}, "email": {"status": "PARSE_DONE", "from": "jroiland@mee7.seeks", "to": ["jroiland@mee7.seeks"]}}
-{"timestamp": "2017-03-25T15:08:58.717123-0600", "flow_id": 677809666680977, "pcap_cnt": 494678, "event_type": "smtp", "src_ip": "10.239.179.209", "src_port": 37639, "dest_ip": "10.10.2.6", "dest_port": 25, "proto": "TCP", "tx_id": 0, "smtp": {"helo": "debian.localdomain", "mail_from": "<schalke@mee2.seeks>", "rcpt_to": ["<rridley@mee2.seeks>"]}, "email": {"status": "PARSE_DONE", "from": "schalke@mee2.seeks", "to": ["rridley@mee2.seeks"]}}
-{"timestamp": "2017-03-25T09:51:22.688639-0600", "flow_id": 1036511201474312, "pcap_cnt": 591038, "event_type": "smtp", "src_ip": "10.212.123.174", "src_port": 58514, "dest_ip": "10.10.6.6", "dest_port": 25, "proto": "TCP", "tx_id": 0, "smtp": {"helo": "debian.localdomain", "mail_from": "<tkauffman@mee6.seeks>", "rcpt_to": ["<schalke@mee6.seeks>"]}, "email": {"status": "PARSE_DONE", "from": "tkauffman@mee6.seeks", "to": ["schalke@mee6.seeks"]}}
-{"timestamp": "2017-03-24T13:03:44.534582-0600", "flow_id": 1480406198113903, "pcap_cnt": 414641, "event_type": "smtp", "src_ip": "10.216.74.156", "src_port": 41729, "dest_ip": "10.10.1.6", "dest_port": 25, "proto": "TCP", "tx_id": 0, "smtp": {"helo": "debian.localdomain", "mail_from": "<eacosta@mee1.seeks>", "rcpt_to": ["<eacosta@mee1.seeks>"]}, "email": {"status": "PARSE_DONE", "from": "eacosta@mee1.seeks", "to": ["eacosta@mee1.seeks"]}}
-{"timestamp": "2017-03-24T21:48:58.492225-0600", "flow_id": 76213803107818, "pcap_cnt": 955425, "event_type": "smtp", "src_ip": "10.215.227.49", "src_port": 58125, "dest_ip": "10.10.2.6", "dest_port": 25, "proto": "TCP", "tx_id": 0, "smtp": {"helo": "sse.wrccdc.secure", "mail_from": "<dharmon@mee2.seeks>", "rcpt_to": ["<sgrammer@mee2.seeks>"]}, "email": {"status": "PARSE_DONE", "from": "dharmon@mee2.seeks", "to": ["sgrammer@mee2.seeks"]}}
-{"timestamp": "2015-03-10T04:43:32.476160-0600", "flow_id": 182380599207300, "pcap_cnt": 161295, "event_type": "smtp", "src_ip": "192.168.0.51", "src_port": 36504, "dest_ip": "81.236.55.3", "dest_port": 25, "proto": "TCP", "tx_id": 0, "smtp": {"helo": "[192.168.0.51]", "mail_from": "<homer.pwned.se@gmx.com>", "rcpt_to": ["<ned.pwned.se@gmx.com>"]}, "email": {"status": "PARSE_DONE", "from": "Homer <homer.pwned.se@gmx.com>", "to": ["Password Ned <ned.pwned.se@gmx.com>"]}}
-`
+	logs := []string{
+		`{"timestamp": "2017-03-24T16:19:40.605670-0600", "flow_id": 216017984097941, "pcap_cnt": 1754515, "event_type": "smtp", "src_ip": "10.251.145.70", "src_port": 59756, "dest_ip": "10.10.6.6", "dest_port": 25, "proto": "TCP", "tx_id": 0, "smtp": {"helo": "debian.localdomain", "mail_from": "<sgrammer@mee6.seeks>", "rcpt_to": ["<jroiland@mee6.seeks>"]}, "email": {"status": "HEADER_READY"}}`,
+		`{"timestamp": "2017-03-25T08:08:31.208750-0600", "flow_id": 1370710792330534, "pcap_cnt": 789061, "event_type": "smtp", "src_ip": "10.195.201.169", "src_port": 59581, "dest_ip": "10.10.4.6", "dest_port": 25, "proto": "TCP", "tx_id": 0, "smtp": {"helo": "debian.localdomain", "mail_from": "<wrandolph@mee4.seeks>", "rcpt_to": ["<sgrammer@mee4.seeks>"]}, "email": {"status": "PARSE_DONE", "from": "wrandolph@mee4.seeks", "to": ["sgrammer@mee4.seeks"]}}`,
+		`{"timestamp": "2017-03-25T03:07:44.352661-0600", "flow_id": 619094627742959, "pcap_cnt": 687031, "event_type": "smtp", "src_ip": "10.202.35.205", "src_port": 45160, "dest_ip": "10.10.3.6", "dest_port": 25, "proto": "TCP", "tx_id": 0, "smtp": {"helo": "debian.localdomain", "mail_from": "<dharmon@mee3.seeks>", "rcpt_to": ["<jroiland@mee3.seeks>"]}, "email": {"status": "PARSE_DONE", "from": "dharmon@mee3.seeks", "to": ["jroiland@mee3.seeks"]}}`,
+		`{"timestamp": "2017-03-24T17:32:08.949674-0600", "flow_id": 2137414842851464, "pcap_cnt": 179995, "event_type": "smtp", "src_ip": "10.238.99.186", "src_port": 51252, "dest_ip": "172.16.33.6", "dest_port": 25, "proto": "TCP", "tx_id": 0, "smtp": {"helo": "sseclone5.wrccdc.secure", "mail_from": "<cparnell@spytellite3.com>", "rcpt_to": ["<anash@spytellite3.com>"]}, "email": {"status": "PARSE_DONE", "from": "cparnell@spytellite3.com", "to": ["anash@spytellite3.com"]}}`,
+		`{"timestamp": "2017-03-25T17:09:00.917042-0600", "flow_id": 1706785518646778, "pcap_cnt": 87794, "event_type": "smtp", "src_ip": "10.201.130.164", "src_port": 52929, "dest_ip": "10.10.4.6", "dest_port": 25, "proto": "TCP", "tx_id": 0, "smtp": {"helo": "sse.wrccdc.secure", "mail_from": "<schalke@mee4.seeks>", "rcpt_to": ["<jroiland@mee4.seeks>"]}, "email": {"status": "PARSE_DONE", "from": "schalke@mee4.seeks", "to": ["jroiland@mee4.seeks"]}}`,
+		`{"timestamp": "2017-03-25T14:18:05.028317-0600", "flow_id": 1499032983293156, "pcap_cnt": 712604, "event_type": "smtp", "src_ip": "10.209.132.164", "src_port": 39435, "dest_ip": "10.10.4.6", "dest_port": 25, "proto": "TCP", "tx_id": 0, "smtp": {"helo": "sse.wrccdc.secure", "mail_from": "<eacosta@mee4.seeks>", "rcpt_to": ["<schalke@mee4.seeks>"]}, "email": {"status": "PARSE_DONE", "from": "eacosta@mee4.seeks", "to": ["schalke@mee4.seeks"]}}`,
+		`{"timestamp": "2017-03-25T06:31:52.594139-0600", "flow_id": 1657751666558755, "pcap_cnt": 280621, "event_type": "smtp", "src_ip": "10.250.172.73", "src_port": 49079, "dest_ip": "10.10.5.6", "dest_port": 25, "proto": "TCP", "tx_id": 0, "smtp": {"helo": "debian.localdomain", "mail_from": "<jroiland@mee5.seeks>", "rcpt_to": ["<jroiland@mee5.seeks>"]}, "email": {"status": "PARSE_DONE", "from": "jroiland@mee5.seeks", "to": ["jroiland@mee5.seeks"]}}`,
+		`{"timestamp": "2017-03-25T04:06:49.264648-0600", "flow_id": 2093638737172268, "pcap_cnt": 404753, "event_type": "smtp", "src_ip": "10.197.244.240", "src_port": 45452, "dest_ip": "10.10.3.6", "dest_port": 25, "proto": "TCP", "tx_id": 0, "smtp": {"helo": "debian.localdomain", "mail_from": "<tkauffman@mee3.seeks>", "rcpt_to": ["<rridley@mee3.seeks>"]}, "email": {"status": "PARSE_DONE", "from": "tkauffman@mee3.seeks", "to": ["rridley@mee3.seeks"]}}`,
+		`{"timestamp": "2017-03-25T06:37:13.211939-0600", "flow_id": 1912846974866847, "pcap_cnt": 411145, "event_type": "smtp", "src_ip": "10.241.76.16", "src_port": 59030, "dest_ip": "10.10.6.6", "dest_port": 25, "proto": "TCP", "tx_id": 0, "smtp": {"helo": "debian.localdomain", "mail_from": "<jroiland@mee6.seeks>", "rcpt_to": ["<tkauffman@mee6.seeks>"]}, "email": {"status": "HEADER_READY"}}`,
+		`{"timestamp": "2017-03-25T12:04:52.631248-0600", "flow_id": 812597901167947, "pcap_cnt": 354647, "event_type": "smtp", "src_ip": "10.242.6.140", "src_port": 46203, "dest_ip": "172.16.34.6", "dest_port": 25, "proto": "TCP", "tx_id": 0, "smtp": {"helo": "sse.wrccdc.secure", "mail_from": "<jgreer@spytellite4.com>", "rcpt_to": ["<anash@spytellite4.com>"]}, "email": {"status": "PARSE_DONE", "from": "jgreer@spytellite4.com", "to": ["anash@spytellite4.com"]}}`,
+	}
 
 	parser := &SMTPParser{}
-	lines := strings.FieldsFunc(logs, func(r rune) bool { return r == '\n' })
-	for _, line := range lines {
-		events := parser.Parse(line)
+	for _, log := range logs {
+		events := parser.Parse(log)
 		require.Equal(t, 1, len(events))
 	}
 }

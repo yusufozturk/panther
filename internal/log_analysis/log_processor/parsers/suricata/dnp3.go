@@ -89,7 +89,7 @@ func (p *Dnp3Parser) New() parsers.LogParser {
 }
 
 // Parse returns the parsed events or nil if parsing failed
-func (p *Dnp3Parser) Parse(log string) []interface{} {
+func (p *Dnp3Parser) Parse(log string) []*parsers.PantherLog {
 	event := &Dnp3{}
 
 	err := jsoniter.UnmarshalFromString(log, event)
@@ -105,7 +105,7 @@ func (p *Dnp3Parser) Parse(log string) []interface{} {
 		return nil
 	}
 
-	return []interface{}{event}
+	return event.Logs()
 }
 
 // LogType returns the log type supported by this parser
@@ -115,6 +115,6 @@ func (p *Dnp3Parser) LogType() string {
 
 func (event *Dnp3) updatePantherFields(p *Dnp3Parser) {
 	eventTime, _ := timestamp.Parse(time.RFC3339Nano, *event.Timestamp)
-	event.SetCoreFields(p.LogType(), &eventTime)
+	event.SetCoreFields(p.LogType(), &eventTime, event)
 	event.AppendAnyIPAddressPtrs(event.SrcIP, event.DestIP)
 }

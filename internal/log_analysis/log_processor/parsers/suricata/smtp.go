@@ -88,7 +88,7 @@ func (p *SMTPParser) New() parsers.LogParser {
 }
 
 // Parse returns the parsed events or nil if parsing failed
-func (p *SMTPParser) Parse(log string) []interface{} {
+func (p *SMTPParser) Parse(log string) []*parsers.PantherLog {
 	event := &SMTP{}
 
 	err := jsoniter.UnmarshalFromString(log, event)
@@ -104,7 +104,7 @@ func (p *SMTPParser) Parse(log string) []interface{} {
 		return nil
 	}
 
-	return []interface{}{event}
+	return event.Logs()
 }
 
 // LogType returns the log type supported by this parser
@@ -114,6 +114,6 @@ func (p *SMTPParser) LogType() string {
 
 func (event *SMTP) updatePantherFields(p *SMTPParser) {
 	eventTime, _ := timestamp.Parse(time.RFC3339Nano, *event.Timestamp)
-	event.SetCoreFields(p.LogType(), &eventTime)
+	event.SetCoreFields(p.LogType(), &eventTime, event)
 	event.AppendAnyIPAddressPtrs(event.SrcIP, event.DestIP)
 }

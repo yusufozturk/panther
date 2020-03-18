@@ -110,7 +110,7 @@ func (p *HTTPParser) New() parsers.LogParser {
 }
 
 // Parse returns the parsed events or nil if parsing failed
-func (p *HTTPParser) Parse(log string) []interface{} {
+func (p *HTTPParser) Parse(log string) []*parsers.PantherLog {
 	event := &HTTP{}
 
 	err := jsoniter.UnmarshalFromString(log, event)
@@ -126,7 +126,7 @@ func (p *HTTPParser) Parse(log string) []interface{} {
 		return nil
 	}
 
-	return []interface{}{event}
+	return event.Logs()
 }
 
 // LogType returns the log type supported by this parser
@@ -136,6 +136,6 @@ func (p *HTTPParser) LogType() string {
 
 func (event *HTTP) updatePantherFields(p *HTTPParser) {
 	eventTime, _ := timestamp.Parse(time.RFC3339Nano, *event.Timestamp)
-	event.SetCoreFields(p.LogType(), &eventTime)
+	event.SetCoreFields(p.LogType(), &eventTime, event)
 	event.AppendAnyIPAddressPtrs(event.SrcIP, event.DestIP)
 }

@@ -70,7 +70,7 @@ func (p *SnmpParser) New() parsers.LogParser {
 }
 
 // Parse returns the parsed events or nil if parsing failed
-func (p *SnmpParser) Parse(log string) []interface{} {
+func (p *SnmpParser) Parse(log string) []*parsers.PantherLog {
 	event := &Snmp{}
 
 	err := jsoniter.UnmarshalFromString(log, event)
@@ -86,7 +86,7 @@ func (p *SnmpParser) Parse(log string) []interface{} {
 		return nil
 	}
 
-	return []interface{}{event}
+	return event.Logs()
 }
 
 // LogType returns the log type supported by this parser
@@ -96,6 +96,6 @@ func (p *SnmpParser) LogType() string {
 
 func (event *Snmp) updatePantherFields(p *SnmpParser) {
 	eventTime, _ := timestamp.Parse(time.RFC3339Nano, *event.Timestamp)
-	event.SetCoreFields(p.LogType(), &eventTime)
+	event.SetCoreFields(p.LogType(), &eventTime, event)
 	event.AppendAnyIPAddressPtrs(event.SrcIP, event.DestIP)
 }

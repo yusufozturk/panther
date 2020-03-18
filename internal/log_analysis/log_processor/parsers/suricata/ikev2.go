@@ -76,7 +76,7 @@ func (p *Ikev2Parser) New() parsers.LogParser {
 }
 
 // Parse returns the parsed events or nil if parsing failed
-func (p *Ikev2Parser) Parse(log string) []interface{} {
+func (p *Ikev2Parser) Parse(log string) []*parsers.PantherLog {
 	event := &Ikev2{}
 
 	err := jsoniter.UnmarshalFromString(log, event)
@@ -92,7 +92,7 @@ func (p *Ikev2Parser) Parse(log string) []interface{} {
 		return nil
 	}
 
-	return []interface{}{event}
+	return event.Logs()
 }
 
 // LogType returns the log type supported by this parser
@@ -102,6 +102,6 @@ func (p *Ikev2Parser) LogType() string {
 
 func (event *Ikev2) updatePantherFields(p *Ikev2Parser) {
 	eventTime, _ := timestamp.Parse(time.RFC3339Nano, *event.Timestamp)
-	event.SetCoreFields(p.LogType(), &eventTime)
+	event.SetCoreFields(p.LogType(), &eventTime, event)
 	event.AppendAnyIPAddressPtrs(event.SrcIP, event.DestIP)
 }

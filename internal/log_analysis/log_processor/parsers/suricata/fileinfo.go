@@ -132,7 +132,7 @@ func (p *FileinfoParser) New() parsers.LogParser {
 }
 
 // Parse returns the parsed events or nil if parsing failed
-func (p *FileinfoParser) Parse(log string) []interface{} {
+func (p *FileinfoParser) Parse(log string) []*parsers.PantherLog {
 	event := &Fileinfo{}
 
 	err := jsoniter.UnmarshalFromString(log, event)
@@ -148,7 +148,7 @@ func (p *FileinfoParser) Parse(log string) []interface{} {
 		return nil
 	}
 
-	return []interface{}{event}
+	return event.Logs()
 }
 
 // LogType returns the log type supported by this parser
@@ -158,6 +158,6 @@ func (p *FileinfoParser) LogType() string {
 
 func (event *Fileinfo) updatePantherFields(p *FileinfoParser) {
 	eventTime, _ := timestamp.Parse(time.RFC3339Nano, *event.Timestamp)
-	event.SetCoreFields(p.LogType(), &eventTime)
+	event.SetCoreFields(p.LogType(), &eventTime, event)
 	event.AppendAnyIPAddressPtrs(event.SrcIP, event.DestIP)
 }

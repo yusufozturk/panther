@@ -86,7 +86,7 @@ func (p *SSHParser) New() parsers.LogParser {
 }
 
 // Parse returns the parsed events or nil if parsing failed
-func (p *SSHParser) Parse(log string) []interface{} {
+func (p *SSHParser) Parse(log string) []*parsers.PantherLog {
 	event := &SSH{}
 
 	err := jsoniter.UnmarshalFromString(log, event)
@@ -102,7 +102,7 @@ func (p *SSHParser) Parse(log string) []interface{} {
 		return nil
 	}
 
-	return []interface{}{event}
+	return event.Logs()
 }
 
 // LogType returns the log type supported by this parser
@@ -112,6 +112,6 @@ func (p *SSHParser) LogType() string {
 
 func (event *SSH) updatePantherFields(p *SSHParser) {
 	eventTime, _ := timestamp.Parse(time.RFC3339Nano, *event.Timestamp)
-	event.SetCoreFields(p.LogType(), &eventTime)
+	event.SetCoreFields(p.LogType(), &eventTime, event)
 	event.AppendAnyIPAddressPtrs(event.SrcIP, event.DestIP)
 }

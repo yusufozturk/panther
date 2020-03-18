@@ -68,7 +68,7 @@ func (p *SIPParser) New() parsers.LogParser {
 }
 
 // Parse returns the parsed events or nil if parsing failed
-func (p *SIPParser) Parse(log string) []interface{} {
+func (p *SIPParser) Parse(log string) []*parsers.PantherLog {
 	event := &SIP{}
 
 	err := jsoniter.UnmarshalFromString(log, event)
@@ -84,7 +84,7 @@ func (p *SIPParser) Parse(log string) []interface{} {
 		return nil
 	}
 
-	return []interface{}{event}
+	return event.Logs()
 }
 
 // LogType returns the log type supported by this parser
@@ -94,6 +94,6 @@ func (p *SIPParser) LogType() string {
 
 func (event *SIP) updatePantherFields(p *SIPParser) {
 	eventTime, _ := timestamp.Parse(time.RFC3339Nano, *event.Timestamp)
-	event.SetCoreFields(p.LogType(), &eventTime)
+	event.SetCoreFields(p.LogType(), &eventTime, event)
 	event.AppendAnyIPAddressPtrs(event.SrcIP, event.DestIP)
 }

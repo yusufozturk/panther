@@ -87,7 +87,7 @@ func (p *RdpParser) New() parsers.LogParser {
 }
 
 // Parse returns the parsed events or nil if parsing failed
-func (p *RdpParser) Parse(log string) []interface{} {
+func (p *RdpParser) Parse(log string) []*parsers.PantherLog {
 	event := &Rdp{}
 
 	err := jsoniter.UnmarshalFromString(log, event)
@@ -103,7 +103,7 @@ func (p *RdpParser) Parse(log string) []interface{} {
 		return nil
 	}
 
-	return []interface{}{event}
+	return event.Logs()
 }
 
 // LogType returns the log type supported by this parser
@@ -113,6 +113,6 @@ func (p *RdpParser) LogType() string {
 
 func (event *Rdp) updatePantherFields(p *RdpParser) {
 	eventTime, _ := timestamp.Parse(time.RFC3339Nano, *event.Timestamp)
-	event.SetCoreFields(p.LogType(), &eventTime)
+	event.SetCoreFields(p.LogType(), &eventTime, event)
 	event.AppendAnyIPAddressPtrs(event.SrcIP, event.DestIP)
 }

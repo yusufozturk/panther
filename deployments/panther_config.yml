@@ -27,6 +27,11 @@ BucketsParameterValues:
   # Use an existing S3 bucket for storing access logs. If not specified, one is created for you.
   AccessLogsBucketName: ''
 
+# CloudFormation parameters for the monitoring.yml which deploys the monitoring stack.
+OnboardingParameterValues:
+  # Whether or not the Panther deployment should automatically onboard itself as a data source.
+  OnboardSelf: true
+
 # CloudFormation parameter overrides for the backend.yml which deploys the backend stack.
 BackendParameterValues:
   # Retention period for all Panther CloudWatch log groups.
@@ -51,6 +56,11 @@ BackendParameterValues:
   # WARNING: SELF SIGNED CERTIFICATES ARE NOT SAFE TO USE IN PRODUCTION, PLEASE
   # PROVIDE A CERTIFICATE FOR PRODUCTION USE
   WebApplicationCertificateArn: ''
+
+  # Domain that you own and have configured to alias to the default load balancer URL
+  #
+  # If not specified, the default load balancer URL is used in all places.
+  CustomDomain: ''
 
   # XRay tracing mode for API Gateway and Lambda: '', 'Active', or 'PassThrough'
   TracingMode: ''

@@ -19,6 +19,8 @@ package forwarder
  */
 
 import (
+	"crypto/md5" // nolint(gosec)
+	"encoding/hex"
 	"strconv"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -78,7 +80,9 @@ func SendAlert(event *AlertDedupEvent) error {
 }
 
 func generateAlertID(event *AlertDedupEvent) string {
-	return event.RuleID + ":" + event.DeduplicationString + ":" + strconv.FormatInt(event.AlertCount, 10)
+	key := event.RuleID + ":" + strconv.FormatInt(event.AlertCount, 10) + ":" + event.DeduplicationString
+	keyHash := md5.Sum([]byte(key)) // nolint(gosec)
+	return hex.EncodeToString(keyHash[:])
 }
 
 func getAlert(alert *AlertDedupEvent) (*alertModel.Alert, error) {
@@ -102,5 +106,6 @@ func getAlert(alert *AlertDedupEvent) (*alertModel.Alert, error) {
 		Tags:              aws.StringSlice(rule.Payload.Tags),
 		Type:              aws.String(alertModel.RuleType),
 		AlertID:           aws.String(generateAlertID(alert)),
+		Title:             alert.Title,
 	}, nil
 }

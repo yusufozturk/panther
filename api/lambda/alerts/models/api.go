@@ -37,7 +37,7 @@ type LambdaInput struct {
 //     }
 // }
 type GetAlertInput struct {
-	AlertID                 *string `json:"alertId" validate:"required"`
+	AlertID                 *string `json:"alertId" validate:"required,hexadecimal,len=32"` // AlertID is an MD5 hash
 	EventsPageSize          *int    `json:"eventsPageSize,omitempty"  validate:"omitempty,min=1,max=50"`
 	EventsExclusiveStartKey *string `json:"eventsExclusiveStartKey,omitempty"`
 }
@@ -85,6 +85,7 @@ type ListAlertsOutput struct {
 type AlertSummary struct {
 	AlertID       *string    `json:"alertId"`
 	RuleID        *string    `json:"ruleId"`
+	DedupString   *string    `json:"dedupString"`
 	CreationTime  *time.Time `json:"creationTime"`
 	UpdateTime    *time.Time `json:"updateTime"`
 	EventsMatched *int       `json:"eventsMatched"`
@@ -95,6 +96,7 @@ type AlertSummary struct {
 type Alert struct {
 	AlertID                *string    `json:"alertId"`
 	RuleID                 *string    `json:"ruleId"`
+	DedupString            *string    `json:"dedupString"`
 	CreationTime           *time.Time `json:"creationTime"`
 	UpdateTime             *time.Time `json:"updateTime"`
 	EventsMatched          *int       `json:"eventsMatched"`

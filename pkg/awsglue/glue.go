@@ -20,12 +20,15 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/glue"
 	"github.com/aws/aws-sdk-go/service/glue/glueiface"
+	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 	"github.com/pkg/errors"
 
 	"github.com/panther-labs/panther/api/lambda/core/log_analysis/log_processor/models"
@@ -151,22 +154,95 @@ func GetTableName(logType string) string {
 	return strings.ToLower(tableName)
 }
 
-// SyncPartition deletes and re-creates a partition using the latest table schema. Used when schemas change.
-func (gm *GlueTableMetadata) SyncPartition(client glueiface.GlueAPI, t time.Time) error {
-	_, err := gm.deletePartition(client, t)
-	if err != nil {
-		if awsErr, ok := err.(awserr.Error); !ok || awsErr.Code() != "EntityNotFoundException" {
-			return errors.Wrapf(err, "delete partition for %s.%s at %v failed", gm.DatabaseName(), gm.TableName(), t)
-		}
+// SyncPartitions updates a table's partitions using the latest table schema. Used when schemas change.
+func (gm *GlueTableMetadata) SyncPartitions(glueClient glueiface.GlueAPI, s3Client s3iface.S3API, startDate time.Time) (failed error) {
+	// inherit StorageDescriptor from table
+	tableInput := &glue.GetTableInput{
+		DatabaseName: aws.String(gm.databaseName),
+		Name:         aws.String(gm.tableName),
 	}
-	err = gm.CreateJSONPartition(client, t)
-	if err != nil {
-		return errors.Wrapf(err, "create partition for %s.%s at %v failed", gm.DatabaseName(), gm.TableName(), t)
+	tableOutput, failed := glueClient.GetTable(tableInput)
+	if failed != nil {
+		return failed
 	}
-	return nil
+
+	columns := tableOutput.Table.StorageDescriptor.Columns
+	if startDate.IsZero() {
+		startDate = *tableOutput.Table.CreateTime
+	}
+	startDate = startDate.Truncate(time.Hour * 24) // clip to beginning of day
+	// update to current day at last hour
+	endDay := time.Now().UTC().Truncate(time.Hour * 24).Add(time.Hour * 23)
+
+	const concurrency = 10
+	updateChan := make(chan time.Time, concurrency)
+	// update concurrently cuz the Glue API is very slow
+	var wg sync.WaitGroup
+	for i := 0; i < concurrency; i++ {
+		wg.Add(1)
+		go func() {
+			for update := range updateChan {
+				if failed != nil {
+					continue // drain channel
+				}
+
+				getPartitionInput := &glue.GetPartitionInput{
+					DatabaseName:    aws.String(gm.databaseName),
+					TableName:       aws.String(gm.tableName),
+					PartitionValues: gm.partitionValues(update),
+				}
+				getPartitionOutput, err := glueClient.GetPartition(getPartitionInput)
+				if err != nil {
+					// skip time period with no partition UNLESS there is data, then create
+					if awsErr, ok := err.(awserr.Error); !ok || awsErr.Code() != glue.ErrCodeEntityNotFoundException {
+						failed = err
+					} else { // no partition, check if there is data in S3, if so, create
+						if hasData, err := gm.partitionHasData(s3Client, update, tableOutput); err != nil {
+							failed = err
+						} else if hasData {
+							if err = gm.createPartition(glueClient, update, tableOutput); err != nil {
+								failed = err
+							}
+						}
+					}
+					continue
+				}
+
+				// leave _everything_ the same except the schema, and the serde info
+				getPartitionOutput.Partition.StorageDescriptor.Columns = columns
+				getPartitionOutput.Partition.StorageDescriptor.SerdeInfo = tableOutput.Table.StorageDescriptor.SerdeInfo
+				values := gm.partitionValues(update)
+				partitionInput := &glue.PartitionInput{
+					Values:            values,
+					StorageDescriptor: getPartitionOutput.Partition.StorageDescriptor,
+				}
+				updatePartitionInput := &glue.UpdatePartitionInput{
+					DatabaseName:       aws.String(gm.databaseName),
+					TableName:          aws.String(gm.tableName),
+					PartitionInput:     partitionInput,
+					PartitionValueList: values,
+				}
+				_, err = glueClient.UpdatePartition(updatePartitionInput)
+				if err != nil {
+					failed = err
+					continue
+				}
+			}
+			wg.Done()
+		}()
+	}
+
+	// loop over each partition updating
+	for timeBin := startDate; !timeBin.After(endDay); timeBin = gm.Timebin().Next(timeBin) {
+		updateChan <- timeBin
+	}
+
+	close(updateChan)
+	wg.Wait()
+
+	return failed
 }
 
-// Deprecated - use GluePartition.CreatePartition instead
 func (gm *GlueTableMetadata) CreateJSONPartition(client glueiface.GlueAPI, t time.Time) error {
 	// inherit StorageDescriptor from table
 	tableInput := &glue.GetTableInput{
@@ -183,6 +259,10 @@ func (gm *GlueTableMetadata) CreateJSONPartition(client glueiface.GlueAPI, t tim
 		return errors.Errorf("not a JSON table: %#v", *tableOutput.Table.StorageDescriptor)
 	}
 
+	return gm.createPartition(client, t, tableOutput)
+}
+
+func (gm *GlueTableMetadata) createPartition(client glueiface.GlueAPI, t time.Time, tableOutput *glue.GetTableOutput) error {
 	location, err := url.Parse(*tableOutput.Table.StorageDescriptor.Location)
 	if err != nil {
 		return errors.Wrapf(err, "Cannot parse table %s.%s s3 path: %s",
@@ -217,6 +297,33 @@ func (gm *GlueTableMetadata) deletePartition(client glueiface.GlueAPI, t time.Ti
 		PartitionValues: gm.partitionValues(t),
 	}
 	return client.DeletePartition(input)
+}
+
+func (gm *GlueTableMetadata) partitionHasData(client s3iface.S3API, t time.Time, tableOutput *glue.GetTableOutput) (bool, error) {
+	location, err := url.Parse(*tableOutput.Table.StorageDescriptor.Location)
+	if err != nil {
+		return false, errors.Wrapf(err, "Cannot parse table %s.%s s3 path: %s",
+			gm.DatabaseName(), gm.TableName(),
+			*tableOutput.Table.StorageDescriptor.Location)
+	}
+
+	// list files w/pagination
+	inputParams := &s3.ListObjectsV2Input{
+		Bucket:  aws.String(location.Host),
+		Prefix:  aws.String(gm.GetPartitionPrefix(t)),
+		MaxKeys: aws.Int64(1), // look for at least 1
+	}
+	var hasData bool
+	err = client.ListObjectsV2Pages(inputParams, func(page *s3.ListObjectsV2Output, isLast bool) bool {
+		for _, value := range page.Contents {
+			if *value.Size > 0 { // we only care about objects with size
+				hasData = true
+			}
+		}
+		return false // "To stop iterating, return false from the fn function."
+	})
+
+	return hasData, err
 }
 
 // Based on Timebin(), return an []*string values (used for Glue APIs)

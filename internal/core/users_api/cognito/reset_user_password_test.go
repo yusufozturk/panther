@@ -1,4 +1,4 @@
-package models
+package cognito
 
 /**
  * Panther is a scalable, powerful, cloud-native SIEM written in Golang/React.
@@ -18,12 +18,25 @@ package models
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// User is a struct describing a Panther User.
-type User struct {
-	CreatedAt  *int64  `json:"createdAt"`
-	Email      *string `json:"email"`
-	FamilyName *string `json:"familyName"`
-	GivenName  *string `json:"givenName"`
-	ID         *string `json:"id"`
-	Status     *string `json:"status"`
+import (
+	"testing"
+
+	provider "github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
+	"github.com/stretchr/testify/assert"
+)
+
+func TestResetUserPassword(t *testing.T) {
+	mockCognitoClient := &mockCognitoClient{}
+	gw := &UsersGateway{userPoolClient: mockCognitoClient}
+
+	mockCognitoClient.On(
+		"AdminResetUserPassword",
+		&provider.AdminResetUserPasswordInput{
+			Username:   mockUserID,
+			UserPoolId: gw.userPoolID,
+		},
+	).Return((*provider.AdminResetUserPasswordOutput)(nil), nil)
+
+	assert.NoError(t, gw.ResetUserPassword(mockUserID))
+	mockCognitoClient.AssertExpectations(t)
 }

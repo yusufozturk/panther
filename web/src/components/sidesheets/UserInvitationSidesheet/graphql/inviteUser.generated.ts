@@ -17,6 +17,7 @@
  */
 
 /* eslint-disable import/order, import/no-duplicates */
+
 import * as Types from '../../../../../__generated__/schema';
 
 import gql from 'graphql-tag';
@@ -27,12 +28,13 @@ export type InviteUserVariables = {
   input: Types.InviteUserInput;
 };
 
-export type InviteUser = { inviteUser?: Types.Maybe<Pick<Types.InviteUserResponse, 'id'>> };
+export type InviteUser = { inviteUser: Pick<Types.User, 'id' | 'email'> };
 
 export const InviteUserDocument = gql`
   mutation InviteUser($input: InviteUserInput!) {
     inviteUser(input: $input) {
       id
+      email
     }
   }
 `;

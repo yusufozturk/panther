@@ -17,7 +17,7 @@ type Mutation {
   deleteIntegration(id: ID!): Boolean
   deletePolicy(input: DeletePolicyInput!): Boolean
   deleteUser(id: ID!): Boolean
-  inviteUser(input: InviteUserInput): InviteUserResponse
+  inviteUser(input: InviteUserInput): User!
   remediateResource(input: RemediateResourceInput!): Boolean
   resetUserPassword(id: ID!): Boolean
   suppressPolicies(input: SuppressPoliciesInput!): Boolean
@@ -48,7 +48,7 @@ type Query {
   organizationStats(input: OrganizationStatsInput): OrganizationStatsResponse
   rule(input: GetRuleInput!): RuleDetails
   rules(input: ListRulesInput): ListRulesResponse
-  users(limit: Int, paginationToken: String): ListUsersResponse
+  users: [User!]!
 }
 
 input ListAlertsInput {
@@ -640,19 +640,10 @@ type User {
   status: String
 }
 
-type InviteUserResponse {
-  id: ID!
-}
-
 input InviteUserInput {
   givenName: String
   familyName: String
   email: AWSEmail
-}
-
-type ListUsersResponse {
-  users: [User]
-  paginationToken: String
 }
 
 enum ComplianceStatusEnum {

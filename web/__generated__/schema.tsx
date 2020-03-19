@@ -274,11 +274,6 @@ export type InviteUserInput = {
   email?: Maybe<Scalars['AWSEmail']>;
 };
 
-export type InviteUserResponse = {
-  __typename?: 'InviteUserResponse';
-  id: Scalars['ID'];
-};
-
 export type JiraConfig = {
   __typename?: 'JiraConfig';
   orgDomain: Scalars['String'];
@@ -415,12 +410,6 @@ export enum ListRulesSortFieldsEnum {
   Severity = 'severity',
 }
 
-export type ListUsersResponse = {
-  __typename?: 'ListUsersResponse';
-  users?: Maybe<Array<Maybe<User>>>;
-  paginationToken?: Maybe<Scalars['String']>;
-};
-
 export type MsTeamsConfig = {
   __typename?: 'MsTeamsConfig';
   webhookURL: Scalars['String'];
@@ -440,7 +429,7 @@ export type Mutation = {
   deleteIntegration?: Maybe<Scalars['Boolean']>;
   deletePolicy?: Maybe<Scalars['Boolean']>;
   deleteUser?: Maybe<Scalars['Boolean']>;
-  inviteUser?: Maybe<InviteUserResponse>;
+  inviteUser: User;
   remediateResource?: Maybe<Scalars['Boolean']>;
   resetUserPassword?: Maybe<Scalars['Boolean']>;
   suppressPolicies?: Maybe<Scalars['Boolean']>;
@@ -670,7 +659,7 @@ export type Query = {
   organizationStats?: Maybe<OrganizationStatsResponse>;
   rule?: Maybe<RuleDetails>;
   rules?: Maybe<ListRulesResponse>;
-  users?: Maybe<ListUsersResponse>;
+  users: Array<User>;
 };
 
 export type QueryAlertArgs = {
@@ -723,11 +712,6 @@ export type QueryRuleArgs = {
 
 export type QueryRulesArgs = {
   input?: Maybe<ListRulesInput>;
-};
-
-export type QueryUsersArgs = {
-  limit?: Maybe<Scalars['Int']>;
-  paginationToken?: Maybe<Scalars['String']>;
 };
 
 export type RemediateResourceInput = {
@@ -1061,7 +1045,6 @@ export type ResolversTypes = {
   ListRulesSortFieldsEnum: ListRulesSortFieldsEnum;
   ListRulesResponse: ResolverTypeWrapper<ListRulesResponse>;
   RuleSummary: ResolverTypeWrapper<RuleSummary>;
-  ListUsersResponse: ResolverTypeWrapper<ListUsersResponse>;
   User: ResolverTypeWrapper<User>;
   AWSEmail: ResolverTypeWrapper<Scalars['AWSEmail']>;
   AWSTimestamp: ResolverTypeWrapper<Scalars['AWSTimestamp']>;
@@ -1085,7 +1068,6 @@ export type ResolversTypes = {
   DeletePolicyInput: DeletePolicyInput;
   DeletePolicyInputItem: DeletePolicyInputItem;
   InviteUserInput: InviteUserInput;
-  InviteUserResponse: ResolverTypeWrapper<InviteUserResponse>;
   RemediateResourceInput: RemediateResourceInput;
   SuppressPoliciesInput: SuppressPoliciesInput;
   TestPolicyInput: TestPolicyInput;
@@ -1166,7 +1148,6 @@ export type ResolversParentTypes = {
   ListRulesSortFieldsEnum: ListRulesSortFieldsEnum;
   ListRulesResponse: ListRulesResponse;
   RuleSummary: RuleSummary;
-  ListUsersResponse: ListUsersResponse;
   User: User;
   AWSEmail: Scalars['AWSEmail'];
   AWSTimestamp: Scalars['AWSTimestamp'];
@@ -1190,7 +1171,6 @@ export type ResolversParentTypes = {
   DeletePolicyInput: DeletePolicyInput;
   DeletePolicyInputItem: DeletePolicyInputItem;
   InviteUserInput: InviteUserInput;
-  InviteUserResponse: InviteUserResponse;
   RemediateResourceInput: RemediateResourceInput;
   SuppressPoliciesInput: SuppressPoliciesInput;
   TestPolicyInput: TestPolicyInput;
@@ -1385,14 +1365,6 @@ export type IntegrationConfigResolvers<
   __isTypeOf?: isTypeOfResolverFn<ParentType>;
 };
 
-export type InviteUserResponseResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['InviteUserResponse'] = ResolversParentTypes['InviteUserResponse']
-> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  __isTypeOf?: isTypeOfResolverFn<ParentType>;
-};
-
 export type JiraConfigResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['JiraConfig'] = ResolversParentTypes['JiraConfig']
@@ -1461,15 +1433,6 @@ export type ListRulesResponseResolvers<
   __isTypeOf?: isTypeOfResolverFn<ParentType>;
 };
 
-export type ListUsersResponseResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['ListUsersResponse'] = ResolversParentTypes['ListUsersResponse']
-> = {
-  users?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
-  paginationToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: isTypeOfResolverFn<ParentType>;
-};
-
 export type MsTeamsConfigResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['MsTeamsConfig'] = ResolversParentTypes['MsTeamsConfig']
@@ -1531,7 +1494,7 @@ export type MutationResolvers<
     RequireFields<MutationDeleteUserArgs, 'id'>
   >;
   inviteUser?: Resolver<
-    Maybe<ResolversTypes['InviteUserResponse']>,
+    ResolversTypes['User'],
     ParentType,
     ContextType,
     RequireFields<MutationInviteUserArgs, never>
@@ -1829,12 +1792,7 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QueryRulesArgs, never>
   >;
-  users?: Resolver<
-    Maybe<ResolversTypes['ListUsersResponse']>,
-    ParentType,
-    ContextType,
-    RequireFields<QueryUsersArgs, never>
-  >;
+  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
 };
 
 export type ResourceDetailsResolvers<
@@ -2015,14 +1973,12 @@ export type Resolvers<ContextType = any> = {
   GithubConfig?: GithubConfigResolvers<ContextType>;
   Integration?: IntegrationResolvers<ContextType>;
   IntegrationConfig?: IntegrationConfigResolvers<ContextType>;
-  InviteUserResponse?: InviteUserResponseResolvers<ContextType>;
   JiraConfig?: JiraConfigResolvers<ContextType>;
   ListAlertsResponse?: ListAlertsResponseResolvers<ContextType>;
   ListComplianceItemsResponse?: ListComplianceItemsResponseResolvers<ContextType>;
   ListPoliciesResponse?: ListPoliciesResponseResolvers<ContextType>;
   ListResourcesResponse?: ListResourcesResponseResolvers<ContextType>;
   ListRulesResponse?: ListRulesResponseResolvers<ContextType>;
-  ListUsersResponse?: ListUsersResponseResolvers<ContextType>;
   MsTeamsConfig?: MsTeamsConfigResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   OpsgenieConfig?: OpsgenieConfigResolvers<ContextType>;

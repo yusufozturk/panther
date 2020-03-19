@@ -37,7 +37,7 @@ type Netflow struct {
 	CommunityID  *string          `json:"community_id,omitempty" description:"Suricata Netflow CommunityID"`
 	DestIP       *string          `json:"dest_ip" validate:"required" description:"Suricata Netflow DestIP"`
 	DestPort     *int             `json:"dest_port,omitempty" description:"Suricata Netflow DestPort"`
-	EventType    *string          `json:"event_type" validate:"required" description:"Suricata Netflow EventType"`
+	EventType    *string          `json:"event_type" validate:"required,eq=netflow" description:"Suricata Netflow EventType"`
 	FlowID       *int             `json:"flow_id,omitempty" description:"Suricata Netflow FlowID"`
 	IcmpCode     *int             `json:"icmp_code,omitempty" description:"Suricata Netflow IcmpCode"`
 	IcmpType     *int             `json:"icmp_type,omitempty" description:"Suricata Netflow IcmpType"`

@@ -37,7 +37,7 @@ type DNS struct {
 	DNS          *DNSDetails `json:"dns" validate:"required,dive" description:"Suricata DNS DNS"`
 	DestIP       *string     `json:"dest_ip" validate:"required" description:"Suricata DNS DestIP"`
 	DestPort     *int        `json:"dest_port,omitempty" description:"Suricata DNS DestPort"`
-	EventType    *string     `json:"event_type" validate:"required" description:"Suricata DNS EventType"`
+	EventType    *string     `json:"event_type" validate:"required,eq=dns" description:"Suricata DNS EventType"`
 	FlowID       *int        `json:"flow_id,omitempty" description:"Suricata DNS FlowID"`
 	PcapCnt      *int        `json:"pcap_cnt,omitempty" description:"Suricata DNS PcapCnt"`
 	PcapFilename *string     `json:"pcap_filename,omitempty" description:"Suricata DNS PcapFilename"`

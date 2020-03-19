@@ -36,7 +36,7 @@ type Snmp struct {
 	CommunityID  *string      `json:"community_id,omitempty" description:"Suricata Snmp CommunityID"`
 	DestIP       *string      `json:"dest_ip" validate:"required" description:"Suricata Snmp DestIP"`
 	DestPort     *int         `json:"dest_port,omitempty" description:"Suricata Snmp DestPort"`
-	EventType    *string      `json:"event_type" validate:"required" description:"Suricata Snmp EventType"`
+	EventType    *string      `json:"event_type" validate:"required,eq=snmp" description:"Suricata Snmp EventType"`
 	FlowID       *int         `json:"flow_id,omitempty" description:"Suricata Snmp FlowID"`
 	PcapCnt      *int         `json:"pcap_cnt,omitempty" description:"Suricata Snmp PcapCnt"`
 	PcapFilename *string      `json:"pcap_filename,omitempty" description:"Suricata Snmp PcapFilename"`

@@ -36,7 +36,7 @@ type SSH struct {
 	CommunityID  *string      `json:"community_id,omitempty" description:"Suricata SSH CommunityID"`
 	DestIP       *string      `json:"dest_ip" validate:"required" description:"Suricata SSH DestIP"`
 	DestPort     *int         `json:"dest_port,omitempty" description:"Suricata SSH DestPort"`
-	EventType    *string      `json:"event_type" validate:"required" description:"Suricata SSH EventType"`
+	EventType    *string      `json:"event_type" validate:"required,eq=ssh" description:"Suricata SSH EventType"`
 	FlowID       *int         `json:"flow_id,omitempty" description:"Suricata SSH FlowID"`
 	Metadata     *SSHMetadata `json:"metadata,omitempty" validate:"omitempty,dive" description:"Suricata SSH Metadata"`
 	PcapCnt      *int         `json:"pcap_cnt,omitempty" description:"Suricata SSH PcapCnt"`

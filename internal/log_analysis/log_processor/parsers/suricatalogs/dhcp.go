@@ -36,7 +36,7 @@ type DHCP struct {
 	DHCP         *DHCPDetails `json:"dhcp" validate:"required,dive" description:"Suricata DHCP DHCP"`
 	DestIP       *string      `json:"dest_ip" validate:"required" description:"Suricata DHCP DestIP"`
 	DestPort     *int         `json:"dest_port,omitempty" description:"Suricata DHCP DestPort"`
-	EventType    *string      `json:"event_type" validate:"required" description:"Suricata DHCP EventType"`
+	EventType    *string      `json:"event_type" validate:"required,eq=dhcp" description:"Suricata DHCP EventType"`
 	FlowID       *int         `json:"flow_id,omitempty" description:"Suricata DHCP FlowID"`
 	PcapCnt      *int         `json:"pcap_cnt,omitempty" description:"Suricata DHCP PcapCnt"`
 	PcapFilename *string      `json:"pcap_filename,omitempty" description:"Suricata DHCP PcapFilename"`

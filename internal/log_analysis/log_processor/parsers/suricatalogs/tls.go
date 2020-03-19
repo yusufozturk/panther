@@ -36,7 +36,7 @@ type TLS struct {
 	CommunityID  *string      `json:"community_id,omitempty" description:"Suricata TLS CommunityID"`
 	DestIP       *string      `json:"dest_ip" validate:"required" description:"Suricata TLS DestIP"`
 	DestPort     *int         `json:"dest_port,omitempty" description:"Suricata TLS DestPort"`
-	EventType    *string      `json:"event_type" validate:"required" description:"Suricata TLS EventType"`
+	EventType    *string      `json:"event_type" validate:"required,eq=tls" description:"Suricata TLS EventType"`
 	FlowID       *int         `json:"flow_id,omitempty" description:"Suricata TLS FlowID"`
 	Metadata     *TLSMetadata `json:"metadata,omitempty" validate:"omitempty,dive" description:"Suricata TLS Metadata"`
 	PcapCnt      *int         `json:"pcap_cnt,omitempty" description:"Suricata TLS PcapCnt"`

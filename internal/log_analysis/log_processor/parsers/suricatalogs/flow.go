@@ -40,7 +40,7 @@ type Flow struct {
 	CommunityID      *string       `json:"community_id,omitempty" description:"Suricata Flow CommunityID"`
 	DestIP           *string       `json:"dest_ip" validate:"required" description:"Suricata Flow DestIP"`
 	DestPort         *int          `json:"dest_port,omitempty" description:"Suricata Flow DestPort"`
-	EventType        *string       `json:"event_type" validate:"required" description:"Suricata Flow EventType"`
+	EventType        *string       `json:"event_type" validate:"required,eq=flow" description:"Suricata Flow EventType"`
 	Flow             *FlowDetails  `json:"flow" validate:"required,dive" description:"Suricata Flow Flow"`
 	FlowID           *int          `json:"flow_id,omitempty" description:"Suricata Flow FlowID"`
 	IcmpCode         *int          `json:"icmp_code,omitempty" description:"Suricata Flow IcmpCode"`

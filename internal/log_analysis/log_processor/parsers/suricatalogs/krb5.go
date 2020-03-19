@@ -36,7 +36,7 @@ type Krb5 struct {
 	CommunityID  *string       `json:"community_id,omitempty" description:"Suricata Krb5 CommunityID"`
 	DestIP       *string       `json:"dest_ip" validate:"required" description:"Suricata Krb5 DestIP"`
 	DestPort     *int          `json:"dest_port,omitempty" description:"Suricata Krb5 DestPort"`
-	EventType    *string       `json:"event_type" validate:"required" description:"Suricata Krb5 EventType"`
+	EventType    *string       `json:"event_type" validate:"required,eq=krb5" description:"Suricata Krb5 EventType"`
 	FlowID       *int          `json:"flow_id,omitempty" description:"Suricata Krb5 FlowID"`
 	Krb5         *Krb5Details  `json:"krb5" validate:"required,dive" description:"Suricata Krb5 Krb5"`
 	Metadata     *Krb5Metadata `json:"metadata,omitempty" validate:"omitempty,dive" description:"Suricata Krb5 Metadata"`

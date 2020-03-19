@@ -38,7 +38,7 @@ type Drop struct {
 	DestIP       *string      `json:"dest_ip" validate:"required" description:"Suricata Drop DestIP"`
 	DestPort     *int         `json:"dest_port,omitempty" description:"Suricata Drop DestPort"`
 	Drop         *DropDetails `json:"drop" validate:"required,dive" description:"Suricata Drop Drop"`
-	EventType    *string      `json:"event_type" validate:"required" description:"Suricata Drop EventType"`
+	EventType    *string      `json:"event_type" validate:"required,eq=drop" description:"Suricata Drop EventType"`
 	FlowID       *int         `json:"flow_id,omitempty" description:"Suricata Drop FlowID"`
 	PcapCnt      *int         `json:"pcap_cnt,omitempty" description:"Suricata Drop PcapCnt"`
 	PcapFilename *string      `json:"pcap_filename,omitempty" description:"Suricata Drop PcapFilename"`

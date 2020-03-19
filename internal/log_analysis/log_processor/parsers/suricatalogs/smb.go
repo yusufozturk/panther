@@ -35,7 +35,7 @@ Reference: https://suricata.readthedocs.io/en/suricata-5.0.2/output/eve/eve-json
 type Smb struct {
 	DestIP       *string     `json:"dest_ip" validate:"required" description:"Suricata Smb DestIP"`
 	DestPort     *int        `json:"dest_port,omitempty" description:"Suricata Smb DestPort"`
-	EventType    *string     `json:"event_type" validate:"required" description:"Suricata Smb EventType"`
+	EventType    *string     `json:"event_type" validate:"required,eq=smb" description:"Suricata Smb EventType"`
 	FlowID       *int        `json:"flow_id,omitempty" description:"Suricata Smb FlowID"`
 	PcapCnt      *int        `json:"pcap_cnt,omitempty" description:"Suricata Smb PcapCnt"`
 	PcapFilename *string     `json:"pcap_filename,omitempty" description:"Suricata Smb PcapFilename"`

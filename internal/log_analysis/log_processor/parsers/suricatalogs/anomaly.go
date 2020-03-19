@@ -38,7 +38,7 @@ type Anomaly struct {
 	CommunityID  *string            `json:"community_id,omitempty" description:"Suricata Anomaly CommunityID"`
 	DestIP       *string            `json:"dest_ip,omitempty" description:"Suricata Anomaly DestIP"`
 	DestPort     *int               `json:"dest_port,omitempty" description:"Suricata Anomaly DestPort"`
-	EventType    *string            `json:"event_type" validate:"required" description:"Suricata Anomaly EventType"`
+	EventType    *string            `json:"event_type" validate:"required,eq=anomaly" description:"Suricata Anomaly EventType"`
 	FlowID       *int               `json:"flow_id,omitempty" description:"Suricata Anomaly FlowID"`
 	IcmpCode     *int               `json:"icmp_code,omitempty" description:"Suricata Anomaly IcmpCode"`
 	IcmpType     *int               `json:"icmp_type,omitempty" description:"Suricata Anomaly IcmpType"`

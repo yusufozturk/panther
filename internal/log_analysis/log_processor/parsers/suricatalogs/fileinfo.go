@@ -37,7 +37,7 @@ type Fileinfo struct {
 	DestIP       *string          `json:"dest_ip" validate:"required" description:"Suricata Fileinfo DestIP"`
 	DestPort     *int             `json:"dest_port,omitempty" description:"Suricata Fileinfo DestPort"`
 	Email        *FileinfoEmail   `json:"email,omitempty" validate:"omitempty,dive" description:"Suricata Fileinfo Email"`
-	EventType    *string          `json:"event_type" validate:"required" description:"Suricata Fileinfo EventType"`
+	EventType    *string          `json:"event_type" validate:"required,eq=fileinfo" description:"Suricata Fileinfo EventType"`
 	Fileinfo     *FileinfoDetails `json:"fileinfo" validate:"required,dive" description:"Suricata Fileinfo Fileinfo"`
 	FlowID       *int             `json:"flow_id,omitempty" description:"Suricata Fileinfo FlowID"`
 	HTTP         *FileinfoHTTP    `json:"http,omitempty" validate:"omitempty,dive" description:"Suricata Fileinfo HTTP"`

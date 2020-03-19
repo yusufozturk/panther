@@ -36,7 +36,7 @@ type FTP struct {
 	CommunityID  *string      `json:"community_id,omitempty" description:"Suricata FTP CommunityID"`
 	DestIP       *string      `json:"dest_ip" validate:"required" description:"Suricata FTP DestIP"`
 	DestPort     *int         `json:"dest_port,omitempty" description:"Suricata FTP DestPort"`
-	EventType    *string      `json:"event_type" validate:"required" description:"Suricata FTP EventType"`
+	EventType    *string      `json:"event_type" validate:"required,eq=ftp" description:"Suricata FTP EventType"`
 	FTP          *FTPDetails  `json:"ftp" validate:"required,dive" description:"Suricata FTP FTP"`
 	FlowID       *int         `json:"flow_id,omitempty" description:"Suricata FTP FlowID"`
 	Metadata     *FTPMetadata `json:"metadata,omitempty" validate:"omitempty,dive" description:"Suricata FTP Metadata"`

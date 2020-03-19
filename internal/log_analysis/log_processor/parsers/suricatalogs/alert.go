@@ -44,7 +44,7 @@ type Alert struct {
 	DestPort         *int                 `json:"dest_port,omitempty" description:"Suricata Alert DestPort"`
 	Dnp3             *jsoniter.RawMessage `json:"dnp3,omitempty" description:"Suricata Alert Dnp3"`
 	Email            *jsoniter.RawMessage `json:"email,omitempty" description:"Suricata Alert Email"`
-	EventType        *string              `json:"event_type" validate:"required" description:"Suricata Alert EventType"`
+	EventType        *string              `json:"event_type" validate:"required,eq=alert" description:"Suricata Alert EventType"`
 	Flow             *jsoniter.RawMessage `json:"flow,omitempty" description:"Suricata Alert Flow"`
 	FlowID           *int                 `json:"flow_id,omitempty" description:"Suricata Alert FlowID"`
 	HTTP             *jsoniter.RawMessage `json:"http,omitempty" description:"Suricata Alert HTTP"`

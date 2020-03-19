@@ -36,7 +36,7 @@ type SIP struct {
 	CommunityID  *string     `json:"community_id,omitempty" description:"Suricata SIP CommunityID"`
 	DestIP       *string     `json:"dest_ip" validate:"required" description:"Suricata SIP DestIP"`
 	DestPort     *int        `json:"dest_port,omitempty" description:"Suricata SIP DestPort"`
-	EventType    *string     `json:"event_type" validate:"required" description:"Suricata SIP EventType"`
+	EventType    *string     `json:"event_type" validate:"required,eq=sip" description:"Suricata SIP EventType"`
 	FlowID       *int        `json:"flow_id,omitempty" description:"Suricata SIP FlowID"`
 	PcapCnt      *int        `json:"pcap_cnt,omitempty" description:"Suricata SIP PcapCnt"`
 	PcapFilename *string     `json:"pcap_filename,omitempty" description:"Suricata SIP PcapFilename"`

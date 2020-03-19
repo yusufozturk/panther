@@ -36,7 +36,7 @@ type Ikev2 struct {
 	CommunityID  *string       `json:"community_id,omitempty" description:"Suricata Ikev2 CommunityID"`
 	DestIP       *string       `json:"dest_ip" validate:"required" description:"Suricata Ikev2 DestIP"`
 	DestPort     *int          `json:"dest_port,omitempty" description:"Suricata Ikev2 DestPort"`
-	EventType    *string       `json:"event_type" validate:"required" description:"Suricata Ikev2 EventType"`
+	EventType    *string       `json:"event_type" validate:"required,eq=ikev2" description:"Suricata Ikev2 EventType"`
 	FlowID       *int          `json:"flow_id,omitempty" description:"Suricata Ikev2 FlowID"`
 	Ikev2        *Ikev2Details `json:"ikev2" validate:"required,dive" description:"Suricata Ikev2 Ikev2"`
 	PcapCnt      *int          `json:"pcap_cnt,omitempty" description:"Suricata Ikev2 PcapCnt"`

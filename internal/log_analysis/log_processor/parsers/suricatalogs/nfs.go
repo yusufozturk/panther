@@ -36,7 +36,7 @@ type Nfs struct {
 	CommunityID  *string     `json:"community_id,omitempty" description:"Suricata Nfs CommunityID"`
 	DestIP       *string     `json:"dest_ip" validate:"required" description:"Suricata Nfs DestIP"`
 	DestPort     *int        `json:"dest_port,omitempty" description:"Suricata Nfs DestPort"`
-	EventType    *string     `json:"event_type" validate:"required" description:"Suricata Nfs EventType"`
+	EventType    *string     `json:"event_type" validate:"required,eq=nfs" description:"Suricata Nfs EventType"`
 	FlowID       *int        `json:"flow_id,omitempty" description:"Suricata Nfs FlowID"`
 	Nfs          *NfsDetails `json:"nfs" validate:"required,dive" description:"Suricata Nfs Nfs"`
 	PcapCnt      *int        `json:"pcap_cnt,omitempty" description:"Suricata Nfs PcapCnt"`

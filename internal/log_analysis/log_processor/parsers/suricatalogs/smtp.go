@@ -37,7 +37,7 @@ type SMTP struct {
 	DestIP       *string       `json:"dest_ip" validate:"required" description:"Suricata SMTP DestIP"`
 	DestPort     *int          `json:"dest_port,omitempty" description:"Suricata SMTP DestPort"`
 	Email        *SMTPEmail    `json:"email,omitempty" validate:"omitempty,dive" description:"Suricata SMTP Email"`
-	EventType    *string       `json:"event_type" validate:"required" description:"Suricata SMTP EventType"`
+	EventType    *string       `json:"event_type" validate:"required,eq=smtp" description:"Suricata SMTP EventType"`
 	FlowID       *int          `json:"flow_id,omitempty" description:"Suricata SMTP FlowID"`
 	Metadata     *SMTPMetadata `json:"metadata,omitempty" validate:"omitempty,dive" description:"Suricata SMTP Metadata"`
 	PcapCnt      *int          `json:"pcap_cnt,omitempty" description:"Suricata SMTP PcapCnt"`

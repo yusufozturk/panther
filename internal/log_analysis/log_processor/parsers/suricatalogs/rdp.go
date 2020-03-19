@@ -35,7 +35,7 @@ Reference: https://suricata.readthedocs.io/en/suricata-5.0.2/output/eve/eve-json
 type Rdp struct {
 	DestIP       *string     `json:"dest_ip" validate:"required" description:"Suricata Rdp DestIP"`
 	DestPort     *int        `json:"dest_port,omitempty" description:"Suricata Rdp DestPort"`
-	EventType    *string     `json:"event_type" validate:"required" description:"Suricata Rdp EventType"`
+	EventType    *string     `json:"event_type" validate:"required,eq=rdp" description:"Suricata Rdp EventType"`
 	FlowID       *int        `json:"flow_id,omitempty" description:"Suricata Rdp FlowID"`
 	PcapCnt      *int        `json:"pcap_cnt,omitempty" description:"Suricata Rdp PcapCnt"`
 	PcapFilename *string     `json:"pcap_filename,omitempty" description:"Suricata Rdp PcapFilename"`

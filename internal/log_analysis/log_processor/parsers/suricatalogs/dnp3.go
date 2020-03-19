@@ -37,7 +37,7 @@ type Dnp3 struct {
 	DestIP       *string      `json:"dest_ip" validate:"required" description:"Suricata Dnp3 DestIP"`
 	DestPort     *int         `json:"dest_port,omitempty" description:"Suricata Dnp3 DestPort"`
 	Dnp3         *Dnp3Details `json:"dnp3" validate:"required,dive" description:"Suricata Dnp3 Dnp3"`
-	EventType    *string      `json:"event_type" validate:"required" description:"Suricata Dnp3 EventType"`
+	EventType    *string      `json:"event_type" validate:"required,eq=dnp3" description:"Suricata Dnp3 EventType"`
 	FlowID       *int         `json:"flow_id,omitempty" description:"Suricata Dnp3 FlowID"`
 	PcapCnt      *int         `json:"pcap_cnt,omitempty" description:"Suricata Dnp3 PcapCnt"`
 	PcapFilename *string      `json:"pcap_filename,omitempty" description:"Suricata Dnp3 PcapFilename"`

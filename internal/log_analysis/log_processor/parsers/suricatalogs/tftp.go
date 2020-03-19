@@ -35,7 +35,7 @@ Reference: https://suricata.readthedocs.io/en/suricata-5.0.2/output/eve/eve-json
 type TFTP struct {
 	DestIP       *string      `json:"dest_ip" validate:"required" description:"Suricata TFTP DestIP"`
 	DestPort     *int         `json:"dest_port,omitempty" description:"Suricata TFTP DestPort"`
-	EventType    *string      `json:"event_type" validate:"required" description:"Suricata TFTP EventType"`
+	EventType    *string      `json:"event_type" validate:"required,eq=tftp" description:"Suricata TFTP EventType"`
 	FlowID       *int         `json:"flow_id,omitempty" description:"Suricata TFTP FlowID"`
 	PcapCnt      *int         `json:"pcap_cnt,omitempty" description:"Suricata TFTP PcapCnt"`
 	PcapFilename *string      `json:"pcap_filename,omitempty" description:"Suricata TFTP PcapFilename"`

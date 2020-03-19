@@ -25,6 +25,7 @@ import (
 	"github.com/panther-labs/panther/internal/log_analysis/log_processor/parsers/nginxlogs"
 	"github.com/panther-labs/panther/internal/log_analysis/log_processor/parsers/osquerylogs"
 	"github.com/panther-labs/panther/internal/log_analysis/log_processor/parsers/osseclogs"
+	"github.com/panther-labs/panther/internal/log_analysis/log_processor/parsers/suricatalogs"
 	"github.com/panther-labs/panther/internal/log_analysis/log_processor/parsers/sysloglogs"
 	"github.com/panther-labs/panther/pkg/awsglue"
 )
@@ -66,6 +67,50 @@ var (
 			&sysloglogs.RFC3164{}, sysloglogs.RFC3164Desc),
 		(&sysloglogs.RFC5424Parser{}).LogType(): DefaultLogParser(&sysloglogs.RFC5424Parser{},
 			&sysloglogs.RFC5424{}, sysloglogs.RFC5424Desc),
+		(&suricatalogs.AlertParser{}).LogType(): DefaultLogParser(&suricatalogs.AlertParser{},
+			&suricatalogs.Alert{}, suricatalogs.AlertDesc),
+		(&suricatalogs.AnomalyParser{}).LogType(): DefaultLogParser(&suricatalogs.AnomalyParser{},
+			&suricatalogs.Anomaly{}, suricatalogs.AnomalyDesc),
+		(&suricatalogs.DHCPParser{}).LogType(): DefaultLogParser(&suricatalogs.DHCPParser{},
+			&suricatalogs.DHCP{}, suricatalogs.DHCPDesc),
+		(&suricatalogs.Dnp3Parser{}).LogType(): DefaultLogParser(&suricatalogs.Dnp3Parser{},
+			&suricatalogs.Dnp3{}, suricatalogs.Dnp3Desc),
+		(&suricatalogs.DNSParser{}).LogType(): DefaultLogParser(&suricatalogs.DNSParser{},
+			&suricatalogs.DNS{}, suricatalogs.DNSDesc),
+		(&suricatalogs.DropParser{}).LogType(): DefaultLogParser(&suricatalogs.DropParser{},
+			&suricatalogs.Drop{}, suricatalogs.DropDesc),
+		(&suricatalogs.FileinfoParser{}).LogType(): DefaultLogParser(&suricatalogs.FileinfoParser{},
+			&suricatalogs.Fileinfo{}, suricatalogs.FileinfoDesc),
+		(&suricatalogs.FlowParser{}).LogType(): DefaultLogParser(&suricatalogs.FlowParser{},
+			&suricatalogs.Flow{}, suricatalogs.FlowDesc),
+		(&suricatalogs.FTPParser{}).LogType(): DefaultLogParser(&suricatalogs.FTPParser{},
+			&suricatalogs.FTP{}, suricatalogs.FTPDesc),
+		(&suricatalogs.HTTPParser{}).LogType(): DefaultLogParser(&suricatalogs.HTTPParser{},
+			&suricatalogs.HTTP{}, suricatalogs.HTTPDesc),
+		(&suricatalogs.Ikev2Parser{}).LogType(): DefaultLogParser(&suricatalogs.Ikev2Parser{},
+			&suricatalogs.Ikev2{}, suricatalogs.Ikev2Desc),
+		(&suricatalogs.Krb5Parser{}).LogType(): DefaultLogParser(&suricatalogs.Krb5Parser{},
+			&suricatalogs.Krb5{}, suricatalogs.Krb5Desc),
+		(&suricatalogs.NetflowParser{}).LogType(): DefaultLogParser(&suricatalogs.NetflowParser{},
+			&suricatalogs.Netflow{}, suricatalogs.NetflowDesc),
+		(&suricatalogs.NfsParser{}).LogType(): DefaultLogParser(&suricatalogs.NfsParser{},
+			&suricatalogs.Nfs{}, suricatalogs.NfsDesc),
+		(&suricatalogs.RdpParser{}).LogType(): DefaultLogParser(&suricatalogs.RdpParser{},
+			&suricatalogs.Rdp{}, suricatalogs.RdpDesc),
+		(&suricatalogs.SIPParser{}).LogType(): DefaultLogParser(&suricatalogs.SIPParser{},
+			&suricatalogs.SIP{}, suricatalogs.SIPDesc),
+		(&suricatalogs.SmbParser{}).LogType(): DefaultLogParser(&suricatalogs.SmbParser{},
+			&suricatalogs.Smb{}, suricatalogs.SmbDesc),
+		(&suricatalogs.SMTPParser{}).LogType(): DefaultLogParser(&suricatalogs.SMTPParser{},
+			&suricatalogs.SMTP{}, suricatalogs.SMTPDesc),
+		(&suricatalogs.SnmpParser{}).LogType(): DefaultLogParser(&suricatalogs.SnmpParser{},
+			&suricatalogs.Snmp{}, suricatalogs.SnmpDesc),
+		(&suricatalogs.SSHParser{}).LogType(): DefaultLogParser(&suricatalogs.SSHParser{},
+			&suricatalogs.SSH{}, suricatalogs.SSHDesc),
+		(&suricatalogs.TFTPParser{}).LogType(): DefaultLogParser(&suricatalogs.TFTPParser{},
+			&suricatalogs.TFTP{}, suricatalogs.TFTPDesc),
+		(&suricatalogs.TLSParser{}).LogType(): DefaultLogParser(&suricatalogs.TLSParser{},
+			&suricatalogs.TLS{}, suricatalogs.TLSDesc),
 	}
 )
 

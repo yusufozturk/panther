@@ -57,6 +57,34 @@ AWS contains a variety of critical data sources used to audit API usage, databas
 | `Syslog.RFC3164`  | https://tools.ietf.org/html/rfc3164                    |
 | `Syslog.RFC5424`  | https://tools.ietf.org/html/rfc5424                    |
 
+## [Suricata](https://github.com/panther-labs/panther/tree/master/internal/log_analysis/log_processor/parsers/suricatalogs)
+
+[Suricata](https://suricata-ids.org/) is a free and open source, mature, fast and robust network threat detection engine.
+
+| Log Type            | Reference                                                                                  |
+| ------------------- | ------------------------------------------------------------------------------------------ |
+| `Suricata.Alert`    | https://suricata.readthedocs.io/en/latest/output/eve/eve-json-format.html#event-type-alert |
+| `Suricata.Anomaly`  | https://suricata.readthedocs.io/en/latest/output/eve/eve-json-format.html                  |
+| `Suricata.DHCP`     | https://suricata.readthedocs.io/en/latest/output/eve/eve-json-format.html                  |
+| `Suricata.Dnp3`     | https://suricata.readthedocs.io/en/latest/output/eve/eve-json-format.html                  |
+| `Suricata.DNS`      | https://suricata.readthedocs.io/en/latest/output/eve/eve-json-format.html#event-type-dns   |
+| `Suricata.Drop`     | https://suricata.readthedocs.io/en/latest/output/eve/eve-json-format.html                  |
+| `Suricata.Fileinfo` | https://suricata.readthedocs.io/en/latest/output/eve/eve-json-format.html                  |
+| `Suricata.Flow`     | https://suricata.readthedocs.io/en/latest/output/eve/eve-json-format.html#event-type-flow  |
+| `Suricata.FTP`      | https://suricata.readthedocs.io/en/latest/output/eve/eve-json-format.html#event-type-ftp   |
+| `Suricata.HTTP`     | https://suricata.readthedocs.io/en/latest/output/eve/eve-json-format.html#event-type-http  |
+| `Suricata.Ikev2`    | https://suricata.readthedocs.io/en/latest/output/eve/eve-json-format.html                  |
+| `Suricata.Krb5`     | https://suricata.readthedocs.io/en/latest/output/eve/eve-json-format.html                  |
+| `Suricata.Netflow`  | https://suricata.readthedocs.io/en/latest/output/eve/eve-json-format.html                  |
+| `Suricata.Nfs`      | https://suricata.readthedocs.io/en/latest/output/eve/eve-json-format.html                  |
+| `Suricata.Rdp`      | https://suricata.readthedocs.io/en/latest/output/eve/eve-json-format.html#event-type-rdp   |
+| `Suricata.SIP`      | https://suricata.readthedocs.io/en/latest/output/eve/eve-json-format.html                  |
+| `Suricata.Smb`      | https://suricata.readthedocs.io/en/latest/output/eve/eve-json-format.html#event-type-smb   |
+| `Suricata.SMTP`     | https://suricata.readthedocs.io/en/latest/output/eve/eve-json-format.html                  |
+| `Suricata.Snmp`     | https://suricata.readthedocs.io/en/latest/output/eve/eve-json-format.html                  |
+| `Suricata.SSH`      | https://suricata.readthedocs.io/en/latest/output/eve/eve-json-format.html#event-type-ssh   |
+| `Suricata.TFTP`     | https://suricata.readthedocs.io/en/latest/output/eve/eve-json-format.html                  |
+| `Suricata.TLS`      | https://suricata.readthedocs.io/en/latest/output/eve/eve-json-format.html#event-type-tls   |
 
 ## Built-in Rule Packs
 

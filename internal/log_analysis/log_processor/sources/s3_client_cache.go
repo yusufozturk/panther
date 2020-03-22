@@ -185,6 +185,9 @@ func getRoleArn(s3Object *S3ObjectInfo) (*string, error) {
 
 	for _, integration := range sourceCache.sources {
 		if aws.StringValue(integration.S3Bucket) == s3Object.S3Bucket {
+			if integration.S3Prefix == nil { // no prefix configured
+				return integration.LogProcessingRole, nil
+			}
 			if strings.HasPrefix(s3Object.S3ObjectKey, aws.StringValue(integration.S3Prefix)) {
 				return integration.LogProcessingRole, nil
 			}
@@ -196,7 +199,7 @@ func getRoleArn(s3Object *S3ObjectInfo) (*string, error) {
 func getNewS3Client(region *string, creds *credentials.Credentials) (result s3iface.S3API) {
 	config := aws.NewConfig().WithCredentials(creds)
 	if region != nil {
-		config.WithCredentials(creds)
+		config.WithRegion(*region)
 	}
 	return s3.New(common.Session, config)
 }

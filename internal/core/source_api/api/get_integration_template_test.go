@@ -32,6 +32,28 @@ import (
 	"github.com/panther-labs/panther/pkg/testutils"
 )
 
+func TestCloudSecTemplate(t *testing.T) {
+	s3Mock := &testutils.S3Mock{}
+	s3Client = s3Mock
+	input := &models.GetIntegrationTemplateInput{
+		AWSAccountID:       aws.String("123456789012"),
+		IntegrationType:    aws.String(models.IntegrationTypeAWSScan),
+		IntegrationLabel:   aws.String("TestLabel-"),
+		CWEEnabled:         aws.Bool(true),
+		RemediationEnabled: aws.Bool(true),
+	}
+
+	template, err := ioutil.ReadFile("../../../../deployments/auxiliary/cloudformation/panther-cloudsec-iam.yml")
+	require.NoError(t, err)
+	s3Mock.On("GetObject", mock.Anything).Return(&s3.GetObjectOutput{Body: ioutil.NopCloser(bytes.NewReader(template))}, nil)
+
+	result, err := API{}.GetIntegrationTemplate(input)
+	require.NoError(t, err)
+	expectedTemplate, err := ioutil.ReadFile("./testdata/panther-cloudsec-iam-updated.yml")
+	require.NoError(t, err)
+	require.YAMLEq(t, string(expectedTemplate), *result.Body)
+}
+
 func TestLogAnalysisTemplate(t *testing.T) {
 	s3Mock := &testutils.S3Mock{}
 	s3Client = s3Mock
@@ -49,7 +71,6 @@ func TestLogAnalysisTemplate(t *testing.T) {
 	s3Mock.On("GetObject", mock.Anything).Return(&s3.GetObjectOutput{Body: ioutil.NopCloser(bytes.NewReader(template))}, nil)
 
 	result, err := API{}.GetIntegrationTemplate(input)
-
 	require.NoError(t, err)
 	expectedTemplate, err := ioutil.ReadFile("./testdata/panther-log-analysis-iam-updated.yml")
 	require.NoError(t, err)

@@ -41,30 +41,26 @@ const (
 	cacheTimeout             = time.Minute * 30
 
 	// Formatting variables used for re-writing the default templates
-	accountIDFind     = "Value: '' # MasterAccountId"
-	accountIDReplace  = "Value: '%s' # MasterAccountId"
-	roleSuffixIDFind  = "Value: '' # RoleSuffix"
-	roleSuffixReplace = "Value: '%s' # RoleSuffix"
+	accountIDFind    = "Value: '' # MasterAccountId"
+	accountIDReplace = "Value: '%s' # MasterAccountId"
 
 	// Formatting variables for Cloud Security
+	regionFind         = "Value: '' # MasterAccountRegion"
+	regionReplace      = "Value: '%s' # MasterAccountRegion"
 	cweFind            = "Value: '' # DeployCloudWatchEventSetup"
-	cweReplace         = "Value: %t # DeployCloudWatchEventSetup"
+	cweReplace         = "Value: '%t' # DeployCloudWatchEventSetup"
 	remediationFind    = "Value: '' # DeployRemediation"
-	remediationReplace = "Value: %t # DeployRemediation"
+	remediationReplace = "Value: '%t' # DeployRemediation"
 
 	// Formatting variables for Log Analysis
-	s3BucketFind    = "Value: '' # S3Bucket"
-	s3BucketReplace = "Value: '%s' # S3Bucket"
-	s3PrefixFind    = "Value: '' # S3Prefix"
-	s3PrefixReplace = "Value: '%s' # S3Prefix"
-	kmsKeyFind      = "Value: '' # KmsKey"
-	kmsKeyReplace   = "Value: '%s' # KmsKey"
-
-	// The format of log processing role
-	logProcessingRoleFormat = "arn:aws:iam::%s:role/PantherLogProcessingRole-%s"
-	auditRoleFormat         = "arn:aws:iam::%s:role/PantherAuditRole"
-	cweRoleFormat           = "arn:aws:iam::%s:role/PantherCloudFormationStackSetExecutionRole"
-	remediationRoleFormat   = "arn:aws:iam::%s:role/PantherRemediationRole"
+	roleSuffixIDFind  = "Value: '' # RoleSuffix"
+	roleSuffixReplace = "Value: '%s' # RoleSuffix"
+	s3BucketFind      = "Value: '' # S3Bucket"
+	s3BucketReplace   = "Value: '%s' # S3Bucket"
+	s3PrefixFind      = "Value: '' # S3Prefix"
+	s3PrefixReplace   = "Value: '%s' # S3Prefix"
+	kmsKeyFind        = "Value: '' # KmsKey"
+	kmsKeyReplace     = "Value: '%s' # KmsKey"
 )
 
 var (
@@ -97,6 +93,8 @@ func (API) GetIntegrationTemplate(input *models.GetIntegrationTemplateInput) (*m
 
 	// Cloud Security replacements
 	if *input.IntegrationType == models.IntegrationTypeAWSScan {
+		formattedTemplate = strings.Replace(formattedTemplate, regionFind,
+			fmt.Sprintf(regionReplace, *sess.Config.Region), 1)
 		formattedTemplate = strings.Replace(formattedTemplate, cweFind,
 			fmt.Sprintf(cweReplace, aws.BoolValue(input.CWEEnabled)), 1)
 		formattedTemplate = strings.Replace(formattedTemplate, remediationFind,

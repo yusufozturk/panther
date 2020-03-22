@@ -34,6 +34,13 @@ import (
 	"github.com/panther-labs/panther/pkg/genericapi"
 )
 
+const (
+	auditRoleFormat         = "arn:aws:iam::%s:role/PantherAuditRole-%s"
+	logProcessingRoleFormat = "arn:aws:iam::%s:role/PantherLogProcessingRole-%s"
+	cweRoleFormat           = "arn:aws:iam::%s:role/PantherCloudFormationStackSetExecutionRole-%s"
+	remediationRoleFormat   = "arn:aws:iam::%s:role/PantherRemediationRole-%s"
+)
+
 var (
 	evaluateIntegrationFunc       = evaluateIntegration
 	checkIntegrationInternalError = &genericapi.InternalError{Message: "Failed to validate source. Please try again later"}
@@ -49,12 +56,15 @@ func (API) CheckIntegration(input *models.CheckIntegrationInput) (*models.Source
 
 	switch aws.StringValue(input.IntegrationType) {
 	case models.IntegrationTypeAWSScan:
-		_, out.AuditRoleStatus = getCredentialsWithStatus(fmt.Sprintf(auditRoleFormat, *input.AWSAccountID))
+		_, out.AuditRoleStatus = getCredentialsWithStatus(fmt.Sprintf(auditRoleFormat,
+			*input.AWSAccountID, *sess.Config.Region))
 		if aws.BoolValue(input.EnableCWESetup) {
-			_, out.CWERoleStatus = getCredentialsWithStatus(fmt.Sprintf(cweRoleFormat, *input.AWSAccountID))
+			_, out.CWERoleStatus = getCredentialsWithStatus(fmt.Sprintf(cweRoleFormat,
+				*input.AWSAccountID, *sess.Config.Region))
 		}
 		if aws.BoolValue(input.EnableRemediation) {
-			_, out.RemediationRoleStatus = getCredentialsWithStatus(fmt.Sprintf(remediationRoleFormat, *input.AWSAccountID))
+			_, out.RemediationRoleStatus = getCredentialsWithStatus(fmt.Sprintf(remediationRoleFormat,
+				*input.AWSAccountID, *sess.Config.Region))
 		}
 
 	case models.IntegrationTypeAWS3:
@@ -71,6 +81,7 @@ func (API) CheckIntegration(input *models.CheckIntegrationInput) (*models.Source
 
 	return out, nil
 }
+
 func checkKey(roleCredentials *credentials.Credentials, key *string) models.SourceIntegrationItemStatus {
 	if key == nil {
 		// KMS key is optional
@@ -140,42 +151,40 @@ func getCredentialsWithStatus(roleARN string) (*credentials.Credentials, models.
 	}
 }
 
-func evaluateIntegration(api API, integration *models.CheckIntegrationInput) (bool, error) {
+func evaluateIntegration(api API, integration *models.CheckIntegrationInput) (string, bool, error) {
 	status, err := api.CheckIntegration(integration)
 	if err != nil {
-		return false, err
+		zap.L().Error("integration failed configuration check",
+			zap.Error(err),
+			zap.Any("integration", integration),
+			zap.Any("status", status))
+		return "", false, err
 	}
 
 	switch aws.StringValue(integration.IntegrationType) {
 	case models.IntegrationTypeAWSScan:
 		if !aws.BoolValue(status.AuditRoleStatus.Healthy) {
-			// If audit role is not healthy return false
-			return false, nil
+			return "audit role has a misconfiguration", false, nil
 		}
 
 		if aws.BoolValue(integration.EnableRemediation) && !aws.BoolValue(status.RemediationRoleStatus.Healthy) {
-			// If remediation is enabled but remediation role is not healthy return false
-			return false, nil
+			return "remediation role has a misconfiguration", false, nil
 		}
 
 		if aws.BoolValue(integration.EnableCWESetup) && !aws.BoolValue(status.CWERoleStatus.Healthy) {
-			// If CWE are enbled but CWEEvents role is not healthy return false
-			return false, nil
+			return "cwe role has a misconfiguration", false, nil
 		}
-		return true, nil
-
+		return "", true, nil
 	case models.IntegrationTypeAWS3:
 		if !aws.BoolValue(status.ProcessingRoleStatus.Healthy) || !aws.BoolValue(status.S3BucketStatus.Healthy) {
-			// If Log processing role is not healthy or S3 bucket status is not healthy return false
-			return false, nil
+			return "log processing role has a misconfiguration", false, nil
 		}
 
 		if integration.KmsKey != nil {
-			// If the integration has a KMS key and the keys is not healthy return false
-			return aws.BoolValue(status.KMSKeyStatus.Healthy), nil
+			return "kms key has a misconfiguration", aws.BoolValue(status.KMSKeyStatus.Healthy), nil
 		}
-		return true, nil
+		return "", true, nil
 	default:
-		return false, errors.New("invalid integration type")
+		return "", false, errors.New("invalid integration type")
 	}
 }

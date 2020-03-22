@@ -1,3 +1,5 @@
+package models
+
 /**
  * Panther is a scalable, powerful, cloud-native SIEM written in Golang/React.
  * Copyright (C) 2020 Panther Labs Inc
@@ -16,4 +18,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export { default } from './CfnLaunchPanel';
+import (
+	"testing"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/stretchr/testify/require"
+)
+
+func TestValidateIntegrationLabelSucceeds(t *testing.T) {
+	validator, err := Validator()
+	require.NoError(t, err)
+	err = validator.Struct(&GetIntegrationTemplateInput{
+		AWSAccountID:     aws.String("123456789012"),
+		IntegrationLabel: aws.String("Test12- "),
+		IntegrationType:  aws.String(IntegrationTypeAWS3),
+	})
+	require.NoError(t, err)
+}
+
+func TestValidateIntegrationLabelFails(t *testing.T) {
+	validator, err := Validator()
+	require.NoError(t, err)
+	err = validator.Struct(&GetIntegrationTemplateInput{
+		AWSAccountID:     aws.String("123456789012"),
+		IntegrationLabel: aws.String(" "),
+		IntegrationType:  aws.String(IntegrationTypeAWS3),
+	})
+	require.Error(t, err)
+}

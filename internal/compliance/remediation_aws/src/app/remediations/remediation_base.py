@@ -128,7 +128,7 @@ class RemediationBase:
             """Refresh credentials by invoking STS AssumeRole operation"""
             cls.logger.info("Refreshing credentials for account %s and region %s", account_id, region)
             params = {
-                'RoleArn': 'arn:aws:iam::{}:role/PantherRemediationRole'.format(account_id),
+                'RoleArn': 'arn:aws:iam::{}:role/PantherRemediationRole-{}'.format(account_id, region),
                 'RoleSessionName': 'RemediationSession',
                 'DurationSeconds': 3600,
             }

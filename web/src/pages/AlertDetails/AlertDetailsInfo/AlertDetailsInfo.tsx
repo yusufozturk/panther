@@ -24,6 +24,7 @@ import Linkify from 'Components/Linkify';
 import { SEVERITY_COLOR_MAP } from 'Source/constants';
 import { formatDatetime } from 'Helpers/utils';
 import Panel from 'Components/Panel';
+import { Link as RRLink } from 'react-router-dom';
 
 interface AlertDetailsInfoProps {
   alert: AlertDetails;
@@ -44,7 +45,15 @@ const AlertDetailsInfo: React.FC<AlertDetailsInfoProps> = ({ alert, rule }) => {
           <SimpleGrid columns={3} spacing={6}>
             <Box my={1}>
               <Label mb={1} as="div" size="small" color="grey300">
-                ID
+                TITLE
+              </Label>
+              <Text size="medium" color="black">
+                {alert.title}
+              </Text>
+            </Box>
+            <Box my={1}>
+              <Label mb={1} as="div" size="small" color="grey300">
+                FULL ALERT ID
               </Label>
               <Text size="medium" color="black">
                 {alert.alertId}
@@ -63,10 +72,26 @@ const AlertDetailsInfo: React.FC<AlertDetailsInfoProps> = ({ alert, rule }) => {
             </Box>
             <Box my={1}>
               <Label mb={1} as="div" size="small" color="grey300">
+                DEDUP STRING
+              </Label>
+              <Text size="medium" color="black">
+                {alert.dedupString}
+              </Text>
+            </Box>
+            <Box my={1}>
+              <Label mb={1} as="div" size="small" color="grey300">
                 CREATED AT
               </Label>
               <Text size="medium" color="black">
                 {formatDatetime(alert.creationTime)}
+              </Text>
+            </Box>
+            <Box my={1}>
+              <Label mb={1} as="div" size="small" color="grey300">
+                LAST MATCHED AT
+              </Label>
+              <Text size="medium" color="black">
+                {formatDatetime(alert.updateTime)}
               </Text>
             </Box>
           </SimpleGrid>
@@ -80,7 +105,15 @@ const AlertDetailsInfo: React.FC<AlertDetailsInfoProps> = ({ alert, rule }) => {
       <SimpleGrid columns={3} spacing={6}>
         <Box my={1}>
           <Label mb={1} as="div" size="small" color="grey300">
-            ID
+            TITLE
+          </Label>
+          <Text size="medium" color="black">
+            {alert.title}
+          </Text>
+        </Box>
+        <Box my={1}>
+          <Label mb={1} as="div" size="small" color="grey300">
+            FULL ALERT ID
           </Label>
           <Text size="medium" color="black">
             {alert.alertId}
@@ -91,7 +124,7 @@ const AlertDetailsInfo: React.FC<AlertDetailsInfoProps> = ({ alert, rule }) => {
             RULE ORIGIN
           </Label>
           {rule ? (
-            <Link color="blue300" to={urls.logAnalysis.rules.details(rule.id)}>
+            <Link color="blue300" as={RRLink} to={urls.logAnalysis.rules.details(rule.id)}>
               {rule.displayName || rule.id}
             </Link>
           ) : (
@@ -165,6 +198,14 @@ const AlertDetailsInfo: React.FC<AlertDetailsInfoProps> = ({ alert, rule }) => {
         </Box>
         <Box my={1}>
           <Label mb={1} as="div" size="small" color="grey300">
+            DEDUP STRING
+          </Label>
+          <Text size="medium" color="black">
+            {alert.dedupString}
+          </Text>
+        </Box>
+        <Box my={1}>
+          <Label mb={1} as="div" size="small" color="grey300">
             CREATED AT
           </Label>
           <Text size="medium" color="black">
@@ -173,10 +214,10 @@ const AlertDetailsInfo: React.FC<AlertDetailsInfoProps> = ({ alert, rule }) => {
         </Box>
         <Box my={1}>
           <Label mb={1} as="div" size="small" color="grey300">
-            DEDUP STRING
+            LAST MATCHED AT
           </Label>
           <Text size="medium" color="black">
-            {alert.dedupString}
+            {formatDatetime(alert.updateTime)}
           </Text>
         </Box>
       </SimpleGrid>

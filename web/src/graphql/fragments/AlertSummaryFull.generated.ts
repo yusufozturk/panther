@@ -22,29 +22,19 @@ import * as Types from '../../../__generated__/schema';
 
 import gql from 'graphql-tag';
 
-export type AlertDetailsFull = Pick<
-  Types.AlertDetails,
-  | 'alertId'
-  | 'ruleId'
-  | 'title'
-  | 'creationTime'
-  | 'eventsMatched'
-  | 'updateTime'
-  | 'eventsLastEvaluatedKey'
-  | 'events'
-  | 'dedupString'
+export type AlertSummaryFull = Pick<
+  Types.AlertSummary,
+  'alertId' | 'ruleId' | 'title' | 'severity' | 'creationTime' | 'eventsMatched' | 'updateTime'
 >;
 
-export const AlertDetailsFull = gql`
-  fragment AlertDetailsFull on AlertDetails {
+export const AlertSummaryFull = gql`
+  fragment AlertSummaryFull on AlertSummary {
     alertId
     ruleId
     title
+    severity
     creationTime
     eventsMatched
     updateTime
-    eventsLastEvaluatedKey
-    events
-    dedupString
   }
 `;

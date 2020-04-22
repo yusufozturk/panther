@@ -18,9 +18,11 @@
 
 import { Box, Breadcrumbs as PounceBreadcrumbs } from 'pouncejs';
 import * as React from 'react';
-import { isGuid, capitalize } from 'Helpers/utils';
+import { isGuid, capitalize, shortenId, isHash } from 'Helpers/utils';
 import { Link as RRLink } from 'react-router-dom';
 import useRouter from 'Hooks/useRouter';
+
+const transformBreadcrumbText = text => (isHash(text) ? shortenId(text) : text);
 
 const Breadcrumbs: React.FC = () => {
   const {
@@ -60,7 +62,7 @@ const Breadcrumbs: React.FC = () => {
       items={fragments}
       itemRenderer={item => (
         <Box as={RRLink} to={item.href} display="block" maxWidth="450px" truncated>
-          {item.text}
+          {transformBreadcrumbText(item.text)}
         </Box>
       )}
     />

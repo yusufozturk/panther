@@ -23,6 +23,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/acm"
 	"github.com/aws/aws-sdk-go/service/acm/acmiface"
+	"github.com/aws/aws-sdk-go/service/cloudwatch"
+	"github.com/aws/aws-sdk-go/service/cloudwatch/cloudwatchiface"
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs/cloudwatchlogsiface"
 	"github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
@@ -36,6 +38,7 @@ var (
 	awsSession *session.Session
 
 	acmClient            acmiface.ACMAPI
+	cloudWatchClient     cloudwatchiface.CloudWatchAPI
 	cloudWatchLogsClient cloudwatchlogsiface.CloudWatchLogsAPI
 	cognitoClient        cognitoidentityprovideriface.CognitoIdentityProviderAPI
 	iamClient            iamiface.IAMAPI
@@ -53,6 +56,13 @@ func getAcmClient() acmiface.ACMAPI {
 		acmClient = acm.New(getSession())
 	}
 	return acmClient
+}
+
+func getCloudWatchClient() cloudwatchiface.CloudWatchAPI {
+	if cloudWatchClient == nil {
+		cloudWatchClient = cloudwatch.New(getSession())
+	}
+	return cloudWatchClient
 }
 
 func getCloudWatchLogsClient() cloudwatchlogsiface.CloudWatchLogsAPI {

@@ -59,7 +59,7 @@ Start the development environment:
 
 #### Step 3
 
-Run the following command to deploy Panther:
+Run the following command at the Docker prompt to deploy Panther:
 
 ```bash
 mage setup deploy

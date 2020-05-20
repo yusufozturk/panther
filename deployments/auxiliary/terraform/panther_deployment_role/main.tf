@@ -50,6 +50,7 @@ resource "aws_iam_policy" "deployment" {
         Action : [
           "acm:*",
           "apigateway:*",
+          "application-autoscaling:DeleteScalingPolicy",
           "application-autoscaling:DeregisterScalableTarget",
           "application-autoscaling:DescribeScalingPolicies",
           "application-autoscaling:DescribeScalableTargets",

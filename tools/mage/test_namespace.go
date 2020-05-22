@@ -211,6 +211,11 @@ func cfnTestFunction(logicalID, template string, resources map[string]string) er
 			logicalID, idPrefix+"MetricFilters", template)
 	}
 
+	if resources[idPrefix+"Alarms"] != "Custom::LambdaAlarms" {
+		return fmt.Errorf("%s needs an associated %s resource in %s",
+			logicalID, idPrefix+"Alarms", template)
+	}
+
 	// Backwards compatibility - these resources did not originally match the naming scheme,
 	// renaming the logical IDs would delete + recreate the log group, which usually causes
 	// deployments to fail because it tries to create a log group which already exists.

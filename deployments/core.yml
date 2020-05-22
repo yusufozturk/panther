@@ -161,6 +161,13 @@ Resources:
                 - appsync:UpdateGraphqlApi
               Resource: !Sub arn:${AWS::Partition}:appsync:${AWS::Region}:${AWS::AccountId}:*
 
+  UsersAPIAlarms:
+    Type: Custom::LambdaAlarms
+    Properties:
+      AlarmTopicArn: !Ref AlarmTopicArn
+      FunctionName: !Ref UsersAPIFunction
+      ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
+
   # Allow Cognito to invoke the users-api for custom triggers
   CustomMessageTriggerInvokePermission:
     Type: AWS::Lambda::Permission
@@ -237,6 +244,13 @@ Resources:
                 - dynamodb:*Item
                 - dynamodb:Scan
               Resource: !GetAtt OrganizationTable.Arn
+
+  OrganizationAPIAlarms:
+    Type: Custom::LambdaAlarms
+    Properties:
+      AlarmTopicArn: !Ref AlarmTopicArn
+      FunctionName: !Ref OrganizationAPIFunction
+      ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
   ##### Analysis API #####
   AnalysisApiFunction:
@@ -334,6 +348,15 @@ Resources:
     Type: Custom::LambdaMetricFilters
     Properties:
       LogGroupName: !Ref AnalysisApiLogGroup
+      ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
+
+  AnalysisApiAlarms:
+    Type: Custom::LambdaAlarms
+    Properties:
+      AlarmTopicArn: !Ref AlarmTopicArn
+      FunctionMemoryMB: 512
+      FunctionName: !Ref AnalysisApiFunction
+      FunctionTimeoutSec: 120
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
   GatewayInvocationPermission: # allow API gateway to invoke analysis-api Lambda function
@@ -476,6 +499,14 @@ Resources:
       LogGroupName: !Ref OutputsApiLogGroup
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
+  OutputsApiAlarms:
+    Type: Custom::LambdaAlarms
+    Properties:
+      AlarmTopicArn: !Ref AlarmTopicArn
+      FunctionMemoryMB: 512
+      FunctionName: !Ref OutputsApiFunction
+      ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
+
   ##### Alert Delivery #####
   AlertQueue:
     Type: AWS::SQS::Queue
@@ -593,6 +624,13 @@ Resources:
       LogGroupName: !Ref AlertDeliveryLogGroup
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
+  AlertDeliveryAlarms:
+    Type: Custom::LambdaAlarms
+    Properties:
+      AlarmTopicArn: !Ref AlarmTopicArn
+      FunctionName: !Ref AlertDeliveryFunction
+      ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
+
   ##### Source API #####
   IntegrationsTable:
     Type: AWS::DynamoDB::Table
@@ -706,6 +744,13 @@ Resources:
     Type: Custom::LambdaMetricFilters
     Properties:
       LogGroupName: !Ref SourceApiLogGroup
+      ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
+
+  SourceApiAlarms:
+    Type: Custom::LambdaAlarms
+    Properties:
+      AlarmTopicArn: !Ref AlarmTopicArn
+      FunctionName: !Ref SourceApiFunction
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
   ##### Layer Management #####
@@ -841,6 +886,14 @@ Resources:
     Type: Custom::LambdaMetricFilters
     Properties:
       LogGroupName: !Ref LayerManagerLogGroup
+      ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
+
+  LayerManagerAlarms:
+    Type: Custom::LambdaAlarms
+    Properties:
+      AlarmTopicArn: !Ref AlarmTopicArn
+      FunctionMemoryMB: 512
+      FunctionName: !Ref LayerManagerFunction
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
   ##### Key-Value store for Python policies/rules #####

@@ -40,13 +40,12 @@ type DynamoDBAlarmProperties struct {
 }
 
 func customDynamoDBAlarms(_ context.Context, event cfn.Event) (string, map[string]interface{}, error) {
-	var props DynamoDBAlarmProperties
-	if err := parseProperties(event.ResourceProperties, &props); err != nil {
-		return "", nil, err
-	}
-
 	switch event.RequestType {
 	case cfn.RequestCreate, cfn.RequestUpdate:
+		var props DynamoDBAlarmProperties
+		if err := parseProperties(event.ResourceProperties, &props); err != nil {
+			return "", nil, err
+		}
 		return "custom:alarms:dynamodb:" + props.TableName, nil, putDynamoAlarmGroup(props)
 
 	case cfn.RequestDelete:

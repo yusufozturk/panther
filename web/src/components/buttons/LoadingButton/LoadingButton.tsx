@@ -17,39 +17,26 @@
  */
 
 import React from 'react';
-import { Modal, Text, Flex, Button } from 'pouncejs';
-import LoadingButton from 'Components/buttons/LoadingButton';
+import { Button, Spinner, Flex, ButtonProps } from 'pouncejs';
 
-export interface ConfirmModalProps {
-  title: string;
-  subtitle: React.ReactNode;
-  loading: boolean;
-  onConfirm: () => void;
-  onClose: () => void;
-}
-
-const ConfirmModal: React.FC<ConfirmModalProps> = ({
-  title,
-  subtitle,
+const LoadingButton: React.FC<Omit<ButtonProps, 'size' | 'variant'> & { loading?: boolean }> = ({
+  children,
+  disabled,
   loading,
-  onConfirm,
-  onClose,
+  ...rest
 }) => {
   return (
-    <Modal open onClose={onClose} title={title}>
-      <Text size="large" color="grey500" mb={8} textAlign="center">
-        {subtitle}
-      </Text>
-      <Flex justify="flex-end">
-        <Button size="large" variant="default" onClick={onClose} mr={3}>
-          Cancel
-        </Button>
-        <LoadingButton onClick={onConfirm} loading={loading} disabled={loading}>
-          Confirm
-        </LoadingButton>
-      </Flex>
-    </Modal>
+    <Button {...rest} type="submit" size="large" variant="primary" disabled={disabled}>
+      {loading ? (
+        <Flex align="center" justify="center">
+          <Spinner size="small" mr={2} />
+          {children}
+        </Flex>
+      ) : (
+        children
+      )}
+    </Button>
   );
 };
 
-export default ConfirmModal;
+export default React.memo(LoadingButton);

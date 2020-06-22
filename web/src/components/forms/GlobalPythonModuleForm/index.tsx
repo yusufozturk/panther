@@ -16,23 +16,5 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable import/order, import/no-duplicates, @typescript-eslint/no-unused-vars */
-
-import * as Types from '../../../__generated__/schema';
-
-import gql from 'graphql-tag';
-
-export type GlobalModuleFull = Pick<
-  Types.GlobalModuleDetails,
-  'createdAt' | 'description' | 'id' | 'lastModified' | 'body'
->;
-
-export const GlobalModuleFull = gql`
-  fragment GlobalModuleFull on GlobalModuleDetails {
-    createdAt
-    description
-    id
-    lastModified
-    body
-  }
-`;
+export { default } from './GlobalPythonModuleForm';
+export * from './GlobalPythonModuleForm';

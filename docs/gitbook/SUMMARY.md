@@ -70,6 +70,8 @@
   * [Suricata](log-analysis/log-processing/supported-logs/Suricata.md)
   * [Syslog](log-analysis/log-processing/supported-logs/Syslog.md)
   * [Zeek](log-analysis/log-processing/supported-logs/Zeek.md)
+* [SaaS logs setup]()
+  * [GSuite](log-analysis/log-processing/log-setup/gsuite.md)
 * [Standard Fields](log-analysis/panther-fields.md)
 
 ## Cloud Security

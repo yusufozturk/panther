@@ -177,6 +177,8 @@ func (destination *S3Destination) SendEvents(parsedEventChannel chan *parsers.Re
 
 		buffer := bufferSet.getBuffer(event)
 
+		// TODO: [destinations/S3] Use `jsonutil.AppendJoinLines` strip new lines from rendered JSON
+		// event.JSON = jsonutil.AppendJoinLines(event.JSON[:0], event.JSON)
 		err := bufferSet.addEvent(buffer, event.JSON)
 		if err != nil {
 			failed = true

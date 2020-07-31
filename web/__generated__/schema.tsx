@@ -99,6 +99,11 @@ export type AddS3LogIntegrationInput = {
   logTypes: Array<Scalars['String']>;
 };
 
+export type AddSqsLogIntegrationInput = {
+  integrationLabel: Scalars['String'];
+  sqsConfig: SqsLogConfigInput;
+};
+
 export type Alert = {
   alertId: Scalars['ID'];
   creationTime: Scalars['AWSDateTime'];
@@ -263,7 +268,7 @@ export type DestinationConfig = {
   __typename?: 'DestinationConfig';
   slack?: Maybe<SlackConfig>;
   sns?: Maybe<SnsConfig>;
-  sqs?: Maybe<SqsConfig>;
+  sqs?: Maybe<SqsDestinationConfig>;
   pagerDuty?: Maybe<PagerDutyConfig>;
   github?: Maybe<GithubConfig>;
   jira?: Maybe<JiraConfig>;
@@ -558,7 +563,7 @@ export type LogAnalysisMetricsResponse = {
   intervalMinutes: Scalars['Int'];
 };
 
-export type LogIntegration = S3LogIntegration;
+export type LogIntegration = S3LogIntegration | SqsLogSourceIntegration;
 
 export type ModifyGlobalPythonModuleInput = {
   description: Scalars['String'];
@@ -580,6 +585,7 @@ export type Mutation = {
   addDestination?: Maybe<Destination>;
   addComplianceIntegration: ComplianceIntegration;
   addS3LogIntegration: S3LogIntegration;
+  addSqsLogIntegration: SqsLogSourceIntegration;
   addPolicy?: Maybe<PolicyDetails>;
   addRule?: Maybe<RuleDetails>;
   addGlobalPythonModule: GlobalPythonModule;
@@ -599,6 +605,7 @@ export type Mutation = {
   updateDestination?: Maybe<Destination>;
   updateComplianceIntegration: ComplianceIntegration;
   updateS3LogIntegration: S3LogIntegration;
+  updateSqsLogIntegration: SqsLogSourceIntegration;
   updateGeneralSettings: GeneralSettings;
   updatePolicy?: Maybe<PolicyDetails>;
   updateRule?: Maybe<RuleDetails>;
@@ -617,6 +624,10 @@ export type MutationAddComplianceIntegrationArgs = {
 
 export type MutationAddS3LogIntegrationArgs = {
   input: AddS3LogIntegrationInput;
+};
+
+export type MutationAddSqsLogIntegrationArgs = {
+  input: AddSqsLogIntegrationInput;
 };
 
 export type MutationAddPolicyArgs = {
@@ -693,6 +704,10 @@ export type MutationUpdateComplianceIntegrationArgs = {
 
 export type MutationUpdateS3LogIntegrationArgs = {
   input: UpdateS3LogIntegrationInput;
+};
+
+export type MutationUpdateSqsLogIntegrationArgs = {
+  input: UpdateSqsLogIntegrationInput;
 };
 
 export type MutationUpdateGeneralSettingsArgs = {
@@ -844,6 +859,7 @@ export type Query = {
   getComplianceIntegrationTemplate: IntegrationTemplate;
   getS3LogIntegration: S3LogIntegration;
   getS3LogIntegrationTemplate: IntegrationTemplate;
+  getSqsLogIntegration: SqsLogSourceIntegration;
   remediations?: Maybe<Scalars['AWSJSON']>;
   resource?: Maybe<ResourceDetails>;
   resources?: Maybe<ListResourcesResponse>;
@@ -888,6 +904,10 @@ export type QueryGetS3LogIntegrationArgs = {
 
 export type QueryGetS3LogIntegrationTemplateArgs = {
   input: GetS3LogIntegrationTemplateInput;
+};
+
+export type QueryGetSqsLogIntegrationArgs = {
+  id: Scalars['ID'];
 };
 
 export type QueryResourceArgs = {
@@ -1092,11 +1112,45 @@ export enum SortDirEnum {
 
 export type SqsConfig = {
   __typename?: 'SqsConfig';
+  logTypes: Array<Scalars['String']>;
+  allowedPrincipals?: Maybe<Array<Maybe<Scalars['String']>>>;
+  allowedSourceArns?: Maybe<Array<Maybe<Scalars['String']>>>;
+  s3Bucket: Scalars['String'];
+  s3Prefix?: Maybe<Scalars['String']>;
+  logProcessingRole?: Maybe<Scalars['String']>;
   queueUrl: Scalars['String'];
 };
 
 export type SqsConfigInput = {
   queueUrl: Scalars['String'];
+};
+
+export type SqsDestinationConfig = {
+  __typename?: 'SqsDestinationConfig';
+  queueUrl: Scalars['String'];
+};
+
+export type SqsLogConfigInput = {
+  logTypes: Array<Scalars['String']>;
+  allowedPrincipals: Array<Maybe<Scalars['String']>>;
+  allowedSourceArns: Array<Maybe<Scalars['String']>>;
+};
+
+export type SqsLogIntegrationHealth = {
+  __typename?: 'SqsLogIntegrationHealth';
+  sqsStatus?: Maybe<IntegrationItemHealthStatus>;
+};
+
+export type SqsLogSourceIntegration = {
+  __typename?: 'SqsLogSourceIntegration';
+  createdAtTime: Scalars['AWSDateTime'];
+  createdBy: Scalars['ID'];
+  integrationId: Scalars['ID'];
+  integrationLabel: Scalars['String'];
+  integrationType: Scalars['String'];
+  lastEventReceived?: Maybe<Scalars['AWSDateTime']>;
+  sqsConfig: SqsConfig;
+  health: SqsLogIntegrationHealth;
 };
 
 export type SuppressPoliciesInput = {
@@ -1178,6 +1232,12 @@ export type UpdateS3LogIntegrationInput = {
   kmsKey?: Maybe<Scalars['String']>;
   s3Prefix?: Maybe<Scalars['String']>;
   logTypes?: Maybe<Array<Scalars['String']>>;
+};
+
+export type UpdateSqsLogIntegrationInput = {
+  integrationId: Scalars['String'];
+  integrationLabel: Scalars['String'];
+  sqsConfig: SqsLogConfigInput;
 };
 
 export type UpdateUserInput = {
@@ -1324,7 +1384,7 @@ export type ResolversTypes = {
   DestinationConfig: ResolverTypeWrapper<DestinationConfig>;
   SlackConfig: ResolverTypeWrapper<SlackConfig>;
   SnsConfig: ResolverTypeWrapper<SnsConfig>;
-  SqsConfig: ResolverTypeWrapper<SqsConfig>;
+  SqsDestinationConfig: ResolverTypeWrapper<SqsDestinationConfig>;
   PagerDutyConfig: ResolverTypeWrapper<PagerDutyConfig>;
   GithubConfig: ResolverTypeWrapper<GithubConfig>;
   JiraConfig: ResolverTypeWrapper<JiraConfig>;
@@ -1342,6 +1402,9 @@ export type ResolversTypes = {
   S3LogIntegration: ResolverTypeWrapper<S3LogIntegration>;
   S3LogIntegrationHealth: ResolverTypeWrapper<S3LogIntegrationHealth>;
   GetS3LogIntegrationTemplateInput: GetS3LogIntegrationTemplateInput;
+  SqsLogSourceIntegration: ResolverTypeWrapper<SqsLogSourceIntegration>;
+  SqsConfig: ResolverTypeWrapper<SqsConfig>;
+  SqsLogIntegrationHealth: ResolverTypeWrapper<SqsLogIntegrationHealth>;
   GetResourceInput: GetResourceInput;
   ResourceDetails: ResolverTypeWrapper<ResourceDetails>;
   ComplianceStatusEnum: ComplianceStatusEnum;
@@ -1365,7 +1428,7 @@ export type ResolversTypes = {
   ListPoliciesResponse: ResolverTypeWrapper<ListPoliciesResponse>;
   PolicySummary: ResolverTypeWrapper<PolicySummary>;
   PoliciesForResourceInput: PoliciesForResourceInput;
-  LogIntegration: ResolversTypes['S3LogIntegration'];
+  LogIntegration: ResolversTypes['S3LogIntegration'] | ResolversTypes['SqsLogSourceIntegration'];
   OrganizationStatsInput: OrganizationStatsInput;
   OrganizationStatsResponse: ResolverTypeWrapper<OrganizationStatsResponse>;
   OrganizationReportBySeverity: ResolverTypeWrapper<OrganizationReportBySeverity>;
@@ -1402,6 +1465,8 @@ export type ResolversTypes = {
   CustomWebhookConfigInput: CustomWebhookConfigInput;
   AddComplianceIntegrationInput: AddComplianceIntegrationInput;
   AddS3LogIntegrationInput: AddS3LogIntegrationInput;
+  AddSqsLogIntegrationInput: AddSqsLogIntegrationInput;
+  SqsLogConfigInput: SqsLogConfigInput;
   AddPolicyInput: AddPolicyInput;
   PolicyUnitTestInput: PolicyUnitTestInput;
   AddRuleInput: AddRuleInput;
@@ -1422,6 +1487,7 @@ export type ResolversTypes = {
   UpdateAlertStatusInput: UpdateAlertStatusInput;
   UpdateComplianceIntegrationInput: UpdateComplianceIntegrationInput;
   UpdateS3LogIntegrationInput: UpdateS3LogIntegrationInput;
+  UpdateSqsLogIntegrationInput: UpdateSqsLogIntegrationInput;
   UpdateGeneralSettingsInput: UpdateGeneralSettingsInput;
   UpdatePolicyInput: UpdatePolicyInput;
   UpdateRuleInput: UpdateRuleInput;
@@ -1455,7 +1521,7 @@ export type ResolversParentTypes = {
   DestinationConfig: DestinationConfig;
   SlackConfig: SlackConfig;
   SnsConfig: SnsConfig;
-  SqsConfig: SqsConfig;
+  SqsDestinationConfig: SqsDestinationConfig;
   PagerDutyConfig: PagerDutyConfig;
   GithubConfig: GithubConfig;
   JiraConfig: JiraConfig;
@@ -1473,6 +1539,9 @@ export type ResolversParentTypes = {
   S3LogIntegration: S3LogIntegration;
   S3LogIntegrationHealth: S3LogIntegrationHealth;
   GetS3LogIntegrationTemplateInput: GetS3LogIntegrationTemplateInput;
+  SqsLogSourceIntegration: SqsLogSourceIntegration;
+  SqsConfig: SqsConfig;
+  SqsLogIntegrationHealth: SqsLogIntegrationHealth;
   GetResourceInput: GetResourceInput;
   ResourceDetails: ResourceDetails;
   ComplianceStatusEnum: ComplianceStatusEnum;
@@ -1496,7 +1565,9 @@ export type ResolversParentTypes = {
   ListPoliciesResponse: ListPoliciesResponse;
   PolicySummary: PolicySummary;
   PoliciesForResourceInput: PoliciesForResourceInput;
-  LogIntegration: ResolversParentTypes['S3LogIntegration'];
+  LogIntegration:
+    | ResolversParentTypes['S3LogIntegration']
+    | ResolversParentTypes['SqsLogSourceIntegration'];
   OrganizationStatsInput: OrganizationStatsInput;
   OrganizationStatsResponse: OrganizationStatsResponse;
   OrganizationReportBySeverity: OrganizationReportBySeverity;
@@ -1533,6 +1604,8 @@ export type ResolversParentTypes = {
   CustomWebhookConfigInput: CustomWebhookConfigInput;
   AddComplianceIntegrationInput: AddComplianceIntegrationInput;
   AddS3LogIntegrationInput: AddS3LogIntegrationInput;
+  AddSqsLogIntegrationInput: AddSqsLogIntegrationInput;
+  SqsLogConfigInput: SqsLogConfigInput;
   AddPolicyInput: AddPolicyInput;
   PolicyUnitTestInput: PolicyUnitTestInput;
   AddRuleInput: AddRuleInput;
@@ -1553,6 +1626,7 @@ export type ResolversParentTypes = {
   UpdateAlertStatusInput: UpdateAlertStatusInput;
   UpdateComplianceIntegrationInput: UpdateComplianceIntegrationInput;
   UpdateS3LogIntegrationInput: UpdateS3LogIntegrationInput;
+  UpdateSqsLogIntegrationInput: UpdateSqsLogIntegrationInput;
   UpdateGeneralSettingsInput: UpdateGeneralSettingsInput;
   UpdatePolicyInput: UpdatePolicyInput;
   UpdateRuleInput: UpdateRuleInput;
@@ -1750,7 +1824,7 @@ export type DestinationConfigResolvers<
 > = {
   slack?: Resolver<Maybe<ResolversTypes['SlackConfig']>, ParentType, ContextType>;
   sns?: Resolver<Maybe<ResolversTypes['SnsConfig']>, ParentType, ContextType>;
-  sqs?: Resolver<Maybe<ResolversTypes['SqsConfig']>, ParentType, ContextType>;
+  sqs?: Resolver<Maybe<ResolversTypes['SqsDestinationConfig']>, ParentType, ContextType>;
   pagerDuty?: Resolver<Maybe<ResolversTypes['PagerDutyConfig']>, ParentType, ContextType>;
   github?: Resolver<Maybe<ResolversTypes['GithubConfig']>, ParentType, ContextType>;
   jira?: Resolver<Maybe<ResolversTypes['JiraConfig']>, ParentType, ContextType>;
@@ -1912,7 +1986,11 @@ export type LogIntegrationResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['LogIntegration'] = ResolversParentTypes['LogIntegration']
 > = {
-  __resolveType: TypeResolveFn<'S3LogIntegration', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<
+    'S3LogIntegration' | 'SqsLogSourceIntegration',
+    ParentType,
+    ContextType
+  >;
 };
 
 export type MsTeamsConfigResolvers<
@@ -1944,6 +2022,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationAddS3LogIntegrationArgs, 'input'>
+  >;
+  addSqsLogIntegration?: Resolver<
+    ResolversTypes['SqsLogSourceIntegration'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationAddSqsLogIntegrationArgs, 'input'>
   >;
   addPolicy?: Resolver<
     Maybe<ResolversTypes['PolicyDetails']>,
@@ -2058,6 +2142,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationUpdateS3LogIntegrationArgs, 'input'>
+  >;
+  updateSqsLogIntegration?: Resolver<
+    ResolversTypes['SqsLogSourceIntegration'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateSqsLogIntegrationArgs, 'input'>
   >;
   updateGeneralSettings?: Resolver<
     ResolversTypes['GeneralSettings'],
@@ -2282,6 +2372,12 @@ export type QueryResolvers<
     ParentType,
     ContextType,
     RequireFields<QueryGetS3LogIntegrationTemplateArgs, 'input'>
+  >;
+  getSqsLogIntegration?: Resolver<
+    ResolversTypes['SqsLogSourceIntegration'],
+    ParentType,
+    ContextType,
+    RequireFields<QueryGetSqsLogIntegrationArgs, 'id'>
   >;
   remediations?: Resolver<Maybe<ResolversTypes['AWSJSON']>, ParentType, ContextType>;
   resource?: Resolver<
@@ -2546,7 +2642,56 @@ export type SqsConfigResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['SqsConfig'] = ResolversParentTypes['SqsConfig']
 > = {
+  logTypes?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  allowedPrincipals?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes['String']>>>,
+    ParentType,
+    ContextType
+  >;
+  allowedSourceArns?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes['String']>>>,
+    ParentType,
+    ContextType
+  >;
+  s3Bucket?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  s3Prefix?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  logProcessingRole?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   queueUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
+export type SqsDestinationConfigResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['SqsDestinationConfig'] = ResolversParentTypes['SqsDestinationConfig']
+> = {
+  queueUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
+export type SqsLogIntegrationHealthResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['SqsLogIntegrationHealth'] = ResolversParentTypes['SqsLogIntegrationHealth']
+> = {
+  sqsStatus?: Resolver<
+    Maybe<ResolversTypes['IntegrationItemHealthStatus']>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
+export type SqsLogSourceIntegrationResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['SqsLogSourceIntegration'] = ResolversParentTypes['SqsLogSourceIntegration']
+> = {
+  createdAtTime?: Resolver<ResolversTypes['AWSDateTime'], ParentType, ContextType>;
+  createdBy?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  integrationId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  integrationLabel?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  integrationType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  lastEventReceived?: Resolver<Maybe<ResolversTypes['AWSDateTime']>, ParentType, ContextType>;
+  sqsConfig?: Resolver<ResolversTypes['SqsConfig'], ParentType, ContextType>;
+  health?: Resolver<ResolversTypes['SqsLogIntegrationHealth'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
@@ -2648,6 +2793,9 @@ export type Resolvers<ContextType = any> = {
   SlackConfig?: SlackConfigResolvers<ContextType>;
   SnsConfig?: SnsConfigResolvers<ContextType>;
   SqsConfig?: SqsConfigResolvers<ContextType>;
+  SqsDestinationConfig?: SqsDestinationConfigResolvers<ContextType>;
+  SqsLogIntegrationHealth?: SqsLogIntegrationHealthResolvers<ContextType>;
+  SqsLogSourceIntegration?: SqsLogSourceIntegrationResolvers<ContextType>;
   TestPolicyResponse?: TestPolicyResponseResolvers<ContextType>;
   UploadPoliciesResponse?: UploadPoliciesResponseResolvers<ContextType>;
   User?: UserResolvers<ContextType>;

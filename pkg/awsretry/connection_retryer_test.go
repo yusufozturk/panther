@@ -1,4 +1,4 @@
-package main
+package awsretry
 
 /**
  * Panther is a Cloud-Native SIEM for the Modern Security Team.
@@ -19,13 +19,31 @@ package main
  */
 
 import (
-	"github.com/aws/aws-lambda-go/lambda"
+	"errors"
+	"testing"
 
-	"github.com/panther-labs/panther/internal/compliance/snapshot_poller/pollers"
-	awspoller "github.com/panther-labs/panther/internal/compliance/snapshot_poller/pollers/aws"
+	"github.com/aws/aws-sdk-go/aws/request"
+	"github.com/stretchr/testify/assert"
 )
 
-func main() {
-	awspoller.Setup()
-	lambda.Start(pollers.Handle)
+func TestConnectionErrRetryerShouldRetry(t *testing.T) {
+	retryer := NewConnectionErrRetryer()
+	sdkRequest := &request.Request{
+		Error: errors.New("read: connection reset by peer"),
+	}
+	assert.True(t, retryer.ShouldRetry(sdkRequest))
+}
+
+func TestConnectionErrRetryerShouldNotRetryOtherErrors(t *testing.T) {
+	retryer := NewConnectionErrRetryer()
+	sdkRequest := &request.Request{
+		Error: errors.New("random error"),
+	}
+	assert.False(t, retryer.ShouldRetry(sdkRequest))
+}
+
+func TestConnectionErrRetryerShouldNotRetryNoErrors(t *testing.T) {
+	retryer := NewConnectionErrRetryer()
+	sdkRequest := &request.Request{}
+	assert.False(t, retryer.ShouldRetry(sdkRequest))
 }

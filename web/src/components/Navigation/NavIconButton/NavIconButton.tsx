@@ -16,27 +16,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { IconButton, IconButtonProps, Tooltip } from 'pouncejs';
 import React from 'react';
-import { Flex, Heading, Text, Button, Box } from 'pouncejs';
-import { Link as RRLink } from 'react-router-dom';
-import NotFoundImg from 'Assets/illustrations/not-found.svg';
-import withSEO from 'Hoc/withSEO';
 
-const Page404: React.FC = () => {
-  return (
-    <Flex justify="center" align="center" direction="column" height="100%" width="100%">
-      <Box mb={10}>
-        <img alt="Page not found illustration" src={NotFoundImg} width="auto" height={400} />
-      </Box>
-      <Heading mb={2}>Not all who wander are lost...</Heading>
-      <Text color="gray-300" mb={10}>
-        ( You definitely are though )
-      </Text>
-      <Button as={RRLink} to="/">
-        Back to Home
-      </Button>
-    </Flex>
-  );
-};
+type NavIconButtonProps = Omit<IconButtonProps, 'variant' | 'aria-label'> &
+  React.AnchorHTMLAttributes<HTMLButtonElement> & {
+    tooltipLabel: string;
+  };
 
-export default withSEO({ title: 'Not Found' })(Page404);
+const NavIconButton: React.FC<NavIconButtonProps> = ({ icon, active, tooltipLabel, ...rest }) => (
+  <Tooltip content={tooltipLabel}>
+    <IconButton
+      {...rest}
+      variant="ghost"
+      icon={icon}
+      active={active}
+      aria-label={tooltipLabel}
+      // @ts-ignore
+      p="9px"
+    />
+  </Tooltip>
+);
+
+export default NavIconButton;

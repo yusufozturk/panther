@@ -16,16 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import Breadcrumbs from 'Components/Breadcrumbs';
-import { Flex } from 'pouncejs';
-
-const Header = () => {
-  return (
-    <Flex as="header" width={1} align="center" justify="space-between" py={10}>
-      <Breadcrumbs />
-    </Flex>
-  );
-};
-
-export default Header;
+export { default as ComplianceNavigation } from './ComplianceNavigation';
+export { default as LogAnalysisNavigation } from './LogAnalysisNavigation';
+export { default as SettingsNavigation } from './SettingsNavigation';

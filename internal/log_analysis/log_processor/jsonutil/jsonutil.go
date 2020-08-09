@@ -19,8 +19,6 @@ package jsonutil
  */
 
 import (
-	"strings"
-
 	jsoniter "github.com/json-iterator/go"
 )
 
@@ -35,21 +33,13 @@ type encoderNamingStrategy struct {
 	translate func(string) string
 }
 
-// UpdateStructDescription maps output field names to
-func (extension *encoderNamingStrategy) UpdateStructDescriptor(structDescriptor *jsoniter.StructDescriptor) {
-	for _, binding := range structDescriptor.Fields {
-		tag, hastag := binding.Field.Tag().Lookup("json")
-
-		// toName := binding.Field.Name()
-		if hastag {
-			tagParts := strings.Split(tag, ",")
-			if tagParts[0] == "-" {
-				continue // hidden field
-			}
-			if name := tagParts[0]; name != "" {
-				// field explicitly named, overwrite
-				// toName = name
-				binding.ToNames = []string{extension.translate(name)}
+// UpdateStructDescription implements jsoniter.Extension.
+// It rewrites field names using the provided translate function
+func (extension *encoderNamingStrategy) UpdateStructDescriptor(desc *jsoniter.StructDescriptor) {
+	for _, binding := range desc.Fields {
+		for i, name := range binding.ToNames {
+			if name := extension.translate(name); name != "" {
+				binding.ToNames[i] = name
 			}
 		}
 	}
@@ -64,3 +54,4 @@ func UnquoteJSON(data []byte) []byte {
 	}
 	return data
 }
+

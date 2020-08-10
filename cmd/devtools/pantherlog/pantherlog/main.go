@@ -79,6 +79,7 @@ func main() {
 		if result == nil {
 			debugLog.Printf("Failed to classify line %d\n", n)
 			os.Exit(1)
+			return
 		}
 		debugLog.Printf("Line=%d Type=%q NumEvents=%d\n", n, unbox.String(result.LogType), len(result.Events))
 		for _, event := range result.Events {

@@ -1,4 +1,4 @@
-package rewrite_fields
+package renamefields
 
 /**
  * Panther is a Cloud-Native SIEM for the Modern Security Team.
@@ -19,29 +19,31 @@ package rewrite_fields
  */
 
 import (
+	"testing"
+
 	jsoniter "github.com/json-iterator/go"
+	"github.com/stretchr/testify/require"
 )
 
-func New(translate func(string) string) jsoniter.Extension {
-	return &renameFieldsExtension{
-		translate: translate,
-	}
-}
-
-type renameFieldsExtension struct {
-	jsoniter.DummyExtension
-	translate func(string) string
-}
-
-// UpdateStructDescription implements jsoniter.Extension.
-// It rewrites field names using the provided translate function
-func (ext *renameFieldsExtension) UpdateStructDescriptor(desc *jsoniter.StructDescriptor) {
-	for _, binding := range desc.Fields {
-		// WARNING: We need to make a copy of ToNames for this to work properly
-		toNames := make([]string, 0, len(binding.ToNames))
-		for _, name := range binding.ToNames {
-			toNames = append(toNames, ext.translate(name))
+func TestEncoderNamingStrategy(t *testing.T) {
+	api := jsoniter.Config{}.Froze()
+	api.RegisterExtension(New(func(name string) string {
+		if name == "foo" {
+			return "bar"
 		}
-		binding.ToNames = toNames
+		return name
+	}))
+
+	type T struct {
+		Foo string `json:"foo"`
+		Baz string `json:"baz"`
 	}
+	value := T{}
+	assert := require.New(t)
+	err := api.UnmarshalFromString(`{"foo":"foo","baz":"baz"}`, &value)
+	assert.NoError(err)
+	assert.Equal(T{Foo: "foo", Baz: "baz"}, value)
+	data, err := api.MarshalToString(&value)
+	assert.NoError(err)
+	assert.Equal(`{"bar":"foo","baz":"baz"}`, data)
 }

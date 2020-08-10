@@ -23,24 +23,25 @@ import (
 )
 
 func New(translate func(string) string) jsoniter.Extension {
-	return &encoderNamingStrategy{
+	return &renameFieldsExtension{
 		translate: translate,
 	}
 }
 
-type encoderNamingStrategy struct {
+type renameFieldsExtension struct {
 	jsoniter.DummyExtension
 	translate func(string) string
 }
 
 // UpdateStructDescription implements jsoniter.Extension.
 // It rewrites field names using the provided translate function
-func (extension *encoderNamingStrategy) UpdateStructDescriptor(desc *jsoniter.StructDescriptor) {
+func (ext *renameFieldsExtension) UpdateStructDescriptor(desc *jsoniter.StructDescriptor) {
 	for _, binding := range desc.Fields {
-		for i, name := range binding.ToNames {
-			if name := extension.translate(name); name != "" {
-				binding.ToNames[i] = name
-			}
+		// WARNING: We need to make a copy of ToNames for this to work properly
+		toNames := make([]string, 0, len(binding.ToNames))
+		for _, name := range binding.ToNames {
+			toNames = append(toNames, ext.translate(name))
 		}
+		binding.ToNames = toNames
 	}
 }

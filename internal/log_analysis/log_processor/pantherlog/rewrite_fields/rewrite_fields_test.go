@@ -34,15 +34,16 @@ func TestEncoderNamingStrategy(t *testing.T) {
 		return name
 	}))
 
-	type S struct {
+	type T struct {
 		Foo string `json:"foo"`
 		Baz string `json:"baz"`
 	}
-	value := S{}
+	value := T{}
+	assert := require.New(t)
 	err := api.UnmarshalFromString(`{"foo":"foo","baz":"baz"}`, &value)
-	require.NoError(t, err)
-	require.Equal(t, S{Foo: "foo", Baz: "baz"}, value)
+	assert.NoError(err)
+	assert.Equal(T{Foo: "foo", Baz: "baz"}, value)
 	data, err := api.MarshalToString(&value)
-	require.NoError(t, err)
-	require.Equal(t, `{"bar":"foo","baz":"baz"}`, data)
+	assert.NoError(err)
+	assert.Equal(`{"bar":"foo","baz":"baz"}`, data)
 }

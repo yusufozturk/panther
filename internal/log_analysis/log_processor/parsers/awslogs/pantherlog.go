@@ -20,7 +20,11 @@ package awslogs
 
 import (
 	"regexp"
+	"strings"
 
+	"github.com/aws/aws-sdk-go/aws/arn"
+
+	"github.com/panther-labs/panther/internal/log_analysis/log_processor/pantherlog"
 	"github.com/panther-labs/panther/internal/log_analysis/log_processor/parsers"
 )
 
@@ -102,4 +106,72 @@ func (pl *AWSPantherLog) AppendAnyAWSTags(values ...string) {
 		pl.PantherAnyAWSTags = parsers.NewPantherAnyString()
 	}
 	parsers.AppendAnyString(pl.PantherAnyAWSTags, values...)
+}
+
+const (
+	FieldAccountID pantherlog.FieldID = 1000 + iota
+	FieldInstanceID
+	FieldARN
+	FieldTag
+)
+
+func init() {
+	pantherlog.MustRegisterIndicator(FieldAccountID, pantherlog.FieldMeta{
+		NameJSON:    `p_any_aws_account_ids`,
+		Name:        `PantherAnyAWSAccountIds`,
+		Description: "Panther added field with collection of AWS account ids associated with the row",
+	})
+	pantherlog.MustRegisterIndicator(FieldInstanceID, pantherlog.FieldMeta{
+		NameJSON:    `p_any_aws_instance_ids`,
+		Name:        `PantherAnyAWSInstanceIds`,
+		Description: "Panther added field with collection of AWS instance ids associated with the row",
+	})
+	pantherlog.MustRegisterIndicator(FieldARN, pantherlog.FieldMeta{
+		NameJSON:    `p_any_aws_arns`,
+		Name:        `PantherAnyAWSARNs`,
+		Description: "Panther added field with collection of AWS ARNs associated with the row",
+	})
+	pantherlog.MustRegisterIndicator(FieldTag, pantherlog.FieldMeta{
+		NameJSON:    `p_any_aws_tags`,
+		Name:        `PantherAnyAWSTags`,
+		Description: "Panther added field with collection of AWS tags associated with the row",
+	})
+	pantherlog.MustRegisterScanner(`aws_arn`, pantherlog.ValueScannerFunc(ScanARN), FieldARN, FieldAccountID, FieldInstanceID)
+	pantherlog.MustRegisterScanner(`aws_instance_id`, pantherlog.ValueScannerFunc(ScanInstanceID), FieldInstanceID)
+	pantherlog.MustRegisterScanner(`aws_tag`, FieldTag, FieldTag)
+	pantherlog.MustRegisterScanner(`aws_account_id`, pantherlog.ValueScannerFunc(ScanAccountID), FieldAccountID)
+}
+
+func ScanARN(w pantherlog.ValueWriter, input string) {
+	parsedARN, err := arn.Parse(input)
+	if err != nil {
+		return
+	}
+	w.WriteValues(FieldARN, input)
+	ScanAccountID(w, parsedARN.AccountID)
+	scanResourceInstanceID(w, parsedARN.Resource)
+}
+
+func scanResourceInstanceID(w pantherlog.ValueWriter, input string) {
+	// instanceId: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-policy-structure.html#EC2_ARN_Format
+	if !strings.HasPrefix(input, "instance/") {
+		return
+	}
+	slashIndex := strings.LastIndex(input, "/")
+	if slashIndex < len(input)-2 { // not if ends in "/"
+		ScanInstanceID(w, input[slashIndex+1:])
+	}
+}
+
+func ScanAccountID(w pantherlog.ValueWriter, input string) {
+	const sizeAccountID = 12
+	if len(input) == sizeAccountID && awsAccountIDRegex.MatchString(input) {
+		w.WriteValues(FieldAccountID, input)
+	}
+}
+
+func ScanInstanceID(w pantherlog.ValueWriter, input string) {
+	if strings.HasPrefix(input, "i-") {
+		w.WriteValues(FieldInstanceID, input)
+	}
 }

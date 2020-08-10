@@ -22,7 +22,10 @@ import (
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws/arn"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/tidwall/gjson"
+
+	"github.com/panther-labs/panther/internal/log_analysis/log_processor/pantherlog"
 )
 
 // extracts useful AWS features that can be detected generically (w/context)
@@ -112,4 +115,62 @@ func (e *AWSExtractor) Extract(key, value gjson.Result) {
 		"domain":         // found in GuardDuty findings
 		e.pl.AppendAnyDomainNames(value.Str)
 	}
+}
+
+type RawMessage []byte
+
+func (msg *RawMessage) WriteValuesTo(w pantherlog.ValueWriter) {
+	if msg == nil {
+		return
+	}
+	iter := jsoniter.ConfigFastest.BorrowIterator(*msg)
+	var visitField func(iterator *jsoniter.Iterator, key string) bool
+	visitField = func(iter *jsoniter.Iterator, key string) bool {
+		switch iter.WhatIsNext() {
+		case jsoniter.ObjectValue:
+			return iter.ReadObjectCB(visitField)
+		case jsoniter.ArrayValue:
+			// Retain array key
+			for iter.ReadArray() {
+				if !visitField(iter, key) {
+					return false
+				}
+			}
+			return true
+		case jsoniter.StringValue:
+			switch value := iter.ReadString(); key {
+			case "tags":
+				w.WriteValues(FieldTag, value)
+			case
+				"ipv6Addresses",
+				"publicIp",         // found in instanceDetails in CloudTrail and GuardDuty (perhaps others)
+				"privateIpAddress", // found in instanceDetails in CloudTrail and GuardDuty (perhaps others)
+				"ipAddressV4":      // found in GuardDuty findings
+				pantherlog.ScanIPAddress(w, value)
+			case
+				"publicDnsName",  // found in instanceDetails in CloudTrail and GuardDuty (perhaps others)
+				"privateDnsName", // found in instanceDetails in CloudTrail and GuardDuty (perhaps others)
+				"domain":         // found in GuardDuty findings
+				w.WriteValues(pantherlog.FieldDomainName, value)
+			case "instanceId":
+				ScanInstanceID(w, value)
+			case "accountId":
+				ScanAccountID(w, value)
+			default:
+				switch {
+				case strings.HasSuffix(key, "AccountId"):
+					ScanAccountID(w, value)
+				case strings.HasSuffix(key, "InstanceId"):
+					ScanInstanceID(w, value)
+				case strings.HasPrefix(value, "arn:"):
+					ScanARN(w, value)
+				}
+			}
+			return true
+		default:
+			iter.Skip()
+			return true
+		}
+	}
+	visitField(iter, "")
 }

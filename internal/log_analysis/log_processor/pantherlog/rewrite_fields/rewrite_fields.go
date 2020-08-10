@@ -1,4 +1,4 @@
-package jsonutil
+package rewrite_fields
 
 /**
  * Panther is a Cloud-Native SIEM for the Modern Security Team.
@@ -19,30 +19,28 @@ package jsonutil
  */
 
 import (
-	"testing"
-
 	jsoniter "github.com/json-iterator/go"
-	"github.com/stretchr/testify/require"
 )
 
-func TestEncoderNamingStrategy(t *testing.T) {
-	api := jsoniter.Config{}.Froze()
-	api.RegisterExtension(NewEncoderNamingStrategy(func(name string) string {
-		if name == "foo" {
-			return "bar"
-		}
-		return name
-	}))
-
-	type S struct {
-		Foo string `json:"foo"`
-		Baz string `json:"baz"`
+func New(translate func(string) string) jsoniter.Extension {
+	return &encoderNamingStrategy{
+		translate: translate,
 	}
-	value := S{}
-	err := api.UnmarshalFromString(`{"foo":"foo","baz":"baz"}`, &value)
-	require.NoError(t, err)
-	require.Equal(t, S{Foo: "foo", Baz: "baz"}, value)
-	data, err := api.MarshalToString(&value)
-	require.NoError(t, err)
-	require.Equal(t, `{"bar":"foo","baz":"baz"}`, data)
+}
+
+type encoderNamingStrategy struct {
+	jsoniter.DummyExtension
+	translate func(string) string
+}
+
+// UpdateStructDescription implements jsoniter.Extension.
+// It rewrites field names using the provided translate function
+func (extension *encoderNamingStrategy) UpdateStructDescriptor(desc *jsoniter.StructDescriptor) {
+	for _, binding := range desc.Fields {
+		for i, name := range binding.ToNames {
+			if name := extension.translate(name); name != "" {
+				binding.ToNames[i] = name
+			}
+		}
+	}
 }

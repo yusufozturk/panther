@@ -30,12 +30,14 @@ import AlertsBySeverity from './AlertsBySeverity';
 import AlertSummary from './AlertSummary';
 import { useGetTopAlerts } from './graphql/getTopAlerts.generated';
 
-export const intervalMinutes = 6 * 60;
+export const intervalMinutes = 60;
 export const defaultPastDays = 3;
 
 const LogAnalysisOverview: React.FC = () => {
-  const toDate = getCurrentDate();
-  const fromDate = subtractDays(toDate, defaultPastDays);
+  const [fromDate, toDate] = React.useMemo(() => {
+    const utcnow = getCurrentDate();
+    return [subtractDays(utcnow, defaultPastDays), utcnow];
+  }, []);
 
   const { data, loading, error } = useGetLogAnalysisMetrics({
     fetchPolicy: 'cache-and-network',

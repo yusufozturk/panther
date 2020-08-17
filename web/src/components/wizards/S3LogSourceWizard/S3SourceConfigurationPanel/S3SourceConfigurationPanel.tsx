@@ -23,7 +23,7 @@ import FormikTextInput from 'Components/fields/TextInput';
 import React from 'react';
 import FormikMultiCombobox from 'Components/fields/MultiComboBox';
 import { LOG_TYPES } from 'Source/constants';
-import { WizardPanelWrapper } from 'Components/Wizard';
+import { WizardPanel } from 'Components/Wizard';
 import { S3LogSourceWizardValues } from '../S3LogSourceWizard';
 
 const S3SourceConfigurationPanel: React.FC = () => {
@@ -34,7 +34,7 @@ const S3SourceConfigurationPanel: React.FC = () => {
 
   return (
     <Box width={460} m="auto">
-      <WizardPanelWrapper.Heading
+      <WizardPanel.Heading
         title={initialValues.integrationId ? 'Update source' : "Let's start with the basics"}
         subtitle={
           initialValues.integrationId

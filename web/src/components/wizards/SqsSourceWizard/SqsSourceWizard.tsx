@@ -25,7 +25,6 @@ import { Wizard, WizardPanel } from 'Components/Wizard';
 import { yupIntegrationLabelValidation } from 'Helpers/utils';
 import SuccessPanel from './SuccessPanel';
 import SqsSourceConfigurationPanel from './SqsSourceConfigurationPanel';
-import InformationPanel from './InformationPanel';
 
 interface SqsLogSourceWizardProps {
   initialValues: SqsLogSourceWizardValues;

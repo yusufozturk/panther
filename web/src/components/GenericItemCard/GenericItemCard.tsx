@@ -36,6 +36,7 @@ interface GenericItemCardComposition {
   Options: React.ForwardRefExoticComponent<React.RefAttributes<HTMLButtonElement>>;
   Value: React.FC<GenericItemCardValueProps>;
   ValuesGroup: React.FC;
+  LineBreak: React.FC;
 }
 
 const GenericItemCard: React.FC & GenericItemCardComposition = ({ children }) => {
@@ -102,12 +103,14 @@ const GenericItemCardValue: React.FC<GenericItemCardValueProps> = ({ label, valu
       <Box as="dt" aria-labelledby={id} color="gray-300" fontSize="2x-small" mb="1px">
         {label}
       </Box>
-      <Box as="dd" aria-labelledby={id} fontSize="medium">
-        {value}
+      <Box as="dd" aria-labelledby={id} fontSize="medium" opacity={value ? 1 : 0.3}>
+        {value || 'Not Set'}
       </Box>
     </Box>
   );
 };
+
+const GenericItemCardLineBreak: React.FC = () => <Box flexBasis="100%" height={0} />;
 
 GenericItemCard.Body = GenericItemCardBody;
 GenericItemCard.Heading = GenericItemCardHeading;
@@ -115,5 +118,6 @@ GenericItemCard.Logo = GenericItemCardLogo;
 GenericItemCard.Options = GenericItemCardOptions;
 GenericItemCard.Value = GenericItemCardValue;
 GenericItemCard.ValuesGroup = GenericItemCardValuesGroup;
+GenericItemCard.LineBreak = GenericItemCardLineBreak;
 
 export default GenericItemCard;

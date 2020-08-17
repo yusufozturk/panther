@@ -80,17 +80,6 @@ const SqsSourceWizard: React.FC<SqsLogSourceWizardProps> = ({
         return (
           <Form>
             <Wizard>
-              {initialValues.integrationId && (
-                <Wizard.Step title="Information">
-                  <WizardPanel>
-                    <InformationPanel />
-
-                    <WizardPanel.Actions>
-                      <WizardPanel.ActionNext>Continue Setup</WizardPanel.ActionNext>
-                    </WizardPanel.Actions>
-                  </WizardPanel>
-                </Wizard.Step>
-              )}
               <Wizard.Step title="Configure">
                 <WizardPanel>
                   <SqsSourceConfigurationPanel />

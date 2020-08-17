@@ -23,9 +23,9 @@ import { LogIntegrationsEnum } from 'Source/constants';
 import { ListLogSources } from '../graphql/listLogSources.generated';
 import { S3LogSourceCard, SqsLogSourceCard } from '../LogSourceCards';
 
-type ListDestinationsTableProps = { sources: ListLogSources['listLogIntegrations'] };
+type ListLogSourceCardsProps = { sources: ListLogSources['listLogIntegrations'] };
 
-const ListDestinationsCards: React.FC<ListDestinationsTableProps> = ({ sources }) => {
+const ListLogSourceCards: React.FC<ListLogSourceCardsProps> = ({ sources }) => {
   return (
     <SimpleGrid columns={1} gap={5}>
       {sources.map(source => {
@@ -45,4 +45,4 @@ const ListDestinationsCards: React.FC<ListDestinationsTableProps> = ({ sources }
   );
 };
 
-export default React.memo(ListDestinationsCards);
+export default React.memo(ListLogSourceCards);

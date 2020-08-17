@@ -88,7 +88,7 @@ const S3SourceConfigurationPanel: React.FC = () => {
           </AbstractButton>
         </Flex>
         <Collapse open={isAdvancedConfigVisible}>
-          <Flex direction="column" spacing={4}>
+          <Flex direction="column" spacing={4} pt={6}>
             <Field
               name="s3Prefix"
               as={FormikTextInput}

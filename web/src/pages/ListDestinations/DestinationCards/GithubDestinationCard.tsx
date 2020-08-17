@@ -31,7 +31,7 @@ interface GithubDestinationCardProps {
 const GithubDestinationCard: React.FC<GithubDestinationCardProps> = ({ destination }) => {
   return (
     <DestinationCard
-      key={destination.outputId}
+
       logo={DESTINATIONS[DestinationTypeEnum.Github].logo}
       destination={destination}
     >

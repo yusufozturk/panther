@@ -31,7 +31,7 @@ interface JiraDestinationCardProps {
 const JiraDestinationCard: React.FC<JiraDestinationCardProps> = ({ destination }) => {
   return (
     <DestinationCard
-      key={destination.outputId}
+
       logo={DESTINATIONS[DestinationTypeEnum.Jira].logo}
       destination={destination}
     >

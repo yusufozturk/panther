@@ -31,7 +31,7 @@ interface DestinationCardProps {
 
 const DestinationCard: React.FC<DestinationCardProps> = ({ destination, logo, children }) => {
   return (
-    <GenericItemCard key={destination.outputId}>
+    <GenericItemCard >
       <GenericItemCard.Logo src={logo} />
       <DestinationCardOptions destination={destination} />
       <GenericItemCard.Body>

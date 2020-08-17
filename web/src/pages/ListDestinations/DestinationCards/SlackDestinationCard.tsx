@@ -31,7 +31,7 @@ interface SlackDestinationCardProps {
 const SlackDestinationCard: React.FC<SlackDestinationCardProps> = ({ destination }) => {
   return (
     <DestinationCard
-      key={destination.outputId}
+
       logo={DESTINATIONS[DestinationTypeEnum.Slack].logo}
       destination={destination}
     >

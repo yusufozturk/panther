@@ -31,7 +31,7 @@ interface AsanaDestinationCardProps {
 const AsanaDestinationCard: React.FC<AsanaDestinationCardProps> = ({ destination }) => {
   return (
     <DestinationCard
-      key={destination.outputId}
+
       logo={DESTINATIONS[DestinationTypeEnum.Asana].logo}
       destination={destination}
     >

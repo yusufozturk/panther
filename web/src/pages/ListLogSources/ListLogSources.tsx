@@ -17,20 +17,57 @@
  */
 
 import React from 'react';
-import { Alert, Box, Button } from 'pouncejs';
+import { Alert, Box, Button, Flex, Heading } from 'pouncejs';
 import Panel from 'Components/Panel';
 import { Link as RRLink } from 'react-router-dom';
 import urls from 'Source/urls';
 import ErrorBoundary from 'Components/ErrorBoundary';
 import { extractErrorMessage } from 'Helpers/utils';
 import withSEO from 'Hoc/withSEO';
+import useUrlParams from 'Hooks/useUrlParams';
 import { useListLogSources } from './graphql/listLogSources.generated';
 import EmptyDataFallback from './EmptyDataFallback';
 import Skeleton from './Skeleton';
 import ListDestinationsCards from './ListLogSourceCards';
+import ListLogSourcesFilters, { ListLogSourcesFiltersValues } from './ListLogSourcesFilters';
 
 const ListLogSources = () => {
   const { loading, error, data } = useListLogSources();
+  const { urlParams, updateUrlParams } = useUrlParams<ListLogSourcesFiltersValues>();
+
+  const filterValues: ListLogSourcesFiltersValues = React.useMemo(
+    () => ({
+      q: urlParams.q || '',
+      sortBy: urlParams.sortBy || 'default',
+    }),
+    [urlParams]
+  );
+
+  const filteredSources = React.useMemo(() => {
+    let sources = data?.listLogIntegrations ?? [];
+
+    if (urlParams.q) {
+      sources = sources.filter(source => source.integrationLabel.includes(filterValues.q));
+    }
+
+    if (urlParams.sortBy !== 'default') {
+      sources = sources.sort((source1, source2) => {
+        const unix1 = new Date(source1.createdAtTime).getTime();
+        const unix2 = new Date(source2.createdAtTime).getTime();
+
+        if (urlParams.sortBy === 'most_recent') {
+          return unix1 < unix2 ? 1 : -1;
+        }
+
+        if (urlParams.sortBy === 'oldest') {
+          return unix1 > unix2 ? 1 : -1;
+        }
+
+        return 0;
+      });
+    }
+    return sources;
+  }, [data, urlParams]);
 
   if (loading && !data) {
     return <Skeleton />;
@@ -58,13 +95,22 @@ const ListLogSources = () => {
       <Panel
         title="Log Sources"
         actions={
-          <Button icon="add" as={RRLink} to={urls.logAnalysis.sources.create()}>
-            Add Source
-          </Button>
+          <Flex spacing={4}>
+            <ListLogSourcesFilters onSubmit={updateUrlParams} initialValues={filterValues} />
+            <Button icon="add" as={RRLink} to={urls.logAnalysis.sources.create()}>
+              Add Source
+            </Button>
+          </Flex>
         }
       >
         <ErrorBoundary>
-          <ListDestinationsCards sources={data.listLogIntegrations} />
+          {filteredSources.length ? (
+            <ListDestinationsCards sources={filteredSources} />
+          ) : (
+            <Heading color="navyblue-100" textAlign="center" py={10} size="small">
+              No matches found
+            </Heading>
+          )}
         </ErrorBoundary>
       </Panel>
     </Box>

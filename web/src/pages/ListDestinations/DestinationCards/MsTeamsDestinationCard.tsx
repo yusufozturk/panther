@@ -31,7 +31,6 @@ interface MsTeamsDestinationCardProps {
 const MsTeamsDestinationCard: React.FC<MsTeamsDestinationCardProps> = ({ destination }) => {
   return (
     <DestinationCard
-
       logo={DESTINATIONS[DestinationTypeEnum.Msteams].logo}
       destination={destination}
     >

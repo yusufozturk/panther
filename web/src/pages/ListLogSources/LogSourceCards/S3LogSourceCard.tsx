@@ -1,11 +1,29 @@
+/**
+ * Panther is a Cloud-Native SIEM for the Modern Security Team.
+ * Copyright (C) 2020 Panther Labs Inc
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import React from 'react';
 import { S3LogIntegration } from 'Generated/schema';
 import GenericItemCard from 'Components/GenericItemCard';
 import { formatDatetime } from 'Helpers/utils';
-import { Box, Flex } from 'pouncejs';
+import { Flex } from 'pouncejs';
+import BulletedLogType from 'Components/BulletedLogType';
 import s3Logo from 'Assets/s3-minimal-logo.svg';
 import LogSourceCard from './LogSourceCard';
-import BulletedLogType from 'Components/BulletedLogType';
 
 interface S3LogSourceCardProps {
   source: S3LogIntegration;

@@ -30,11 +30,7 @@ interface SlackDestinationCardProps {
 
 const SlackDestinationCard: React.FC<SlackDestinationCardProps> = ({ destination }) => {
   return (
-    <DestinationCard
-
-      logo={DESTINATIONS[DestinationTypeEnum.Slack].logo}
-      destination={destination}
-    >
+    <DestinationCard logo={DESTINATIONS[DestinationTypeEnum.Slack].logo} destination={destination}>
       <GenericItemCard.Value
         label="Date Created"
         value={formatDatetime(destination.creationTime, true)}

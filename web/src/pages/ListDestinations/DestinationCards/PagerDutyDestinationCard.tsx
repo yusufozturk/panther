@@ -31,7 +31,6 @@ interface PagerDutyDestinationCardProps {
 const PagerDutyDestinationCard: React.FC<PagerDutyDestinationCardProps> = ({ destination }) => {
   return (
     <DestinationCard
-
       logo={DESTINATIONS[DestinationTypeEnum.Pagerduty].logo}
       destination={destination}
     >

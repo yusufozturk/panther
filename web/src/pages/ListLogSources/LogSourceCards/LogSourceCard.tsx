@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, Flex, Link } from 'pouncejs';
+import { Flex, Link } from 'pouncejs';
+import { Link as RRLink } from 'react-router-dom';
 import GenericItemCard from 'Components/GenericItemCard';
 import { LogIntegration } from 'Generated/schema';
 import { PANTHER_USER_ID } from 'Source/constants';
@@ -21,7 +22,11 @@ const LogSourceCard: React.FC<LogSourceCardProps> = ({ source, children, logo })
       <GenericItemCard.Logo src={logo} />
       {!isCreatedByPanther && <LogSourceCardOptions source={source} />}
       <GenericItemCard.Body>
-        <Link to={urls.logAnalysis.sources.edit(source.integrationId, 'sqs')} cursor="pointer">
+        <Link
+          as={RRLink}
+          to={urls.logAnalysis.sources.edit(source.integrationId, 'sqs')}
+          cursor="pointer"
+        >
           <GenericItemCard.Heading>{source.integrationLabel}</GenericItemCard.Heading>
         </Link>
         <GenericItemCard.ValuesGroup>

@@ -5,6 +5,8 @@ import { ComplianceIntegration } from 'Generated/schema';
 import { formatDatetime } from 'Helpers/utils';
 import urls from 'Source/urls';
 import logo from 'Assets/aws-minimal-logo.svg';
+import { Link as RRLink } from 'react-router-dom';
+
 import ComplianceSourceCardOptions from './ComplianceSourceCardOptions';
 import ComplianceSourceCardHealthBadge from './ComplianceSourceCardHealthBadge';
 
@@ -18,7 +20,7 @@ const ComplianceSourceCard: React.FC<ComplianceSourceCardProps> = ({ source }) =
       <GenericItemCard.Logo src={logo} />
       <ComplianceSourceCardOptions source={source} />
       <GenericItemCard.Body>
-        <Link to={urls.logAnalysis.sources.edit(source.integrationId, 'sqs')} cursor="pointer">
+        <Link as={RRLink} to={urls.compliance.sources.edit(source.integrationId)} cursor="pointer">
           <GenericItemCard.Heading>{source.integrationLabel}</GenericItemCard.Heading>
         </Link>
         <GenericItemCard.ValuesGroup>

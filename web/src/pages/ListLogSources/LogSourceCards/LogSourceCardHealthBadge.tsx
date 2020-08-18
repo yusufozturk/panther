@@ -17,9 +17,8 @@
  */
 
 import React from 'react';
-import { Badge, Box, Icon, Tooltip } from 'pouncejs';
+import { Badge, Box, Tooltip } from 'pouncejs';
 import { LogIntegration, S3LogIntegration, SqsLogSourceIntegration } from 'Generated/schema';
-import StatusBadge from 'Components/StatusBadge';
 
 interface LogSourceCardHealthBadgeProps {
   logSourceHealth: LogIntegration['health'];

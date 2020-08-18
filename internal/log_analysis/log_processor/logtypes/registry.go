@@ -27,6 +27,7 @@ import (
 
 	"github.com/panther-labs/panther/api/lambda/core/log_analysis/log_processor/models"
 	"github.com/panther-labs/panther/internal/log_analysis/awsglue"
+	"github.com/panther-labs/panther/internal/log_analysis/log_processor/pantherlog"
 	"github.com/panther-labs/panther/internal/log_analysis/log_processor/parsers"
 )
 
@@ -93,6 +94,28 @@ func (r *Registry) Del(logType string) bool {
 	return false
 }
 
+func (r *Registry) RegisterJSON(desc Desc, eventFactory func() interface{}) (Entry, error) {
+	if eventFactory == nil {
+		return nil, errors.New(`nil event factory`)
+	}
+	event := eventFactory()
+	schema, err := pantherlog.BuildEventSchema(event)
+	if err != nil {
+		return nil, err
+	}
+	config := Config{
+		Name:         desc.Name,
+		Description:  desc.Description,
+		ReferenceURL: desc.ReferenceURL,
+		Schema:       schema,
+		NewParser: &parsers.JSONParserFactory{
+			LogType:  desc.Name,
+			NewEvent: eventFactory,
+		},
+	}
+	return r.Register(config)
+}
+
 func (r *Registry) Register(config Config) (Entry, error) {
 	if err := config.Validate(); err != nil {
 		return nil, err
@@ -126,6 +149,7 @@ type Entry interface {
 	NewParser(params interface{}) (parsers.Interface, error)
 	Schema() interface{}
 	GlueTableMeta() *awsglue.GlueTableMetadata
+	String() string
 }
 
 // Config describes a log event type in a declarative way.
@@ -158,6 +182,9 @@ func (config *Config) Validate() error {
 	}
 	if err := checkLogEntrySchema(desc.Name, config.Schema); err != nil {
 		return err
+	}
+	if config.NewParser == nil {
+		return errors.New("nil parser factory")
 	}
 	return nil
 }
@@ -196,7 +223,7 @@ func (desc *Desc) Validate() error {
 type entry struct {
 	Desc
 	schema        interface{}
-	newParser     parsers.Factory
+	newParser     parsers.FactoryFunc
 	glueTableMeta *awsglue.GlueTableMetadata
 }
 
@@ -204,7 +231,7 @@ func newEntry(desc Desc, schema interface{}, fac parsers.Factory) *entry {
 	return &entry{
 		Desc:          desc,
 		schema:        schema,
-		newParser:     fac,
+		newParser:     fac.NewParser,
 		glueTableMeta: awsglue.NewGlueTableMetadata(models.LogData, desc.Name, desc.Description, awsglue.GlueTableHourly, schema),
 	}
 }
@@ -212,6 +239,11 @@ func newEntry(desc Desc, schema interface{}, fac parsers.Factory) *entry {
 func (e *entry) Describe() Desc {
 	return e.Desc
 }
+
+func (e *entry) String() string {
+	return e.Desc.Name
+}
+
 func (e *entry) Schema() interface{} {
 	return e.schema
 }
@@ -238,5 +270,29 @@ func checkLogEntrySchema(logType string, schema interface{}) error {
 	if err := jsoniter.Unmarshal(data, &fields); err != nil {
 		return errors.Errorf("invalid schema struct for log type %q: %s", logType, err)
 	}
+	// Verify we can generate glue schema from the provided struct
+	if err := checkGlue(schema); err != nil {
+		return errors.Wrapf(err, "failed to infer Glue columns for %q", logType)
+	}
 	return nil
+}
+
+func checkGlue(schema interface{}) (err error) {
+	defer func() {
+		if e := recover(); e != nil {
+			switch e := e.(type) {
+			case error:
+				err = e
+			case string:
+				err = errors.New(e)
+			default:
+				err = errors.Errorf(`panic %v`, e)
+			}
+		}
+	}()
+	cols, _ := awsglue.InferJSONColumns(schema, awsglue.GlueMappings...)
+	if len(cols) == 0 {
+		err = errors.New("empty columns")
+	}
+	return
 }

@@ -17,20 +17,27 @@
  */
 
 import React from 'react';
-import { Box, Card, FadeIn, Heading, Text } from 'pouncejs';
+import { Box, Card, FadeIn } from 'pouncejs';
 import urls from 'Source/urls';
 import LogSourceCard from 'Components/LogSourceCard';
 import s3Logo from 'Assets/s3-minimal-logo.svg';
-import duoLogo from 'Assets/duo-minimal-logo.svg';
+import sqsLogo from 'Assets/sqs-minimal-logo.svg';
+import gsuiteLogo from 'Assets/gsuite-minimal-logo.svg';
 import eventBridgeLogo from 'Assets/eventbridge-minimal-logo.svg';
 import oktaLogo from 'Assets/okta-minimal-logo.svg';
 import withSEO from 'Hoc/withSEO';
+import { WizardPanelWrapper } from 'Components/Wizard';
 
 const logSourcesConfig = [
   {
     logo: s3Logo,
     title: 'Amazon S3',
     type: 'S3',
+  },
+  {
+    logo: sqsLogo,
+    title: 'Amazon SQS',
+    type: 'SQS',
   },
   {
     logo: eventBridgeLogo,
@@ -45,31 +52,35 @@ const logSourcesConfig = [
     disabled: true,
   },
   {
-    logo: duoLogo,
-    title: 'Duo Security',
-    type: 'duo',
+    logo: gsuiteLogo,
+    title: 'G Suite',
+    type: 'gsuite',
     disabled: true,
   },
 ];
 const LogSourceOnboarding: React.FC = () => {
   return (
     <FadeIn>
-      <Card p={9} mb={6}>
-        <Box width={600} m="auto" textAlign="center">
-          <Heading mb={4}>Select a Source Type</Heading>
-          <Text color="gray-300" mb={8}>
-            Please select the source type you want to configure from the list below
-          </Text>
-          {logSourcesConfig.map(config => (
-            <LogSourceCard
-              key={config.title}
-              logo={config.logo}
-              title={config.title}
-              disabled={config.disabled}
-              to={`${urls.logAnalysis.sources.create(config.type)}`}
+      <Card p={6} mb={6}>
+        <WizardPanelWrapper>
+          <WizardPanelWrapper.Content>
+            <WizardPanelWrapper.Heading
+              title="Select a Source Type"
+              subtitle="Please select the source type you want to configure from the list below"
             />
-          ))}
-        </Box>
+            <Box mx={10}>
+              {logSourcesConfig.map(config => (
+                <LogSourceCard
+                  key={config.title}
+                  logo={config.logo}
+                  title={config.title}
+                  disabled={config.disabled}
+                  to={`${urls.logAnalysis.sources.create(config.type)}`}
+                />
+              ))}
+            </Box>
+          </WizardPanelWrapper.Content>
+        </WizardPanelWrapper>
       </Card>
     </FadeIn>
   );

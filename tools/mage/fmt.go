@@ -53,11 +53,6 @@ func Fmt() {
 
 	count++
 	go func(c chan goroutineResult) {
-		c <- goroutineResult{"fmt: go mod tidy", goModTidy()}
-	}(results)
-
-	count++
-	go func(c chan goroutineResult) {
 		c <- goroutineResult{"fmt: yapf", yapf(pyTargets...)}
 	}(results)
 
@@ -69,11 +64,6 @@ func Fmt() {
 	count++
 	go func(c chan goroutineResult) {
 		c <- goroutineResult{"fmt: tf", terraformFmt()}
-	}(results)
-
-	count++
-	go func(c chan goroutineResult) {
-		c <- goroutineResult{"docs", doc()}
 	}(results)
 
 	logResults(results, "fmt", 1, count, count)
@@ -136,11 +126,6 @@ func removeImportNewlines(path string) error {
 	}
 
 	return ioutil.WriteFile(path, bytes.Join(newLines, []byte("\n")), 0600)
-}
-
-// Tidy go.mod/go.sum
-func goModTidy() error {
-	return sh.Run("go", "mod", "tidy")
 }
 
 // Apply Python formatting to the given paths

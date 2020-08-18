@@ -36,6 +36,9 @@ const swaggerGlob = "api/gateway/*/api.yml"
 // Build contains targets for compiling source code.
 type Build mg.Namespace
 
+// Other mage commands can use this to invoke build commands directly.
+var build = Build{}
+
 // API Generate API source files from GraphQL + Swagger
 func (b Build) API() {
 	mg.Deps(b.generateSwaggerClients, b.generateWebTypescript)
@@ -198,12 +201,29 @@ func (b Build) tools() error {
 		}
 	})
 
+	// Set global gitVersion, warn if not deploying a tagged release
+	getGitVersion()
+
 	for _, path := range paths {
-		logger.Infof("build:tools: compiling %s for %d os/arch combinations", path, len(buildEnvs))
+		parts := strings.SplitN(path, `/`, 3)
+		// E.g. "out/bin/cmd/devtools/" or "out/bin/cmd/opstools"
+		outDir := filepath.Join("out", "bin", parts[0], parts[1])
+
+		// used in tools to check/display which Panther version was compiled
+		setVersionVar := fmt.Sprintf("-X 'main.version=%s'", gitVersion)
+
+		logger.Infof("build:tools: compiling %s to %s with %d os/arch combinations",
+			path, outDir, len(buildEnvs))
 		for _, env := range buildEnvs {
-			outDir := filepath.Join("out", "bin", filepath.Base(filepath.Dir(path)),
-				env["GOOS"], env["GOARCH"], filepath.Base(filepath.Dir(path)))
-			err := sh.RunWith(env, "go", "build", "-p", "1", "-ldflags", "-s -w", "-o", outDir, "./"+path)
+			// E.g. "requeue-darwin-amd64"
+			binaryName := filepath.Base(filepath.Dir(path)) + "-" + env["GOOS"] + "-" + env["GOARCH"]
+			if env["GOOS"] == "windows" {
+				binaryName += ".exe"
+			}
+
+			err := sh.RunWith(env, "go", "build",
+				"-ldflags", "-s -w "+setVersionVar,
+				"-o", filepath.Join(outDir, binaryName), "./"+path)
 			if err != nil {
 				return err
 			}
@@ -213,7 +233,7 @@ func (b Build) tools() error {
 	return nil
 }
 
-// Generate CloudFormation templates in out/deployments folder
+// Generate CloudFormation: deployments/dashboards.yml and out/deployments/
 func (b Build) Cfn() {
 	if err := b.cfn(); err != nil {
 		logger.Fatal(err)

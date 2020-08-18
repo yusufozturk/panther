@@ -1,5 +1,23 @@
 package main
 
+/**
+ * Panther is a Cloud-Native SIEM for the Modern Security Team.
+ * Copyright (C) 2020 Panther Labs Inc
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import (
 	"flag"
 	"fmt"
@@ -21,6 +39,7 @@ import (
 	"go.uber.org/zap/zapcore"
 
 	"github.com/panther-labs/panther/cmd/opstools/s3queue"
+	"github.com/panther-labs/panther/pkg/prompt"
 )
 
 const (
@@ -34,6 +53,7 @@ var (
 	CONCURRENCY = flag.Int("concurrency", 50, "The number of concurrent sqs writer go routines")
 	LIMIT       = flag.Uint64("limit", 0, "If non-zero, then limit the number of files to this number.")
 	TOQ         = flag.String("queue", "panther-input-data-notifications-queue", "The name of the log processor queue to send notifications.")
+	INTERACTIVE = flag.Bool("interactive", true, "If true, prompt for required flags if not set")
 	VERBOSE     = flag.Bool("verbose", false, "Enable verbose logging")
 
 	logger *zap.SugaredLogger
@@ -48,15 +68,17 @@ func usage() {
 
 func init() {
 	flag.Usage = usage
+}
 
+func logInit() {
 	config := zap.NewDevelopmentConfig() // DEBUG by default
 	if !*VERBOSE {
-		// In normal mode, hide DEBUG messages and file/line numbers
-		config.DisableCaller = true
+		// In normal mode, hide DEBUG messages
 		config.Level = zap.NewAtomicLevelAt(zapcore.InfoLevel)
 	}
 
-	// Always disable error traces and use color-coded log levels and short timestamps
+	// Always disable and file/line numbers, error traces and use color-coded log levels and short timestamps
+	config.DisableCaller = true
 	config.DisableStacktrace = true
 	config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 
@@ -71,6 +93,8 @@ func init() {
 func main() {
 	flag.Parse()
 
+	logInit() // must be done after parsing flags
+
 	sess, err := session.NewSession()
 	if err != nil {
 		logger.Fatal(err)
@@ -83,6 +107,9 @@ func main() {
 		REGION = sess.Config.Region
 	}
 
+	promptFlags()
+	validateFlags()
+
 	s3Region := getS3Region(sess, *S3PATH)
 
 	if *ACCOUNT == "" {
@@ -92,8 +119,6 @@ func main() {
 		}
 		ACCOUNT = identity.Account
 	}
-
-	validateFlags()
 
 	startTime := time.Now()
 	if *VERBOSE {
@@ -115,12 +140,26 @@ func main() {
 			caught, stats.NumFiles, float32(stats.NumBytes)/(1024.0*1024.0), *TOQ, time.Since(startTime))
 	}()
 
-	err = s3queue.S3Queue(sess, *ACCOUNT, *S3PATH, s3Region, *TOQ, *CONCURRENCY, *LIMIT, *VERBOSE, stats)
+	err = s3queue.S3Queue(sess, *ACCOUNT, *S3PATH, s3Region, *TOQ, *CONCURRENCY, *LIMIT, stats)
 	if err != nil {
 		logger.Fatal(err)
 	} else {
 		logger.Infof("sent %d files (%.2fMB) to %s (%s) in %v",
 			stats.NumFiles, float32(stats.NumBytes)/(1024.0*1024.0), *TOQ, *REGION, time.Since(startTime))
+	}
+}
+
+func promptFlags() {
+	if !*INTERACTIVE {
+		return
+	}
+
+	if *S3PATH == "" {
+		*S3PATH = prompt.Read("Please enter the s3 path to read from (e.g., s3://<bucket>/<prefix>): ", prompt.NonemptyValidator)
+	}
+
+	if *TOQ == "" {
+		*TOQ = prompt.Read("Please enter queue name to write to: ", prompt.NonemptyValidator)
 	}
 }
 

@@ -50,6 +50,9 @@ export type TypePolicies = Partial<
 const typePolicies: TypePolicies = {
   Query: {
     fields: {
+      destination(existing, { args, toReference }) {
+        return existing || toReference({ __typename: 'Destination', outputId: args.id });
+      },
       getComplianceIntegration(existing, { args, toReference }) {
         return (
           existing || toReference({ __typename: 'ComplianceIntegration', integrationId: args.id })
@@ -57,6 +60,12 @@ const typePolicies: TypePolicies = {
       },
       getS3LogIntegration(existing, { args, toReference }) {
         return existing || toReference({ __typename: 'S3LogIntegration', integrationId: args.id });
+      },
+      getSqsLogIntegration(existingData, { args, toReference }) {
+        return (
+          existingData ||
+          toReference({ __typename: 'SqsLogSourceIntegration', integrationId: args.id })
+        );
       },
       // TODO: when apollo client is updated to 3.0.0-rc.12+, use this code
       // // For GetAlert (AlertDetails)
@@ -113,6 +122,9 @@ const typePolicies: TypePolicies = {
     keyFields: ['integrationId'],
   },
   S3LogIntegration: {
+    keyFields: ['integrationId'],
+  },
+  SqsLogSourceIntegration: {
     keyFields: ['integrationId'],
   },
   GeneralSettings: {

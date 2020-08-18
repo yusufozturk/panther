@@ -32,7 +32,9 @@ import (
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 
+	"github.com/panther-labs/panther/pkg/prompt"
 	"github.com/panther-labs/panther/tools/cfnparse"
+	"github.com/panther-labs/panther/tools/cfnstacks"
 	"github.com/panther-labs/panther/tools/config"
 )
 
@@ -75,11 +77,11 @@ func masterDeployPreCheck() (string, string, string) {
 	deployPreCheck(*awsSession.Config.Region, false)
 
 	_, err := cloudformation.New(awsSession).DescribeStacks(
-		&cloudformation.DescribeStacksInput{StackName: aws.String(bootstrapStack)})
+		&cloudformation.DescribeStacksInput{StackName: aws.String(cfnstacks.Bootstrap)})
 	if err == nil {
 		// Multiple Panther deployments won't work in the same region in the same account.
 		// Named resources (e.g. IAM roles) will conflict
-		logger.Fatalf("%s stack already exists, can't deploy master template", bootstrapStack)
+		logger.Fatalf("%s stack already exists, can't deploy master template", cfnstacks.Bootstrap)
 	}
 
 	bucket := os.Getenv("BUCKET")
@@ -103,7 +105,7 @@ func (Master) Publish() {
 	version := getMasterVersion()
 
 	logger.Infof("Publishing panther-community v%s to %s", version, strings.Join(publishRegions, ","))
-	result := promptUser("Are you sure you want to continue? (yes|no) ", nonemptyValidator)
+	result := prompt.Read("Are you sure you want to continue? (yes|no) ", prompt.NonemptyValidator)
 	if strings.ToLower(result) != "yes" {
 		logger.Fatal("publish aborted")
 	}
@@ -155,18 +157,26 @@ func masterPackage(bucket, pantherVersion, imgRegistry string) string {
 
 // Get the Panther version indicated in the master template.
 func getMasterVersion() string {
-	cfn, err := cfnparse.ParseTemplate(pythonVirtualEnvPath, "deployments/master.yml")
-	if err != nil {
+	type template struct {
+		Mappings struct {
+			Constants struct {
+				Panther struct {
+					Version string
+				}
+			}
+		}
+	}
+
+	var cfn template
+	if err := cfnparse.ParseTemplate(pythonVirtualEnvPath, "deployments/master.yml", &cfn); err != nil {
 		logger.Fatal(err)
 	}
-	type m = map[string]interface{}
-	version := cfn["Mappings"].(m)["Constants"].(m)["Panther"].(m)["Version"].(string)
 
-	if version == "" {
+	if cfn.Mappings.Constants.Panther.Version == "" {
 		logger.Fatal("Mappings:Constants:Panther:Version not found in deployments/master.yml")
 	}
 
-	return version
+	return cfn.Mappings.Constants.Panther.Version
 }
 
 func publishToRegion(version, region string) {

@@ -25,7 +25,8 @@ import BaseDestinationForm, {
   BaseDestinationFormValues,
   defaultValidationSchema,
 } from 'Components/forms/BaseDestinationForm';
-import { webhookValidation } from 'Helpers/utils';
+import { yupWebhookValidation } from 'Helpers/utils';
+import { SimpleGrid } from 'pouncejs';
 
 type MicrosoftTeamsFieldValues = Pick<DestinationConfigInput, 'msTeams'>;
 
@@ -43,7 +44,7 @@ const MicrosoftTeamsDestinationForm: React.FC<MicrosoftTeamsDestinationFormProps
   const msTeamsFieldsValidationSchema = Yup.object().shape({
     outputConfig: Yup.object().shape({
       msTeams: Yup.object().shape({
-        webhookURL: existing ? webhookValidation() : webhookValidation().required(),
+        webhookURL: existing ? yupWebhookValidation : yupWebhookValidation.required(),
       }),
     }),
   });
@@ -56,18 +57,27 @@ const MicrosoftTeamsDestinationForm: React.FC<MicrosoftTeamsDestinationFormProps
       validationSchema={mergedValidationSchema}
       onSubmit={onSubmit}
     >
-      <Field
-        as={FormikTextInput}
-        type="password"
-        name="outputConfig.msTeams.webhookURL"
-        label="Microsoft Teams Webhook URL"
-        placeholder={
-          existing
-            ? 'Information is hidden. New values will override the existing ones.'
-            : 'Where should we send a push notification to?'
-        }
-        required={!existing}
-      />
+      <SimpleGrid gap={5} columns={2}>
+        <Field
+          name="displayName"
+          as={FormikTextInput}
+          label="* Display Name"
+          placeholder="How should we name this?"
+          required
+        />
+        <Field
+          as={FormikTextInput}
+          type="password"
+          name="outputConfig.msTeams.webhookURL"
+          label="Microsoft Teams Webhook URL"
+          placeholder={
+            existing
+              ? 'Information is hidden. New values will override the existing ones.'
+              : 'Where should we send a push notification to?'
+          }
+          required={!existing}
+        />
+      </SimpleGrid>
     </BaseDestinationForm>
   );
 };

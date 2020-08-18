@@ -22,7 +22,7 @@ import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { Wizard, WizardPanelWrapper } from 'Components/Wizard';
 import { FetchResult } from '@apollo/client';
-import { getArnRegexForService, integrationLabelValidation } from 'Helpers/utils';
+import { getArnRegexForService, yupIntegrationLabelValidation } from 'Helpers/utils';
 import StackDeploymentPanel from './StackDeploymentPanel';
 import SuccessPanel from './SuccessPanel';
 import S3SourceConfigurationPanel from './S3SourceConfigurationPanel';
@@ -47,7 +47,7 @@ export interface S3LogSourceWizardValues {
 }
 
 const validationSchema = Yup.object().shape<S3LogSourceWizardValues>({
-  integrationLabel: integrationLabelValidation(),
+  integrationLabel: yupIntegrationLabelValidation,
   awsAccountId: Yup.string()
     .matches(AWS_ACCOUNT_ID_REGEX, 'Must be a valid AWS Account ID')
     .required(),
@@ -84,28 +84,30 @@ const S3LogSourceWizard: React.FC<S3LogSourceWizardProps> = ({
         return (
           <Form>
             <Wizard>
-              <Wizard.Step title="Configure Logs Source" icon="settings">
+              <Wizard.Step title="Configure Logs Source">
                 <WizardPanelWrapper>
                   <WizardPanelWrapper.Content>
                     <S3SourceConfigurationPanel />
                   </WizardPanelWrapper.Content>
                   <WizardPanelWrapper.Actions>
-                    <WizardPanelWrapper.ActionNext disabled={!dirty || !isValid} />
+                    <WizardPanelWrapper.ActionNext disabled={!dirty || !isValid}>
+                      Continue Setup
+                    </WizardPanelWrapper.ActionNext>
                   </WizardPanelWrapper.Actions>
                 </WizardPanelWrapper>
               </Wizard.Step>
-              <Wizard.Step title="Deploy Stack" icon="upload">
+              <Wizard.Step title="Deploy Stack">
                 <WizardPanelWrapper>
                   <WizardPanelWrapper.Content>
                     <StackDeploymentPanel />
                   </WizardPanelWrapper.Content>
                   <WizardPanelWrapper.Actions>
                     <WizardPanelWrapper.ActionPrev />
-                    <WizardPanelWrapper.ActionNext />
+                    <WizardPanelWrapper.ActionNext>Continue Setup</WizardPanelWrapper.ActionNext>
                   </WizardPanelWrapper.Actions>
                 </WizardPanelWrapper>
               </Wizard.Step>
-              <Wizard.Step title="Done!" icon="check">
+              <Wizard.Step title="Done!">
                 <WizardPanelWrapper>
                   <WizardPanelWrapper.Content>
                     <SuccessPanel />

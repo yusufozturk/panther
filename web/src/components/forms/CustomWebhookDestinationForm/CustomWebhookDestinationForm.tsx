@@ -25,7 +25,8 @@ import BaseDestinationForm, {
   BaseDestinationFormValues,
   defaultValidationSchema,
 } from 'Components/forms/BaseDestinationForm';
-import { webhookValidation } from 'Helpers/utils';
+import { yupWebhookValidation } from 'Helpers/utils';
+import { SimpleGrid } from 'pouncejs';
 
 type CustomWebhookFieldValues = Pick<DestinationConfigInput, 'customWebhook'>;
 
@@ -43,7 +44,7 @@ const CustomWebhookDestinationForm: React.FC<CustomWebhookDestinationFormProps> 
   const customWebhookFieldsValidationSchema = Yup.object().shape({
     outputConfig: Yup.object().shape({
       customWebhook: Yup.object().shape({
-        webhookURL: existing ? webhookValidation() : webhookValidation().required(),
+        webhookURL: existing ? yupWebhookValidation : yupWebhookValidation.required(),
       }),
     }),
   });
@@ -58,18 +59,27 @@ const CustomWebhookDestinationForm: React.FC<CustomWebhookDestinationFormProps> 
       validationSchema={mergedValidationSchema}
       onSubmit={onSubmit}
     >
-      <Field
-        as={FormikTextInput}
-        type="password"
-        name="outputConfig.customWebhook.webhookURL"
-        label="Custom Webhook URL"
-        placeholder={
-          existing
-            ? 'Information is hidden. New values will override the existing ones.'
-            : 'Where should we send a push notification to?'
-        }
-        required={!existing}
-      />
+      <SimpleGrid gap={5} columns={2}>
+        <Field
+          name="displayName"
+          as={FormikTextInput}
+          label="* Display Name"
+          placeholder="How should we name this?"
+          required
+        />
+        <Field
+          as={FormikTextInput}
+          type="password"
+          name="outputConfig.customWebhook.webhookURL"
+          label="Custom Webhook URL"
+          placeholder={
+            existing
+              ? 'Information is hidden. New values will override the existing ones.'
+              : 'Where should we send a push notification to?'
+          }
+          required={!existing}
+        />
+      </SimpleGrid>
     </BaseDestinationForm>
   );
 };

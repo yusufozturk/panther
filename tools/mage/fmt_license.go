@@ -26,7 +26,7 @@ import (
 
 const agplSource = "docs/LICENSE_HEADER_AGPL.txt"
 
-var licensePaths = []string{"api", "build", "deployments", "internal", "pkg", "tools", "web", "magefile.go"}
+var licensePaths = []string{"api", "build", "cmd", "deployments", "internal", "pkg", "tools", "web", "magefile.go"}
 
 // Add a comment character in front of each line in a block of license text.
 func commentEachLine(prefix, text string) string {
@@ -56,11 +56,27 @@ func fmtLicense(paths ...string) {
 	hashtagLicense := commentEachLine("#", header)
 
 	for _, root := range paths {
-		walk(root, func(path string, info os.FileInfo) {
-			if !info.IsDir() {
+		err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+
+			if info.IsDir() {
+				// some monorepo dirs have nested node_modules. Until NPM ships their "workspaces" feature,
+				// we can't hoist all node modules in single folder at the project root. This prevents us
+				// from wrongly adding headers to 3rd party modules
+				if strings.Contains(path, "node_modules") {
+					return filepath.SkipDir
+				}
+			} else {
 				addFileLicense(path, asteriskLicense, hashtagLicense)
 			}
+
+			return nil
 		})
+		if err != nil {
+			logger.Fatalf("failed to walk %s: %v", root, err)
+		}
 	}
 }
 

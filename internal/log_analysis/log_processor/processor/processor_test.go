@@ -72,8 +72,7 @@ func newTestLog() *parsers.Result {
 		logLine: testLogLine,
 	}
 	log.SetCoreFields(testLogType, &refTime, &log)
-	result, _ := log.Result()
-	return result
+	return log.Result()
 }
 
 func TestProcess(t *testing.T) {
@@ -282,6 +281,10 @@ func TestProcessClassifyFailure(t *testing.T) {
 						Name: "EventsProcessed",
 						Unit: metrics.UnitCount,
 					},
+					{
+						Name: "CombinedLatency",
+						Unit: metrics.UnitMilliseconds,
+					},
 				},
 			},
 		},
@@ -367,6 +370,10 @@ func TestProcessClassifyFailure(t *testing.T) {
 				{
 					Key:     "EventsProcessed",
 					Integer: 1999,
+				},
+				{
+					Key:     "CombinedLatency",
+					Integer: 0,
 				},
 				{
 					Key:       "_aws",

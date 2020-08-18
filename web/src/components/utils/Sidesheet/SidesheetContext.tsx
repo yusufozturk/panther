@@ -17,7 +17,6 @@
  */
 
 import React from 'react';
-import { UpdateDestinationSidesheetProps } from 'Components/sidesheets/UpdateDestinationSidesheet';
 import { PolicyBulkUploadSideSheetProps } from 'Components/sidesheets/PolicyBulkUploadSidesheet';
 import { EditUserSidesheetProps } from 'Components/sidesheets/EditUserSidesheet';
 
@@ -27,9 +26,7 @@ const HIDE_SIDESHEET = 'HIDE_SIDESHEET';
 /* The available list of sidesheets to dispatch */
 export enum SIDESHEETS {
   POLICY_BULK_UPLOAD = 'POLICY_BULK_UPLOAD',
-  ADD_DESTINATION = 'ADD_DESTINATION',
   UPDATE_DESTINATION = 'UPDATE_DESTINATION',
-  EDIT_ACCOUNT = 'EDIT_ACCOUNT',
   EDIT_USER = 'EDIT_USER',
   USER_INVITATION = 'USER_INVITATION',
 }
@@ -43,21 +40,6 @@ interface SidesheetStateShape {
   isVisible: boolean;
 }
 
-interface AddDestinationSideSheetAction {
-  type: typeof SHOW_SIDESHEET;
-  payload: {
-    sidesheet: SIDESHEETS.ADD_DESTINATION;
-  };
-}
-
-interface UpdateDestinationSideSheetAction {
-  type: typeof SHOW_SIDESHEET;
-  payload: {
-    sidesheet: SIDESHEETS.UPDATE_DESTINATION;
-    props: OmitControlledProps<UpdateDestinationSidesheetProps>;
-  };
-}
-
 interface HideSidesheetAction {
   type: typeof HIDE_SIDESHEET;
 }
@@ -68,13 +50,6 @@ interface PolicyBulkUploadSideSheetAction {
   payload: {
     sidesheet: SIDESHEETS.POLICY_BULK_UPLOAD;
     props: OmitControlledProps<PolicyBulkUploadSideSheetProps>;
-  };
-}
-
-interface EditAccountSideSheetAction {
-  type: typeof SHOW_SIDESHEET;
-  payload: {
-    sidesheet: SIDESHEETS.EDIT_ACCOUNT;
   };
 }
 
@@ -96,9 +71,6 @@ interface UserInvitationSideSheetAction {
 /* The available actions that can be dispatched */
 type SidesheetStateAction =
   | PolicyBulkUploadSideSheetAction
-  | AddDestinationSideSheetAction
-  | UpdateDestinationSideSheetAction
-  | EditAccountSideSheetAction
   | EditUserSideSheetAction
   | UserInvitationSideSheetAction
   | HideSidesheetAction;

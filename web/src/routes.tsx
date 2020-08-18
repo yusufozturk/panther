@@ -25,7 +25,9 @@ import ResourceDetailsPage from 'Pages/ResourceDetails';
 import PolicyDetailsPage from 'Pages/PolicyDetails';
 import GeneralSettingsPage from 'Pages/GeneralSettings';
 import SignInPage from 'Pages/SignIn';
-import DestinationsPage from 'Pages/Destinations';
+import ListDestinationsPage from 'Pages/ListDestinations';
+import CreateDestinationPage from 'Pages/CreateDestination';
+import EditDestinationPage from 'Pages/EditDestination';
 import UsersPage from 'Pages/Users';
 import RuleDetailsPage from 'Pages/RuleDetails';
 import LandingPage from 'Pages/Landing';
@@ -56,6 +58,7 @@ import LogSourceOnboarding from 'Pages/LogSourceOnboarding';
 import ListGlobalPythonModulesPage from 'Pages/ListGlobalPythonModules';
 import CreateGlobalPythonModulePage from 'Pages/CreateGlobalPythonModule';
 import EditGlobalPythonModulePage from 'Pages/EditGlobalPythonModule';
+import EditSqsLogSource from 'Pages/EditSqsLogSource';
 
 // Main page container for the web application, Navigation bar and Content body goes here
 const PrimaryPageLayout: React.FunctionComponent = () => {
@@ -166,6 +169,11 @@ const PrimaryPageLayout: React.FunctionComponent = () => {
                   path={urls.logAnalysis.sources.edit(':id', 's3')}
                   component={EditS3LogSourcePage}
                 />
+                <Route
+                  exact
+                  path={urls.logAnalysis.sources.edit(':id', 'sqs')}
+                  component={EditSqsLogSource}
+                />
                 <Redirect
                   exact
                   from={`${urls.logAnalysis.sources.list()}:type`}
@@ -196,7 +204,21 @@ const PrimaryPageLayout: React.FunctionComponent = () => {
                   to={urls.settings.globalPythonModules.edit(':id')}
                 />
                 <Route exact path={urls.settings.users()} component={UsersPage} />
-                <Route exact path={urls.settings.destinations()} component={DestinationsPage} />
+                <Route
+                  exact
+                  path={urls.settings.destinations.create()}
+                  component={CreateDestinationPage}
+                />
+                <Route
+                  exact
+                  path={urls.settings.destinations.edit(':id')}
+                  component={EditDestinationPage}
+                />
+                <Route
+                  exact
+                  path={urls.settings.destinations.list()}
+                  component={ListDestinationsPage}
+                />
                 <Route component={Page404} />
               </Switch>
             </APIErrorFallback>

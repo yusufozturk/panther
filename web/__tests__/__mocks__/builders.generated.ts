@@ -23,6 +23,7 @@ import {
   AddPolicyInput,
   AddRuleInput,
   AddS3LogIntegrationInput,
+  AddSqsLogIntegrationInput,
   AlertDetails,
   AlertSummary,
   AsanaConfig,
@@ -108,6 +109,10 @@ import {
   SnsConfigInput,
   SqsConfig,
   SqsConfigInput,
+  SqsDestinationConfig,
+  SqsLogConfigInput,
+  SqsLogIntegrationHealth,
+  SqsLogSourceIntegration,
   SuppressPoliciesInput,
   TestPolicyInput,
   TestPolicyResponse,
@@ -117,6 +122,7 @@ import {
   UpdatePolicyInput,
   UpdateRuleInput,
   UpdateS3LogIntegrationInput,
+  UpdateSqsLogIntegrationInput,
   UpdateUserInput,
   UploadPoliciesInput,
   UploadPoliciesResponse,
@@ -196,6 +202,7 @@ export const buildAddRuleInput = (overrides: Partial<AddRuleInput> = {}): AddRul
   return {
     body: 'body' in overrides ? overrides.body : 'microchip',
     dedupPeriodMinutes: 'dedupPeriodMinutes' in overrides ? overrides.dedupPeriodMinutes : 429,
+    threshold: 'threshold' in overrides ? overrides.threshold : 140,
     description: 'description' in overrides ? overrides.description : 'purple',
     displayName: 'displayName' in overrides ? overrides.displayName : 'Investment Account',
     enabled: 'enabled' in overrides ? overrides.enabled : true,
@@ -221,6 +228,16 @@ export const buildAddS3LogIntegrationInput = (
     kmsKey: 'kmsKey' in overrides ? overrides.kmsKey : 'Personal Loan Account',
     s3Prefix: 's3Prefix' in overrides ? overrides.s3Prefix : 'reintermediate',
     logTypes: 'logTypes' in overrides ? overrides.logTypes : ['expedite'],
+  };
+};
+
+export const buildAddSqsLogIntegrationInput = (
+  overrides: Partial<AddSqsLogIntegrationInput> = {}
+): AddSqsLogIntegrationInput => {
+  return {
+    integrationLabel:
+      'integrationLabel' in overrides ? overrides.integrationLabel : 'data-warehouse',
+    sqsConfig: 'sqsConfig' in overrides ? overrides.sqsConfig : buildSqsLogConfigInput(),
   };
 };
 
@@ -447,7 +464,7 @@ export const buildDestinationConfig = (
     __typename: 'DestinationConfig',
     slack: 'slack' in overrides ? overrides.slack : buildSlackConfig(),
     sns: 'sns' in overrides ? overrides.sns : buildSnsConfig(),
-    sqs: 'sqs' in overrides ? overrides.sqs : buildSqsConfig(),
+    sqs: 'sqs' in overrides ? overrides.sqs : buildSqsDestinationConfig(),
     pagerDuty: 'pagerDuty' in overrides ? overrides.pagerDuty : buildPagerDutyConfig(),
     github: 'github' in overrides ? overrides.github : buildGithubConfig(),
     jira: 'jira' in overrides ? overrides.jira : buildJiraConfig(),
@@ -1097,6 +1114,7 @@ export const buildRuleDetails = (overrides: Partial<RuleDetails> = {}): RuleDeta
     createdBy:
       'createdBy' in overrides ? overrides.createdBy : '6c3e570b-c621-4e3a-aab1-8a21e9aa4d17',
     dedupPeriodMinutes: 'dedupPeriodMinutes' in overrides ? overrides.dedupPeriodMinutes : 34,
+    threshold: 'threshold' in overrides ? overrides.threshold : 244,
     description: 'description' in overrides ? overrides.description : 'EXE',
     displayName: 'displayName' in overrides ? overrides.displayName : 'Advanced',
     enabled: 'enabled' in overrides ? overrides.enabled : false,
@@ -1249,6 +1267,14 @@ export const buildSnsConfigInput = (overrides: Partial<SnsConfigInput> = {}): Sn
 export const buildSqsConfig = (overrides: Partial<SqsConfig> = {}): SqsConfig => {
   return {
     __typename: 'SqsConfig',
+    logTypes: 'logTypes' in overrides ? overrides.logTypes : ['Direct'],
+    allowedPrincipalArns:
+      'allowedPrincipalArns' in overrides ? overrides.allowedPrincipalArns : ['HTTP'],
+    allowedSourceArns:
+      'allowedSourceArns' in overrides ? overrides.allowedSourceArns : ['holistic'],
+    s3Bucket: 's3Bucket' in overrides ? overrides.s3Bucket : 'Balanced',
+    s3Prefix: 's3Prefix' in overrides ? overrides.s3Prefix : 'deposit',
+    logProcessingRole: 'logProcessingRole' in overrides ? overrides.logProcessingRole : 'national',
     queueUrl: 'queueUrl' in overrides ? overrides.queueUrl : 'Engineer',
   };
 };
@@ -1256,6 +1282,58 @@ export const buildSqsConfig = (overrides: Partial<SqsConfig> = {}): SqsConfig =>
 export const buildSqsConfigInput = (overrides: Partial<SqsConfigInput> = {}): SqsConfigInput => {
   return {
     queueUrl: 'queueUrl' in overrides ? overrides.queueUrl : 'Seamless',
+  };
+};
+
+export const buildSqsDestinationConfig = (
+  overrides: Partial<SqsDestinationConfig> = {}
+): SqsDestinationConfig => {
+  return {
+    __typename: 'SqsDestinationConfig',
+    queueUrl: 'queueUrl' in overrides ? overrides.queueUrl : 'mobile',
+  };
+};
+
+export const buildSqsLogConfigInput = (
+  overrides: Partial<SqsLogConfigInput> = {}
+): SqsLogConfigInput => {
+  return {
+    logTypes: 'logTypes' in overrides ? overrides.logTypes : ['Incredible'],
+    allowedPrincipalArns:
+      'allowedPrincipalArns' in overrides ? overrides.allowedPrincipalArns : ['Zloty'],
+    allowedSourceArns:
+      'allowedSourceArns' in overrides ? overrides.allowedSourceArns : ['partnerships'],
+  };
+};
+
+export const buildSqsLogIntegrationHealth = (
+  overrides: Partial<SqsLogIntegrationHealth> = {}
+): SqsLogIntegrationHealth => {
+  return {
+    __typename: 'SqsLogIntegrationHealth',
+    sqsStatus: 'sqsStatus' in overrides ? overrides.sqsStatus : buildIntegrationItemHealthStatus(),
+  };
+};
+
+export const buildSqsLogSourceIntegration = (
+  overrides: Partial<SqsLogSourceIntegration> = {}
+): SqsLogSourceIntegration => {
+  return {
+    __typename: 'SqsLogSourceIntegration',
+    createdAtTime:
+      'createdAtTime' in overrides ? overrides.createdAtTime : '2020-11-22T04:16:09.421Z',
+    createdBy:
+      'createdBy' in overrides ? overrides.createdBy : '8db76f97-491c-446e-b3f2-eec061dd9b79',
+    integrationId:
+      'integrationId' in overrides
+        ? overrides.integrationId
+        : '53e839d8-068b-4f1e-a593-5868c37a1403',
+    integrationLabel: 'integrationLabel' in overrides ? overrides.integrationLabel : 'Future',
+    integrationType: 'integrationType' in overrides ? overrides.integrationType : 'Sleek Steel Hat',
+    lastEventReceived:
+      'lastEventReceived' in overrides ? overrides.lastEventReceived : '2020-03-01T16:22:21.931Z',
+    sqsConfig: 'sqsConfig' in overrides ? overrides.sqsConfig : buildSqsConfig(),
+    health: 'health' in overrides ? overrides.health : buildSqsLogIntegrationHealth(),
   };
 };
 
@@ -1356,6 +1434,7 @@ export const buildUpdateRuleInput = (overrides: Partial<UpdateRuleInput> = {}): 
   return {
     body: 'body' in overrides ? overrides.body : 'capacitor',
     dedupPeriodMinutes: 'dedupPeriodMinutes' in overrides ? overrides.dedupPeriodMinutes : 748,
+    threshold: 'threshold' in overrides ? overrides.threshold : 475,
     description: 'description' in overrides ? overrides.description : 'Utah',
     displayName: 'displayName' in overrides ? overrides.displayName : 'Internal',
     enabled: 'enabled' in overrides ? overrides.enabled : true,
@@ -1382,6 +1461,16 @@ export const buildUpdateS3LogIntegrationInput = (
     kmsKey: 'kmsKey' in overrides ? overrides.kmsKey : 'deposit',
     s3Prefix: 's3Prefix' in overrides ? overrides.s3Prefix : 'Keyboard',
     logTypes: 'logTypes' in overrides ? overrides.logTypes : ['Dynamic'],
+  };
+};
+
+export const buildUpdateSqsLogIntegrationInput = (
+  overrides: Partial<UpdateSqsLogIntegrationInput> = {}
+): UpdateSqsLogIntegrationInput => {
+  return {
+    integrationId: 'integrationId' in overrides ? overrides.integrationId : 'Pennsylvania',
+    integrationLabel: 'integrationLabel' in overrides ? overrides.integrationLabel : 'morph',
+    sqsConfig: 'sqsConfig' in overrides ? overrides.sqsConfig : buildSqsLogConfigInput(),
   };
 };
 

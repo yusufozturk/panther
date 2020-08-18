@@ -25,6 +25,7 @@ import { capitalize, minutesToString } from 'Helpers/utils';
 import FormikTextArea from 'Components/fields/TextArea';
 import FormikSwitch from 'Components/fields/Switch';
 import FormikCombobox from 'Components/fields/ComboBox';
+import FormikNumberInput from 'Components/fields/NumberInput';
 import FormikMultiCombobox from 'Components/fields/MultiComboBox';
 import { LOG_TYPES, RESOURCE_TYPES } from 'Source/constants';
 import { RuleFormValues } from 'Components/forms/RuleForm';
@@ -74,7 +75,7 @@ const BaseRuleFormCoreSection: React.FC<BaseRuleFormCoreSectionProps> = ({ type 
       return (
         <FormHelperText id="outputIds-description" mt={2} mr={1}>
           You have not configured any destinations, create one
-          <Link ml={1} as={RRLink} to={urls.settings.destinations()}>
+          <Link ml={1} as={RRLink} to={urls.settings.destinations.create()}>
             here
           </Link>
         </FormHelperText>
@@ -140,20 +141,35 @@ const BaseRuleFormCoreSection: React.FC<BaseRuleFormCoreSectionProps> = ({ type 
           placeholder={`Additional context about this ${type}`}
           name="description"
         />
-        <SimpleGrid columns={2} spacing={5}>
+        <SimpleGrid columns={1} spacing={5}>
           <FastField
             as={FormikTextArea}
             label="Runbook"
             placeholder={`Procedures and operations related to this ${type}`}
             name="runbook"
           />
-          <FastField
-            as={FormikTextArea}
-            label="Reference"
-            placeholder={`An external link to why this ${type} exists`}
-            name="reference"
-          />
         </SimpleGrid>
+        <Flex spacing={5}>
+          <Box flexGrow={7} flexShrink={0}>
+            <FastField
+              as={FormikTextArea}
+              label="Reference"
+              placeholder={`An external link to why this ${type} exists`}
+              name="reference"
+            />
+          </Box>
+          {!isPolicy && (
+            <Box flexGrow={1}>
+              <Field
+                as={FormikNumberInput}
+                label="* Events Threshold"
+                min={0}
+                name="threshold"
+                placeholder="Send an alert only after # events"
+              />
+            </Box>
+          )}
+        </Flex>
       </SimpleGrid>
       <SimpleGrid columns={4} spacing={5}>
         {isPolicy && (

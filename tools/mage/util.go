@@ -19,17 +19,13 @@ package mage
  */
 
 import (
-	"bufio"
-	"errors"
+	"bytes"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"regexp"
 	"runtime"
 	"strings"
-	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
@@ -171,6 +167,19 @@ func getSession() {
 		"accessKeyId", creds.AccessKeyID)
 }
 
+// Set global gitVersion, warn if not deploying a tagged release
+func getGitVersion() {
+	var err error
+	gitVersion, err = sh.Output("git", "describe", "--tags")
+	if err != nil {
+		logger.Fatalf("git describe failed: %v", err)
+	}
+	// The gitVersion is "v0.3.0" on tagged release, otherwise something like "v0.3.0-128-g77fd9ff"
+	if strings.Contains(gitVersion, "-") {
+		logger.Warnf("%s is not a tagged release, proceed at your own risk", gitVersion)
+	}
+}
+
 // Upload a local file to S3.
 func uploadFileToS3(path, bucket, key string) (*s3manager.UploadOutput, error) {
 	file, err := os.Open(path)
@@ -189,72 +198,27 @@ func uploadFileToS3(path, bucket, key string) (*s3manager.UploadOutput, error) {
 	})
 }
 
-// Prompt the user for a string input.
-func promptUser(prompt string, validator func(string) error) string {
-	reader := bufio.NewReader(os.Stdin)
-	for {
-		fmt.Print(prompt)
-		result, err := reader.ReadString('\n')
-		if err != nil {
-			fmt.Printf("read string failed: %v\n", err)
-			continue
-		}
-
-		result = strings.TrimSpace(result)
-		if validator != nil {
-			if err := validator(result); err != nil {
-				fmt.Println(err)
-				continue
-			}
-		}
-
-		return result
-	}
-}
-
-// Run a command, hiding both stdout and stderr unless running in verbose mode.
+// Run a command, capturing stdout and stderr unless the command errors or we're in verbose mode.
 //
-// Almost identical to sh.Run(), except sh.Run() only hides stdout in non-verbose mode.
-func runWithoutStderr(cmd string, args ...string) error {
-	var stdout, stderr io.Writer
+// This is helpful for tools which print unwanted info to stderr even when successful or, conversely,
+// tools which output failing tests to stdout that we want to show even in non-verbose mode.
+//
+// Both outputs will be printed if the command returns an error.
+//
+// Similar to sh.Run(), except sh.Run() only hides stdout in non-verbose mode.
+func runWithCapturedOutput(cmd string, args ...string) error {
 	if mg.Verbose() {
-		stdout = os.Stdout
-		stderr = os.Stderr
+		return sh.Run(cmd, args...)
 	}
-	_, err := sh.Exec(nil, stdout, stderr, cmd, args...)
-	return err
-}
 
-// Ensure non-empty strings.
-func nonemptyValidator(input string) error {
-	if len(input) == 0 {
-		return errors.New("input is blank, please try again")
+	var buf bytes.Buffer
+	if _, err := sh.Exec(nil, &buf, &buf, cmd, args...); err != nil {
+		// The command failed - in non-verbose mode, all output has been hidden.
+		// We need to print the output so the user can see the error message.
+		fmt.Println(buf.String())
+		return err
 	}
-	return nil
-}
 
-// Very simple email validation to prevent obvious mistakes.
-func emailValidator(email string) error {
-	if len(email) >= 4 && strings.Contains(email, "@") && strings.Contains(email, ".") {
-		return nil
-	}
-	return errors.New("invalid email: must be at least 4 characters and contain '@' and '.'")
-}
-
-func regexValidator(text string) error {
-	if _, err := regexp.Compile(text); err != nil {
-		return fmt.Errorf("invalid regex: %v", err)
-	}
-	return nil
-}
-
-func dateValidator(text string) error {
-	if len(text) == 0 { // allow no date
-		return nil
-	}
-	if _, err := time.Parse("2006-01-02", text); err != nil {
-		return fmt.Errorf("invalid date: %v", err)
-	}
 	return nil
 }
 

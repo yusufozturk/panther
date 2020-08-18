@@ -25,15 +25,6 @@ const SqsLogSourceCard: React.FC<SqsLogSourceCardProps> = ({ source }) => {
           </React.Fragment>
         }
       />
-      <GenericItemCard.LineBreak />
-      <GenericItemCard.Value
-        label="Date Created"
-        value={formatDatetime(source.createdAtTime, true)}
-      />
-      <GenericItemCard.Value
-        label="Last Received Events At"
-        value={formatDatetime(source.lastEventReceived, true)}
-      />
       <GenericItemCard.Value
         label="Allowed Source ARNs"
         value={
@@ -43,6 +34,15 @@ const SqsLogSourceCard: React.FC<SqsLogSourceCardProps> = ({ source }) => {
             ))}
           </React.Fragment>
         }
+      />
+      <GenericItemCard.LineBreak />
+      <GenericItemCard.Value
+        label="Date Created"
+        value={formatDatetime(source.createdAtTime, true)}
+      />
+      <GenericItemCard.Value
+        label="Last Received Events At"
+        value={formatDatetime(source.lastEventReceived, true)}
       />
       <GenericItemCard.LineBreak />
       <GenericItemCard.Value

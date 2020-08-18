@@ -25,7 +25,7 @@ type ListDestinationsTableProps = { sources: ListComplianceSources['listComplian
 
 const ListDestinationsCards: React.FC<ListDestinationsTableProps> = ({ sources }) => {
   return (
-    <SimpleGrid columns={1} gap={5}>
+    <SimpleGrid as="article" columns={1} gap={5}>
       {sources.map(source => (
         <ComplianceSourceCard key={source.integrationId} source={source} />
       ))}

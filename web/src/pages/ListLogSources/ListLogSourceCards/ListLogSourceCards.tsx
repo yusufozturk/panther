@@ -27,7 +27,7 @@ type ListLogSourceCardsProps = { sources: ListLogSources['listLogIntegrations'] 
 
 const ListLogSourceCards: React.FC<ListLogSourceCardsProps> = ({ sources }) => {
   return (
-    <SimpleGrid columns={1} gap={5}>
+    <SimpleGrid as="article" columns={1} gap={5}>
       {sources.map(source => {
         const { integrationId, integrationType } = source;
         switch (integrationType) {

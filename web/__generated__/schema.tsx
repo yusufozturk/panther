@@ -858,6 +858,7 @@ export type Query = {
   __typename?: 'Query';
   alert?: Maybe<AlertDetails>;
   alerts?: Maybe<ListAlertsResponse>;
+  sendTestAlert?: Maybe<SendTestAlertResponse>;
   destination?: Maybe<Destination>;
   destinations?: Maybe<Array<Maybe<Destination>>>;
   generalSettings: GeneralSettings;
@@ -891,6 +892,10 @@ export type QueryAlertArgs = {
 
 export type QueryAlertsArgs = {
   input?: Maybe<ListAlertsInput>;
+};
+
+export type QuerySendTestAlertArgs = {
+  input: SendTestAlertInput;
 };
 
 export type QueryDestinationArgs = {
@@ -1067,6 +1072,15 @@ export type ScannedResourceStats = {
   __typename?: 'ScannedResourceStats';
   count?: Maybe<ComplianceStatusCounts>;
   type?: Maybe<Scalars['String']>;
+};
+
+export type SendTestAlertInput = {
+  outputIds: Array<Scalars['ID']>;
+};
+
+export type SendTestAlertResponse = {
+  __typename?: 'SendTestAlertResponse';
+  success?: Maybe<Scalars['Boolean']>;
 };
 
 export type Series = {
@@ -1385,6 +1399,9 @@ export type ResolversTypes = {
   SortDirEnum: SortDirEnum;
   ListAlertsResponse: ResolverTypeWrapper<ListAlertsResponse>;
   AlertSummary: ResolverTypeWrapper<AlertSummary>;
+  SendTestAlertInput: SendTestAlertInput;
+  SendTestAlertResponse: ResolverTypeWrapper<SendTestAlertResponse>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Destination: ResolverTypeWrapper<Destination>;
   DestinationTypeEnum: DestinationTypeEnum;
   DestinationConfig: ResolverTypeWrapper<DestinationConfig>;
@@ -1399,7 +1416,6 @@ export type ResolversTypes = {
   AsanaConfig: ResolverTypeWrapper<AsanaConfig>;
   CustomWebhookConfig: ResolverTypeWrapper<CustomWebhookConfig>;
   GeneralSettings: ResolverTypeWrapper<GeneralSettings>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   ComplianceIntegration: ResolverTypeWrapper<ComplianceIntegration>;
   ComplianceIntegrationHealth: ResolverTypeWrapper<ComplianceIntegrationHealth>;
   IntegrationItemHealthStatus: ResolverTypeWrapper<IntegrationItemHealthStatus>;
@@ -1523,6 +1539,9 @@ export type ResolversParentTypes = {
   SortDirEnum: SortDirEnum;
   ListAlertsResponse: ListAlertsResponse;
   AlertSummary: AlertSummary;
+  SendTestAlertInput: SendTestAlertInput;
+  SendTestAlertResponse: SendTestAlertResponse;
+  Boolean: Scalars['Boolean'];
   Destination: Destination;
   DestinationTypeEnum: DestinationTypeEnum;
   DestinationConfig: DestinationConfig;
@@ -1537,7 +1556,6 @@ export type ResolversParentTypes = {
   AsanaConfig: AsanaConfig;
   CustomWebhookConfig: CustomWebhookConfig;
   GeneralSettings: GeneralSettings;
-  Boolean: Scalars['Boolean'];
   ComplianceIntegration: ComplianceIntegration;
   ComplianceIntegrationHealth: ComplianceIntegrationHealth;
   IntegrationItemHealthStatus: IntegrationItemHealthStatus;
@@ -2353,6 +2371,12 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QueryAlertsArgs, never>
   >;
+  sendTestAlert?: Resolver<
+    Maybe<ResolversTypes['SendTestAlertResponse']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerySendTestAlertArgs, 'input'>
+  >;
   destination?: Resolver<
     Maybe<ResolversTypes['Destination']>,
     ParentType,
@@ -2613,6 +2637,14 @@ export type ScannedResourceStatsResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
+export type SendTestAlertResponseResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['SendTestAlertResponse'] = ResolversParentTypes['SendTestAlertResponse']
+> = {
+  success?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
 export type SeriesResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Series'] = ResolversParentTypes['Series']
@@ -2807,6 +2839,7 @@ export type Resolvers<ContextType = any> = {
   S3LogIntegrationHealth?: S3LogIntegrationHealthResolvers<ContextType>;
   ScannedResources?: ScannedResourcesResolvers<ContextType>;
   ScannedResourceStats?: ScannedResourceStatsResolvers<ContextType>;
+  SendTestAlertResponse?: SendTestAlertResponseResolvers<ContextType>;
   Series?: SeriesResolvers<ContextType>;
   SeriesData?: SeriesDataResolvers<ContextType>;
   SingleValue?: SingleValueResolvers<ContextType>;

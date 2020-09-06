@@ -18,16 +18,18 @@
 
 import * as Types from '../../../__generated__/schema';
 
+import { GraphQLError } from 'graphql';
 import gql from 'graphql-tag';
 
 export type IntegrationItemHealthDetails = Pick<
   Types.IntegrationItemHealthStatus,
-  'healthy' | 'errorMessage'
+  'healthy' | 'message' | 'rawErrorMessage'
 >;
 
 export const IntegrationItemHealthDetails = gql`
   fragment IntegrationItemHealthDetails on IntegrationItemHealthStatus {
     healthy
-    errorMessage
+    message
+    rawErrorMessage
   }
 `;

@@ -63,6 +63,16 @@ type SourceIntegrationMetadata struct {
 	SqsConfig          *SqsConfig `json:"sqsConfig,omitempty"`
 }
 
+func (info *SourceIntegration) RequiredLogTypes() (logTypes []string) {
+	// We use a switch to avoid git conflicts with enterprise
+	switch {
+	case info.SqsConfig != nil:
+		return info.SqsConfig.LogTypes
+	default:
+		return info.LogTypes
+	}
+}
+
 type SourceIntegrationHealth struct {
 	IntegrationType string `json:"integrationType"`
 
@@ -82,7 +92,8 @@ type SourceIntegrationHealth struct {
 
 type SourceIntegrationItemStatus struct {
 	Healthy      bool   `json:"healthy"`
-	ErrorMessage string `json:"errorMessage,omitempty"`
+	Message      string `json:"message"`
+	ErrorMessage string `json:"rawErrorMessage,omitempty"`
 }
 
 type SourceIntegrationTemplate struct {

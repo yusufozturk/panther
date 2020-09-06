@@ -16,14 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { AbstractButton, Box, Collapse, Flex } from 'pouncejs';
+import { AbstractButton, Box, Collapse, Flex, useSnackbar } from 'pouncejs';
 import ErrorBoundary from 'Components/ErrorBoundary';
 import { Field, useFormikContext } from 'formik';
 import FormikTextInput from 'Components/fields/TextInput';
 import React from 'react';
 import FormikMultiCombobox from 'Components/fields/MultiComboBox';
-import { LOG_TYPES } from 'Source/constants';
-import { WizardPanelWrapper } from 'Components/Wizard';
+import { WizardPanel } from 'Components/Wizard';
+import { useListAvailableLogTypes } from 'Source/graphql/queries/listAvailableLogTypes.generated';
 import { S3LogSourceWizardValues } from '../S3LogSourceWizard';
 
 const S3SourceConfigurationPanel: React.FC = () => {
@@ -31,10 +31,14 @@ const S3SourceConfigurationPanel: React.FC = () => {
   const [isAdvancedConfigVisible, showAdvancedConfig] = React.useState(
     Boolean(values.s3Prefix) || Boolean(values.kmsKey)
   );
+  const { pushSnackbar } = useSnackbar();
+  const { data } = useListAvailableLogTypes({
+    onError: () => pushSnackbar({ title: "Couldn't fetch your available log types" }),
+  });
 
   return (
     <Box width={460} m="auto">
-      <WizardPanelWrapper.Heading
+      <WizardPanel.Heading
         title={initialValues.integrationId ? 'Update source' : "Let's start with the basics"}
         subtitle={
           initialValues.integrationId
@@ -48,14 +52,14 @@ const S3SourceConfigurationPanel: React.FC = () => {
           <Field
             name="integrationLabel"
             as={FormikTextInput}
-            label="Name"
+            label="* Name"
             placeholder="A nickname for this log analysis source"
             required
           />
           <Field
             name="awsAccountId"
             as={FormikTextInput}
-            label="Account ID"
+            label="* Account ID"
             placeholder="The AWS Account ID that the S3 log bucket lives in"
             disabled={!!initialValues.integrationId}
             required
@@ -63,16 +67,16 @@ const S3SourceConfigurationPanel: React.FC = () => {
           <Field
             name="s3Bucket"
             as={FormikTextInput}
-            label="Bucket Name"
+            label="* Bucket Name"
             required
             placeholder="The name of the S3 bucket that holds the logs"
           />
           <Field
             as={FormikMultiCombobox}
             searchable
-            label="Log Types"
+            label="* Log Types"
             name="logTypes"
-            items={LOG_TYPES}
+            items={data?.listAvailableLogTypes.logTypes ?? []}
             placeholder="The types of logs that are collected"
           />
         </Flex>
@@ -88,7 +92,7 @@ const S3SourceConfigurationPanel: React.FC = () => {
           </AbstractButton>
         </Flex>
         <Collapse open={isAdvancedConfigVisible}>
-          <Flex direction="column" spacing={4}>
+          <Flex direction="column" spacing={4} pt={6}>
             <Field
               name="s3Prefix"
               as={FormikTextInput}

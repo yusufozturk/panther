@@ -17,12 +17,12 @@
  */
 
 import React from 'react';
-import { useSnackbar } from 'pouncejs';
+import { Box, useSnackbar } from 'pouncejs';
 import { DestinationConfigInput, DestinationInput, DestinationTypeEnum } from 'Generated/schema';
 import { BaseDestinationFormValues } from 'Components/forms/BaseDestinationForm';
 import DestinationFormSwitcher from 'Components/forms/DestinationFormSwitcher';
 import { capitalize, extractErrorMessage } from 'Helpers/utils';
-import { useWizardContext, WizardPanelWrapper } from 'Components/Wizard';
+import { useWizardContext, WizardPanel } from 'Components/Wizard';
 import { useAddDestination } from './graphql/addDestination.generated';
 import { WizardData } from '../CreateDestinationWizard';
 
@@ -115,8 +115,8 @@ const ConfigureDestinationPanel: React.FC = () => {
       : selectedDestinationType
   );
   return (
-    <React.Fragment>
-      <WizardPanelWrapper.Heading
+    <Box maxWidth={700} mx="auto">
+      <WizardPanel.Heading
         title={`Configure Your ${destinationDisplayName} Destination`}
         subtitle="Fill out the form below to configure your Destination"
       />
@@ -124,7 +124,7 @@ const ConfigureDestinationPanel: React.FC = () => {
         initialValues={{ ...initialValues, outputType: selectedDestinationType }}
         onSubmit={handleSubmit}
       />
-    </React.Fragment>
+    </Box>
   );
 };
 

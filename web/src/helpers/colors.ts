@@ -63,3 +63,18 @@ const stringToHSL = ({
 
 export const stringToPaleColor = (str: string) =>
   stringToHSL({ str, saturation: [20, 50], lightness: [30, 80] });
+
+/**
+ *
+ * @param color A theme color
+ * @param opacity a value between [0,1]
+ * @returns A new color with opacity  added to it
+ */
+export function addOpacity(color: string, opacity: number) {
+  const hexWithoutHash = color.replace('#', '');
+  const r = parseInt(hexWithoutHash.substring(0, 2), 16);
+  const g = parseInt(hexWithoutHash.substring(2, 4), 16);
+  const b = parseInt(hexWithoutHash.substring(4, 6), 16);
+
+  return `rgba(${r},${g},${b},${opacity})` as keyof Theme['colors'];
+}

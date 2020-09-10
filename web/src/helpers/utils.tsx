@@ -80,12 +80,20 @@ export const isGuid = (str: string) =>
 export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
 /**
+ * Given a server-received DateTime string, returns the an Epoch ms
+ * */
+
+export const dateToEpoch = (datetime: string) => {
+  return dayjs(datetime).unix();
+};
+
+/**
  * Given a server-received DateTime string, creates a proper display text for it. We manually
  * calculate the offset cause there is no available format-string that can display the UTC offset
  * as a single digit (all of them display it either as 03:00 or as 0300) and require string
  * manipulation which is harder
  * */
-export const formatDatetime = (datetime: string, verbose = false) => {
+export const formatDatetime = (datetime: string | number, verbose = false) => {
   // get the offset minutes and calculate the hours from them
   const utcOffset = dayjs(datetime).utcOffset() / 60;
 

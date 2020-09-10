@@ -16,17 +16,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import ReactDOM from 'react-dom';
-import { Box, Flex, Text, useTheme } from 'pouncejs';
-import { formatTime, formatDatetime, remToPx, capitalize } from 'Helpers/utils';
+import { Box, Flex, Text, AbstractButton, useTheme } from 'pouncejs';
+import { formatTime, formatDatetime, dateToEpoch, remToPx, capitalize } from 'Helpers/utils';
 import { SeriesData } from 'Generated/schema';
 import { EChartOption } from 'echarts';
 import mapKeys from 'lodash/mapKeys';
 import { SEVERITY_COLOR_MAP } from 'Source/constants';
-import { stringToPaleColor } from 'Helpers/colors';
+import { stringToPaleColor, addOpacity } from 'Helpers/colors';
 
 interface TimeSeriesLinesProps {
+  /** Title of the series chart */
+  title?: string;
+
   /** The data for the time series */
   data: SeriesData;
 
@@ -63,11 +66,13 @@ function formatDateString(timestamp) {
 
 const TimeSeriesChart: React.FC<TimeSeriesLinesProps> = ({
   data,
+  title,
   zoomable = false,
   segments = 12,
   maxZoomPeriod = 3600 * 1000 * 24,
 }) => {
   const theme = useTheme();
+  const [regression, setRegression] = useState('linear');
   const container = React.useRef<HTMLDivElement>(null);
   const tooltip = React.useRef<HTMLDivElement>(document.createElement('div'));
 
@@ -101,6 +106,10 @@ const TimeSeriesChart: React.FC<TimeSeriesLinesProps> = ({
        * is an array of values for all datapoints
        * Must be ordered
        */
+      const epochTimestamps = timestamps.map(v => dateToEpoch(v));
+
+      const xAxisMax = Math.max(...epochTimestamps);
+      const xAxisMin = Math.min(...epochTimestamps);
       const seriesData = series.map(({ label, values }) => {
         return {
           name: label,
@@ -112,29 +121,22 @@ const TimeSeriesChart: React.FC<TimeSeriesLinesProps> = ({
           data: values.map((v, i) => {
             return {
               name: label,
-              value: [timestamps[i], v],
+              value: [epochTimestamps[i], v],
             };
           }),
         };
       });
 
+      const xAxisType = regression === 'linear' ? 'time' : 'log';
+
       const options: EChartOption = {
         grid: {
-          left: 180,
-          right: 20,
-          bottom: 20,
+          left: '20%',
+          right: 10,
           top: 10,
+          bottom: 55,
           containLabel: true,
         },
-        ...(zoomable && {
-          dataZoom: [
-            {
-              type: 'inside',
-              orient: 'horizontal',
-              minValueSpan: maxZoomPeriod,
-            },
-          ],
-        }),
         tooltip: {
           trigger: 'axis' as const,
           backgroundColor: theme.colors['navyblue-300'],
@@ -142,7 +144,6 @@ const TimeSeriesChart: React.FC<TimeSeriesLinesProps> = ({
             if (!params || !params.length) {
               return '';
             }
-
             const component = (
               <Box font="primary" minWidth={200} boxShadow="dark250" p={2} borderRadius="medium">
                 <Text fontSize="small-medium" mb={3}>
@@ -156,7 +157,7 @@ const TimeSeriesChart: React.FC<TimeSeriesLinesProps> = ({
                         {seriesTooltip.seriesName}
                       </Box>
                       <Box as="dd" font="mono" fontWeight="bold">
-                        {seriesTooltip.value[1].toLocaleString('en')}
+                        {/* {seriesTooltip.value[1].toLocaleString('en')} */}
                       </Box>
                     </Flex>
                   ))}
@@ -195,23 +196,26 @@ const TimeSeriesChart: React.FC<TimeSeriesLinesProps> = ({
           pageButtonGap: theme.space[3] as number,
         },
         xAxis: {
-          type: 'time' as const,
-          splitNumber: segments,
+          // type: 'log',
+          min: xAxisMin,
+          max: xAxisMax,
+          // splitNumber: segments,
           splitLine: {
             show: false,
           },
           axisLine: {
+            onZero: false,
             lineStyle: {
               color: 'transparent',
             },
           },
-          axisLabel: {
-            formatter: value => formatDateString(value),
-            fontWeight: theme.fontWeights.medium as any,
-            fontSize: remToPx(theme.fontSizes['x-small']),
-            fontFamily: theme.fonts.primary,
-            color: theme.colors['gray-50'],
-          },
+          // axisLabel: {
+          //   formatter: value => formatDateString(value),
+          //   fontWeight: theme.fontWeights.medium as any,
+          //   fontSize: remToPx(theme.fontSizes['x-small']),
+          //   fontFamily: theme.fonts.primary,
+          //   color: theme.colors['gray-50'],
+          // },
           splitArea: { show: false }, // remove the grid area
         },
         yAxis: {
@@ -239,16 +243,64 @@ const TimeSeriesChart: React.FC<TimeSeriesLinesProps> = ({
             },
           },
         },
+        ...(zoomable && {
+          dataZoom: [
+            {
+              type: 'slider',
+              textStyle: {
+                fontWeight: theme.fontWeights.medium as any,
+                fontSize: remToPx(theme.fontSizes['x-small']),
+                fontFamily: theme.fonts.primary,
+                color: theme.colors['gray-50'],
+              },
+              // labelFormatter: value => formatDateString(value),
+              handleIcon:
+                'M6.5 24C9.81371 24 12.5 21.3137 12.5 18C12.5 14.6863 9.81371 12 6.5 12C3.18629 12 0.5 14.6863 0.5 18C0.5 21.3137 3.18629 24 6.5 24Z M7 0.986084V36.0139H6V0.986084H7Z M6.5 24C9.81371 24 12.5 21.3137 12.5 18C12.5 14.6863 9.81371 12 6.5 12C3.18629 12 0.5 14.6863 0.5 18C0.5 21.3137 3.18629 24 6.5 24Z',
+              fillerColor: addOpacity(theme.colors['navyblue-200'], 0.2),
+              handleStyle: {
+                color: theme.colors['navyblue-200'],
+                opacity: 1,
+              },
+              borderColor: theme.colors['navyblue-200'],
+              orient: 'horizontal',
+              minValueSpan: maxZoomPeriod,
+              dataBackground: {
+                areaStyle: {
+                  opacity: 1,
+                  color: theme.colors['navyblue-400'],
+                },
+              },
+            },
+          ],
+        }),
         series: seriesData,
       };
 
       // load the timeSeriesChart
       const timeSeriesChart = echarts.init(container.current);
-      timeSeriesChart.setOption(options);
+      timeSeriesChart.setOption(options, true);
     })();
-  }, [data]);
+  }, [data, regression]);
 
-  return <Box ref={container} width="100%" height="100%" />;
+  const onLinearClick = useCallback(() => {
+    setRegression('linear');
+  }, [setRegression]);
+  const onLogarithmicClick = useCallback(() => {
+    setRegression('logarithmic');
+  }, [setRegression]);
+
+  return (
+    <Box width="100%">
+      <Flex width="100%" mb={3}>
+        <Box width="20%">{title}</Box>
+        <Box>
+          <AbstractButton onClick={onLinearClick}>Linear</AbstractButton>
+          <AbstractButton onClick={onLogarithmicClick}>Logarithmic</AbstractButton>
+        </Box>
+      </Flex>
+      <Box ref={container} width="100%" minHeight={200} />
+    </Box>
+  );
 };
 
 export default React.memo(TimeSeriesChart);

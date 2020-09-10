@@ -76,7 +76,7 @@ const LogAnalysisOverview: React.FC = () => {
     <Box as="article" mb={6}>
       <SimpleGrid columns={1} spacingX={3} spacingY={2} as="section" mb={5}>
         <Panel title="Real-time Alerts">
-          <Box height={200}>
+          <Box>
             <Flex direction="row" width="100%">
               <AlertSummary data={totalAlertsDelta} />
               <AlertsBySeverity alerts={alertsBySeverity} />
@@ -86,7 +86,7 @@ const LogAnalysisOverview: React.FC = () => {
       </SimpleGrid>
       <SimpleGrid columns={1} spacingX={3} spacingY={2} my={5}>
         <Panel title="Events by Log Type">
-          <Box height={200}>
+          <Box>
             <EventsByLogType events={eventsProcessed} />
           </Box>
         </Panel>

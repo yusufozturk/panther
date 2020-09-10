@@ -27,9 +27,9 @@ const DifferenceText: React.FC<DifferenceTextProps> = ({ diff }) => {
   if (diff === 0) {
     return (
       <React.Fragment>
-        <Text fontSize="small">No change</Text>
-        <Flex>
-          <Text fontSize="small">{diff}</Text>
+        <Text fontSize="large">No change</Text>
+        <Flex align="center">
+          <Text fontSize="large">{diff}</Text>
         </Flex>
       </React.Fragment>
     );
@@ -38,9 +38,9 @@ const DifferenceText: React.FC<DifferenceTextProps> = ({ diff }) => {
     return (
       <React.Fragment>
         <Text fontSize="small">Decreased by</Text>
-        <Flex>
-          <Icon type="caret-down" size="small" color="green-400" />
-          <Text fontSize="small">{diff}</Text>
+        <Flex align="center">
+          <Icon type="caret-down" size="large" color="green-400" />
+          <Text fontSize="large">{diff}</Text>
         </Flex>
       </React.Fragment>
     );
@@ -49,9 +49,9 @@ const DifferenceText: React.FC<DifferenceTextProps> = ({ diff }) => {
   return (
     <React.Fragment>
       <Text fontSize="small">Increased by</Text>
-      <Flex>
-        <Icon type="caret-up" size="small" color="red-300" />
-        <Text fontSize="small">{-diff}</Text>
+      <Flex align="center">
+        <Icon type="caret-up" size="large" color="red-300" />
+        <Text fontSize="large">{-diff}</Text>
       </Flex>
     </React.Fragment>
   );

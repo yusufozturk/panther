@@ -22,14 +22,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"go.uber.org/zap"
 
 	"github.com/panther-labs/panther/pkg/prompt"
 	"github.com/panther-labs/panther/tools/mage/clean"
+	"github.com/panther-labs/panther/tools/mage/clients"
 	"github.com/panther-labs/panther/tools/mage/deploy"
 	"github.com/panther-labs/panther/tools/mage/logger"
 	"github.com/panther-labs/panther/tools/mage/setup"
@@ -76,9 +75,8 @@ func Publish() error {
 
 func publishToRegion(log *zap.SugaredLogger, version, region string) error {
 	log.Infof("publishing to %s", region)
-	// We need a different client for each region, so we don't use the global AWS clients pkg here.
-	awsSession := session.Must(session.NewSession(
-		aws.NewConfig().WithMaxRetries(10).WithRegion(region)))
+	// Override the region for the AWS session and clients.
+	clients.SetRegion(region)
 
 	bucket := util.PublicAssetsBucket()
 	s3Key := fmt.Sprintf("v%s/panther.yml", version)
@@ -86,7 +84,7 @@ func publishToRegion(log *zap.SugaredLogger, version, region string) error {
 
 	// Check if this version already exists - it's easy to forget to update the version
 	// in the template file and we don't want to overwrite a previous version.
-	_, err := s3.New(awsSession).HeadObject(&s3.HeadObjectInput{Bucket: &bucket, Key: &s3Key})
+	_, err := clients.S3().HeadObject(&s3.HeadObjectInput{Bucket: &bucket, Key: &s3Key})
 	if err == nil {
 		return fmt.Errorf("%s already exists", s3URL)
 	}

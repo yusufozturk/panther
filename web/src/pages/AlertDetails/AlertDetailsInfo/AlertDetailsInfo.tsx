@@ -21,7 +21,7 @@ import { Box, Card, Flex, Img, Link, SimpleGrid } from 'pouncejs';
 import Linkify from 'Components/Linkify';
 import { Link as RRLink } from 'react-router-dom';
 import urls from 'Source/urls';
-import { formatDatetime, minutesToString } from 'Helpers/utils';
+import { formatDatetime, formatNumber, minutesToString } from 'Helpers/utils';
 import { AlertDetails, RuleTeaser, ListDestinations } from 'Pages/AlertDetails';
 import AlertDeliverySection from 'Pages/AlertDetails/AlertDetailsInfo/AlertDeliverySection';
 import { DESTINATIONS } from 'Source/constants';
@@ -88,7 +88,7 @@ const AlertDetailsInfo: React.FC<AlertDetailsInfoProps> = ({ alert, rule, alertD
                 <Link id="rule-link" as={RRLink} to={urls.logAnalysis.rules.details(rule.id)}>
                   {rule.displayName || rule.id}
                 </Link>
-                <Box id="threshold">{minutesToString(rule.threshold)}</Box>
+                <Box id="threshold">{formatNumber(rule.threshold)}</Box>
                 <Box id="deduplication-period">
                   {rule.dedupPeriodMinutes
                     ? minutesToString(rule.dedupPeriodMinutes)

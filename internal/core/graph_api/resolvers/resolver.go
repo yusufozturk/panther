@@ -18,18 +18,8 @@ package resolvers
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import (
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/lambda"
-)
-
 //go:generate go run github.com/99designs/gqlgen
 
-var (
-	awsRegion  = "eu-central-1"
-	awsSession = session.Must(session.NewSession())
-	client     = lambda.New(awsSession, &aws.Config{Region: aws.String(awsRegion)})
-)
+// FIXME: Any dependency injection should be added here. This file only gets invoked once.
 
 type Resolver struct{}

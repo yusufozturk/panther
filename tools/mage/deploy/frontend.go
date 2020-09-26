@@ -103,8 +103,8 @@ func PushWebImg(imageRegistry, tag string) (string, error) {
 		return "", err
 	}
 
-	log.Info("docker build web server (deployments/Dockerfile)")
-	dockerBuildOutput, err := sh.Output("docker", "build", "--file", "deployments/Dockerfile", "--quiet", ".")
+	log.Info("docker build web server (deployments/web.Dockerfile)")
+	dockerBuildOutput, err := sh.Output("docker", "build", "--file", "deployments/web.Dockerfile", "--quiet", ".")
 	if err != nil {
 		return "", fmt.Errorf("docker build failed: %v", err)
 	}

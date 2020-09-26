@@ -192,6 +192,7 @@ type ComplexityRoot struct {
 	}
 
 	GeneralSettings struct {
+		AnalyticsConsent      func(childComplexity int) int
 		DisplayName           func(childComplexity int) int
 		Email                 func(childComplexity int) int
 		ErrorReportingConsent func(childComplexity int) int
@@ -1257,6 +1258,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.FloatSeriesData.Timestamps(childComplexity), true
+
+	case "GeneralSettings.analyticsConsent":
+		if e.complexity.GeneralSettings.AnalyticsConsent == nil {
+			break
+		}
+
+		return e.complexity.GeneralSettings.AnalyticsConsent(childComplexity), true
 
 	case "GeneralSettings.displayName":
 		if e.complexity.GeneralSettings.DisplayName == nil {
@@ -3806,12 +3814,14 @@ input UpdateGeneralSettingsInput {
   displayName: String
   email: String
   errorReportingConsent: Boolean
+  analyticsConsent: Boolean
 }
 
 type GeneralSettings {
   displayName: String
   email: String
   errorReportingConsent: Boolean
+  analyticsConsent: Boolean
 }
 
 input TestPolicyInput {
@@ -8135,6 +8145,37 @@ func (ec *executionContext) _GeneralSettings_errorReportingConsent(ctx context.C
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ErrorReportingConsent, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _GeneralSettings_analyticsConsent(ctx context.Context, field graphql.CollectedField, obj *models.GeneralSettings) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "GeneralSettings",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AnalyticsConsent, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -19895,6 +19936,14 @@ func (ec *executionContext) unmarshalInputUpdateGeneralSettingsInput(ctx context
 			if err != nil {
 				return it, err
 			}
+		case "analyticsConsent":
+			var err error
+
+			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("analyticsConsent"))
+			it.AnalyticsConsent, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -21019,6 +21068,8 @@ func (ec *executionContext) _GeneralSettings(ctx context.Context, sel ast.Select
 			out.Values[i] = ec._GeneralSettings_email(ctx, field, obj)
 		case "errorReportingConsent":
 			out.Values[i] = ec._GeneralSettings_errorReportingConsent(ctx, field, obj)
+		case "analyticsConsent":
+			out.Values[i] = ec._GeneralSettings_analyticsConsent(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

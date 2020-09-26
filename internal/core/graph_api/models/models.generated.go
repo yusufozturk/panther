@@ -290,6 +290,7 @@ type GeneralSettings struct {
 	DisplayName           *string `json:"displayName"`
 	Email                 *string `json:"email"`
 	ErrorReportingConsent *bool   `json:"errorReportingConsent"`
+	AnalyticsConsent      *bool   `json:"analyticsConsent"`
 }
 
 type GetAlertInput struct {
@@ -827,6 +828,7 @@ type UpdateGeneralSettingsInput struct {
 	DisplayName           *string `json:"displayName"`
 	Email                 *string `json:"email"`
 	ErrorReportingConsent *bool   `json:"errorReportingConsent"`
+	AnalyticsConsent      *bool   `json:"analyticsConsent"`
 }
 
 type UpdatePolicyInput struct {

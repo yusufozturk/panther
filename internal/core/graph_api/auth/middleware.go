@@ -33,25 +33,27 @@ import (
 )
 
 // The shared context among our resolvers
-const userCtxKey = "user"
+type Key string
+
+const userCtxKey Key = "user"
 
 var (
 	// Cognito details
 	awsRegion   = os.Getenv("AWS_REGION")
-	userPoolId  = os.Getenv("WEB_APPLICATION_USER_POOL_ID")
-	appClientId = os.Getenv("WEB_APPLICATION_USER_POOL_CLIENT_ID")
+	userPoolID  = os.Getenv("WEB_APPLICATION_USER_POOL_ID")
+	appClientID = os.Getenv("WEB_APPLICATION_USER_POOL_CLIENT_ID")
 
 	// A static list of JSON Web Key Sets that contain the public RSA keys for validating the associated JWTs. It should
 	// be read once and stored in memory since the RSA keys never change
 	// FIXME: handle error somehow
-	keySet, _ = jwk.Fetch(fmt.Sprintf("https://cognito-idp.%s.amazonaws.com/%s/.well-known/jwks.json", awsRegion, userPoolId))
+	keySet, _ = jwk.Fetch(fmt.Sprintf("https://cognito-idp.%s.amazonaws.com/%s/.well-known/jwks.json", awsRegion, userPoolID))
 )
 
+// nolint:lll
 // Middleware decodes the share session cookie and packs the session into context
 // https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-verifying-a-jwt.html#amazon-cognito-user-pools-using-tokens-step-2
 func Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
 		// attempt to parse the body of the request
 		bodyAsBytes, err := ioutil.ReadAll(r.Body)
 		if err != nil {
@@ -89,7 +91,7 @@ func Middleware(next http.Handler) http.Handler {
 		token, err := jwtParser.ParseWithClaims(authorizationToken, &claims, func(token *jwt.Token) (interface{}, error) {
 			// Validating that the algorithm is indeed RSA
 			if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
-				return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
 
 			// Making sure that the token specifies a mapping to Cognito's Public Key Sets
@@ -101,7 +103,7 @@ func Middleware(next http.Handler) http.Handler {
 			// Making sure that a Public RSA Key exists in the known Key Sets for this particular JWT token
 			keys := keySet.LookupKeyID(kid)
 			if len(keys) == 0 {
-				return nil, fmt.Errorf("Public RSA key %v not found", kid)
+				return nil, fmt.Errorf("public RSA key %v not found", kid)
 			}
 
 			// Return the Public RSA key in a weird format that jwt-go expects

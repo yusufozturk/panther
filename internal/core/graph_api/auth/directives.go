@@ -26,13 +26,15 @@ import (
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
+// nolint:golint,stylecheck
+// The implementation of the `@aws_auth` GraphQL directive
 func AwsAuth(ctx context.Context, _ interface{}, next graphql.Resolver, cognito_groups []string) (interface{}, error) {
 	user := ForContext(ctx)
 
 	hasPermission := len(intersect.Simple(user.Groups, cognito_groups).([]interface{})) > 0
-	if hasPermission == false {
+	if !hasPermission {
 		// block calling the next resolver
-		return nil, gqlerror.Errorf("Access denied")
+		return nil, gqlerror.Errorf("access denied")
 	}
 
 	return next(ctx)

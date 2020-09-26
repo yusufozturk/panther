@@ -33,16 +33,16 @@ type CognitoClaims struct {
 	PhoneNumberVerified bool   `json:"phone_number_verified"`
 	CognitoUsername     string `json:"cognitousername"`
 	GivenName           string `json:"given_name"`
-	EventId             string `json:"event_id"`
+	EventID             string `json:"event_id"`
 	TokenUse            string `json:"token_use"`
 	AuthTime            int64  `json:"auth_time"`
 	PhoneNumber         string `json:"phone_number"`
 	FamilyName          string `json:"family_name"`
 	Email               string `json:"email"`
 
-	// Enterprise
+	// Extra
 	Groups []string `json:"cognito:groups"`
-	RoleId string   `json:"custom:role_id,omitempty"`
+	RoleID string   `json:"custom:role_id,omitempty"`
 }
 
 // Check JWT target audience
@@ -74,25 +74,25 @@ func (c CognitoClaims) VerifyIssuedAt() bool {
 
 // Checks if the token's claims are valid
 func (c CognitoClaims) Valid() error {
-	if c.VerifyExpiresAt() == false {
-		return fmt.Errorf("Token has expired")
+	if !c.VerifyExpiresAt() {
+		return fmt.Errorf("token has expired")
 	}
 
-	if c.VerifyIssuedAt() == false {
-		return fmt.Errorf("Token used before issued")
+	if !c.VerifyIssuedAt() {
+		return fmt.Errorf("token used before issued")
 	}
 
-	if c.VerifyUsage() == false {
-		return fmt.Errorf("Invalid JWT usage")
+	if !c.VerifyUsage() {
+		return fmt.Errorf("invalid JWT usage")
 	}
 
-	if c.VerifyAudience(appClientId) == false {
-		return fmt.Errorf("Invalid JWT issuer")
+	if !c.VerifyAudience(appClientID) {
+		return fmt.Errorf("invalid JWT issuer")
 	}
 
-	expectedIssuer := fmt.Sprintf("https://cognito-idp.%s.amazonaws.com/%s", awsRegion, userPoolId)
-	if c.VerifyIssuer(expectedIssuer) == false {
-		return fmt.Errorf("Invalid JWT issuer")
+	expectedIssuer := fmt.Sprintf("https://cognito-idp.%s.amazonaws.com/%s", awsRegion, userPoolID)
+	if !c.VerifyIssuer(expectedIssuer) {
+		return fmt.Errorf("invalid JWT issuer")
 	}
 
 	return nil

@@ -83,3 +83,7 @@ issues:
       linters:
         # long lines with raw test strings
         - lll
+    - path: internal/core/graph_api/resolvers/
+      linters:
+        # long signatures  of autogen resolvers
+        - lll

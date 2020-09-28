@@ -25,8 +25,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-// A private key for context that only this package can access. This is important
-// to prevent collisions between different context uses
+// The claims that Cognito's JWT token contains
 type CognitoClaims struct {
 	jwt.StandardClaims
 	EmailVerified       bool   `json:"email_verified"`

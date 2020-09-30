@@ -129,8 +129,7 @@ func (api API) validateIntegration(input *models.PutIntegrationInput) error {
 	if !passing {
 		zap.L().Warn("PutIntegration: resource has a misconfiguration",
 			zap.Error(err),
-			zap.String("reason", reason),
-			zap.Any("input", input))
+			zap.String("reason", reason))
 		return &genericapi.InvalidInputError{
 			Message: fmt.Sprintf("Source %s did not pass configuration check. %s",
 				input.IntegrationLabel, reason),

@@ -864,18 +864,6 @@ Resources:
             - Effect: Allow
               Action: s3:GetObject
               Resource: arn:aws:s3:::panther-public-cloudformation-templates/*
-        - Id: CreateGlueTables # to create tables for new log sources
-          Version: 2012-10-17
-          Statement:
-            - Effect: Allow
-              Action:
-                - glue:CreateTable
-                - glue:GetTable
-                - glue:UpdateTable
-              Resource:
-                - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:catalog
-                - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:database/panther*
-                - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/panther*
         - Id: AthenaPermissions # to create views over Glue tables
           Version: 2012-10-17
           Statement:

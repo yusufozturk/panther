@@ -17,25 +17,31 @@
  */
 
 import { DestinationTypeEnum } from 'Generated/schema';
-import mx from 'mixpanel-browser';
 import storage from 'Helpers/storage';
-import { ANALYTICS_CONSENT_STORAGE_KEY } from 'Source/constants';
+import { ANALYTICS_CONSENT_STORAGE_KEY, STABLE_PANTHER_VERSION } from 'Source/constants';
 import { AlertSummaryFull } from 'Source/graphql/fragments/AlertSummaryFull.generated';
-import { logError } from 'Helpers/loggers';
+import { logError } from 'Helpers/errors';
 
 const evaluateTracking = (...args) => {
   const mixpanelPublicToken = process.env.MIXPANEL_PUBLIC_TOKEN;
   if (!mixpanelPublicToken || storage.local.read<boolean>(ANALYTICS_CONSENT_STORAGE_KEY) !== true) {
     return;
   }
-  window.requestIdleCallback(() => {
-    try {
-      mx.init(mixpanelPublicToken);
-      mx.track(...args);
-    } catch (e) {
-      // Reporting to sentry
-      logError(e);
-    }
+
+  import(/* webpackChunkName: "mixpanel" */ 'mixpanel-browser').then(mx => {
+    // We don't wanna initialize before any tracking occurs so we don't have to un-necessarily
+    // download the mixpanel chunk at the user's device. `init` method is idempotent, meaning that
+    // no matter how many times we call it, it won't override anything.
+    window.requestIdleCallback(() => {
+      try {
+        mx.init(mixpanelPublicToken);
+        const [eventName, meta] = args;
+        mx.track(eventName, { ...meta, version: STABLE_PANTHER_VERSION });
+      } catch (e) {
+        // Reporting to sentry
+        logError(e);
+      }
+    });
   });
 };
 
@@ -148,8 +154,8 @@ export const trackEvent = (payload: TrackEvent) => {
   evaluateTracking(payload.event, {
     type: 'event',
     src: payload.src,
-    ctx: 'ctx' in payload ? payload.ctx : null,
-    ...('data' in payload ? payload.data : null),
+    ctx: 'ctx' in payload ? payload.ctx : undefined,
+    ...('data' in payload ? payload.data : undefined),
   });
 };
 
@@ -159,21 +165,17 @@ export enum TrackErrorEnum {
   FailedMfa = 'Failed MFA',
 }
 
-interface ErrorEvent {
-  data: any;
-}
-
-interface AddDestinationError extends ErrorEvent {
+interface AddDestinationError {
   event: TrackErrorEnum.FailedToAddDestination;
   src: SrcEnum.Destinations;
   ctx: DestinationTypeEnum;
 }
 
-interface AddRuleError extends ErrorEvent {
+interface AddRuleError {
   event: TrackErrorEnum.FailedToAddRule;
   src: SrcEnum.Rules;
 }
-interface MfaError extends ErrorEvent {
+interface MfaError {
   event: TrackErrorEnum.FailedMfa;
   src: SrcEnum.Auth;
 }
@@ -184,7 +186,6 @@ export const trackError = (payload: TrackError) => {
   evaluateTracking(payload.event, {
     type: 'error',
     src: payload.src,
-    ctx: 'ctx' in payload ? payload.ctx : null,
-    data: 'data' in payload ? payload.data : null,
+    ctx: 'ctx' in payload ? payload.ctx : undefined,
   });
 };

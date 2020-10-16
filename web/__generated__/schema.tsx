@@ -457,6 +457,7 @@ export type ListAlertsInput = {
   pageSize?: Maybe<Scalars['Int']>;
   exclusiveStartKey?: Maybe<Scalars['String']>;
   severity?: Maybe<Array<Maybe<SeverityEnum>>>;
+  logTypes?: Maybe<Array<Scalars['String']>>;
   nameContains?: Maybe<Scalars['String']>;
   createdAtBefore?: Maybe<Scalars['AWSDateTime']>;
   createdAtAfter?: Maybe<Scalars['AWSDateTime']>;
@@ -465,7 +466,6 @@ export type ListAlertsInput = {
   status?: Maybe<Array<Maybe<AlertStatusesEnum>>>;
   eventCountMin?: Maybe<Scalars['Int']>;
   eventCountMax?: Maybe<Scalars['Int']>;
-  logTypes?: Maybe<Array<Scalars['String']>>;
   sortBy?: Maybe<ListAlertsSortFieldsEnum>;
   sortDir?: Maybe<SortDirEnum>;
 };
@@ -566,7 +566,7 @@ export type ListRulesInput = {
   enabled?: Maybe<Scalars['Boolean']>;
   logTypes?: Maybe<Scalars['String']>;
   severity?: Maybe<SeverityEnum>;
-  tags?: Maybe<Scalars['String']>;
+  tags?: Maybe<Array<Scalars['String']>>;
   sortBy?: Maybe<ListRulesSortFieldsEnum>;
   sortDir?: Maybe<SortDirEnum>;
   pageSize?: Maybe<Scalars['Int']>;
@@ -600,6 +600,7 @@ export type LogAnalysisMetricsResponse = {
   alertsBySeverity: SeriesData;
   eventsLatency: FloatSeriesData;
   totalAlertsDelta: Array<SingleValue>;
+  alertsByRuleID: Array<SingleValue>;
   fromDate: Scalars['AWSDateTime'];
   toDate: Scalars['AWSDateTime'];
   intervalMinutes: Scalars['Int'];
@@ -1074,10 +1075,12 @@ export type RuleSummary = {
   displayName?: Maybe<Scalars['String']>;
   enabled?: Maybe<Scalars['Boolean']>;
   id: Scalars['ID'];
+  threshold?: Maybe<Scalars['Int']>;
   lastModified?: Maybe<Scalars['AWSDateTime']>;
+  createdAt?: Maybe<Scalars['AWSDateTime']>;
   logTypes?: Maybe<Array<Maybe<Scalars['String']>>>;
   severity?: Maybe<SeverityEnum>;
-  tags?: Maybe<Array<Maybe<Scalars['String']>>>;
+  tags?: Maybe<Array<Scalars['String']>>;
 };
 
 export type S3LogIntegration = {
@@ -2105,6 +2108,7 @@ export type LogAnalysisMetricsResponseResolvers<
   alertsBySeverity?: Resolver<ResolversTypes['SeriesData'], ParentType, ContextType>;
   eventsLatency?: Resolver<ResolversTypes['FloatSeriesData'], ParentType, ContextType>;
   totalAlertsDelta?: Resolver<Array<ResolversTypes['SingleValue']>, ParentType, ContextType>;
+  alertsByRuleID?: Resolver<Array<ResolversTypes['SingleValue']>, ParentType, ContextType>;
   fromDate?: Resolver<ResolversTypes['AWSDateTime'], ParentType, ContextType>;
   toDate?: Resolver<ResolversTypes['AWSDateTime'], ParentType, ContextType>;
   intervalMinutes?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -2676,10 +2680,12 @@ export type RuleSummaryResolvers<
   displayName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   enabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  threshold?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   lastModified?: Resolver<Maybe<ResolversTypes['AWSDateTime']>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['AWSDateTime']>, ParentType, ContextType>;
   logTypes?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   severity?: Resolver<Maybe<ResolversTypes['SeverityEnum']>, ParentType, ContextType>;
-  tags?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 

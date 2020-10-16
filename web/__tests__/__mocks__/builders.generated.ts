@@ -727,6 +727,7 @@ export const buildListAlertsInput = (overrides: Partial<ListAlertsInput> = {}): 
     exclusiveStartKey:
       'exclusiveStartKey' in overrides ? overrides.exclusiveStartKey : 'Throughway',
     severity: 'severity' in overrides ? overrides.severity : [SeverityEnum.Low],
+    logTypes: 'logTypes' in overrides ? overrides.logTypes : ['Awesome Wooden Mouse'],
     nameContains: 'nameContains' in overrides ? overrides.nameContains : 'Island',
     createdAtBefore:
       'createdAtBefore' in overrides ? overrides.createdAtBefore : '2020-05-22T12:33:45.819Z',
@@ -737,7 +738,6 @@ export const buildListAlertsInput = (overrides: Partial<ListAlertsInput> = {}): 
     status: 'status' in overrides ? overrides.status : [AlertStatusesEnum.Open],
     eventCountMin: 'eventCountMin' in overrides ? overrides.eventCountMin : 694,
     eventCountMax: 'eventCountMax' in overrides ? overrides.eventCountMax : 911,
-    logTypes: 'logTypes' in overrides ? overrides.logTypes : ['Awesome Wooden Mouse'],
     sortBy: 'sortBy' in overrides ? overrides.sortBy : ListAlertsSortFieldsEnum.CreatedAt,
     sortDir: 'sortDir' in overrides ? overrides.sortDir : SortDirEnum.Descending,
   };
@@ -862,7 +862,7 @@ export const buildListRulesInput = (overrides: Partial<ListRulesInput> = {}): Li
     enabled: 'enabled' in overrides ? overrides.enabled : false,
     logTypes: 'logTypes' in overrides ? overrides.logTypes : 'Drive',
     severity: 'severity' in overrides ? overrides.severity : SeverityEnum.Low,
-    tags: 'tags' in overrides ? overrides.tags : 'channels',
+    tags: 'tags' in overrides ? overrides.tags : ['channels'],
     sortBy: 'sortBy' in overrides ? overrides.sortBy : ListRulesSortFieldsEnum.Enabled,
     sortDir: 'sortDir' in overrides ? overrides.sortDir : SortDirEnum.Ascending,
     pageSize: 'pageSize' in overrides ? overrides.pageSize : 19,
@@ -902,6 +902,7 @@ export const buildLogAnalysisMetricsResponse = (
     eventsLatency: 'eventsLatency' in overrides ? overrides.eventsLatency : buildFloatSeriesData(),
     totalAlertsDelta:
       'totalAlertsDelta' in overrides ? overrides.totalAlertsDelta : [buildSingleValue()],
+    alertsByRuleID: 'alertsByRuleID' in overrides ? overrides.alertsByRuleID : [buildSingleValue()],
     fromDate: 'fromDate' in overrides ? overrides.fromDate : '2020-06-15T22:39:08.690Z',
     toDate: 'toDate' in overrides ? overrides.toDate : '2020-06-29T16:49:54.582Z',
     intervalMinutes: 'intervalMinutes' in overrides ? overrides.intervalMinutes : 670,
@@ -1207,7 +1208,9 @@ export const buildRuleSummary = (overrides: Partial<RuleSummary> = {}): RuleSumm
     displayName: 'displayName' in overrides ? overrides.displayName : 'array',
     enabled: 'enabled' in overrides ? overrides.enabled : false,
     id: 'id' in overrides ? overrides.id : '4ce135b7-005f-4a98-8a69-9b9d3b372bdb',
+    threshold: 'threshold' in overrides ? overrides.threshold : 550,
     lastModified: 'lastModified' in overrides ? overrides.lastModified : '2020-10-11T23:20:19.662Z',
+    createdAt: 'createdAt' in overrides ? overrides.createdAt : '2020-09-24T09:09:49.137Z',
     logTypes: 'logTypes' in overrides ? overrides.logTypes : ['AI'],
     severity: 'severity' in overrides ? overrides.severity : SeverityEnum.Info,
     tags: 'tags' in overrides ? overrides.tags : ['Virginia'],

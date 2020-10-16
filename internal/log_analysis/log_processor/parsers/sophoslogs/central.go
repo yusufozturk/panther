@@ -37,7 +37,7 @@ type SophosCentralEvent struct {
 	ID           pantherlog.String `json:"id" validate:"required" description:"Unique identifier for the event"`
 	Type         pantherlog.String `json:"type" validate:"required" description:"Type of event"`
 	Category     pantherlog.String `json:"group" validate:"required" description:"Category of event"`
-	Time         pantherlog.Time   `json:"end" validate:"required" panther:"event_time" description:"Time the event occurred on the endpoint"`
+	Time         pantherlog.Time   `json:"end" validate:"required" event_time:"true" tcodec:"rfc3339" description:"Time the event occurred on the endpoint"`
 	UploadTime   pantherlog.Time   `json:"rt" validate:"required" description:"Time the event was uploaded to Sophos Central"`
 	Host         pantherlog.String `json:"dhost" validate:"required" description:"Source host of the event"`
 	User         pantherlog.String `json:"suser" validate:"required" description:"Logged in user"`

@@ -55,9 +55,11 @@ describe('OpsGenieDestinationForm', () => {
     );
     const displayNameField = getByLabelText('* Display Name');
     const apiKeyField = getByLabelText('Opsgenie API key');
+    const europeanServiceRegionSwitch = getByText('European Service Region');
     const submitButton = getByText('Add Destination');
     expect(displayNameField).toBeInTheDocument();
     expect(apiKeyField).toBeInTheDocument();
+    expect(europeanServiceRegionSwitch).toBeInTheDocument();
     Object.values(SeverityEnum).forEach(sev => {
       expect(getByText(sev)).toBeInTheDocument();
     });
@@ -71,11 +73,12 @@ describe('OpsGenieDestinationForm', () => {
     );
     const displayNameField = getByLabelText('* Display Name');
     const apiKeyField = getByLabelText('Opsgenie API key');
+    const europeanServiceRegionSwitch = getByText('European Service Region');
     const submitButton = getByText('Add Destination');
     const criticalSeverityCheckBox = document.getElementById(severity);
     expect(criticalSeverityCheckBox).not.toBeNull();
     expect(submitButton).toHaveAttribute('disabled');
-
+    expect(europeanServiceRegionSwitch).not.toBeNull();
     fireEvent.change(displayNameField, { target: { value: displayName } });
     fireEvent.click(criticalSeverityCheckBox);
     await waitMs(50);
@@ -92,12 +95,14 @@ describe('OpsGenieDestinationForm', () => {
     );
     const displayNameField = getByLabelText('* Display Name');
     const apiKeyField = getByLabelText('Opsgenie API key');
+    const europeanServiceRegionSwitch = getByText('European Service Region');
     const submitButton = getByText('Add Destination');
     const criticalSeverityCheckBox = document.getElementById(severity);
     expect(criticalSeverityCheckBox).not.toBeNull();
     expect(submitButton).toHaveAttribute('disabled');
 
     fireEvent.change(displayNameField, { target: { value: displayName } });
+    fireEvent.click(europeanServiceRegionSwitch);
     fireEvent.click(criticalSeverityCheckBox);
     fireEvent.change(apiKeyField, { target: { value: '123' } });
     await waitMs(50);
@@ -108,7 +113,7 @@ describe('OpsGenieDestinationForm', () => {
     expect(submitMockFunc).toHaveBeenCalledWith({
       outputId: null,
       displayName,
-      outputConfig: { opsgenie: { apiKey: '123' } },
+      outputConfig: { opsgenie: { apiKey: '123', europeanServiceRegion: true } },
       defaultForSeverity: [severity],
     });
   });

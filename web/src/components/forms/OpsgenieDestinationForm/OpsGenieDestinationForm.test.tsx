@@ -28,6 +28,7 @@ const emptyInitialValues = {
   outputConfig: {
     opsgenie: {
       apiKey: '',
+      europeanServiceRegion: false,
     },
   },
 };
@@ -41,6 +42,7 @@ const initialValues = {
   outputConfig: {
     opsgenie: {
       apiKey: '',
+      europeanServiceRegion: false,
     },
   },
   defaultForSeverity: [severity],

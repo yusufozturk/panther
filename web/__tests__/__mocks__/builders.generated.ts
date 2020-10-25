@@ -938,6 +938,8 @@ export const buildOpsgenieConfig = (overrides: Partial<OpsgenieConfig> = {}): Op
   return {
     __typename: 'OpsgenieConfig',
     apiKey: 'apiKey' in overrides ? overrides.apiKey : 'IB',
+    europeanServiceRegion:
+      'europeanServiceRegion' in overrides ? overrides.europeanServiceRegion : true,
   };
 };
 
@@ -946,6 +948,8 @@ export const buildOpsgenieConfigInput = (
 ): OpsgenieConfigInput => {
   return {
     apiKey: 'apiKey' in overrides ? overrides.apiKey : 'hacking',
+    europeanServiceRegion:
+      'europeanServiceRegion' in overrides ? overrides.europeanServiceRegion : false,
   };
 };
 

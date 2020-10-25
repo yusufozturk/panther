@@ -229,7 +229,8 @@ type JiraConfig struct {
 
 // OpsgenieConfig defines options for each Opsgenie output
 type OpsgenieConfig struct {
-	APIKey string `json:"apiKey"`
+	APIKey                string `json:"apiKey"`
+	EuropeanServiceRegion bool   `json:"europeanServiceRegion"`
 }
 
 // MsTeamsConfig defines options for each MsTeams output

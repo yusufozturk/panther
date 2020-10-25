@@ -465,6 +465,7 @@ describe('EditDestination', () => {
       defaultForSeverity: [SeverityEnum.Critical],
     }) as DestinationFull;
     destination.outputConfig.opsgenie.apiKey = '';
+    destination.outputConfig.opsgenie.europeanServiceRegion = false;
 
     const mocks = [
       mockGetDestinationDetails({ data: { destination } }),
@@ -478,6 +479,7 @@ describe('EditDestination', () => {
             outputConfig: {
               opsgenie: {
                 apiKey: destination.outputConfig.opsgenie.apiKey,
+                europeanServiceRegion: destination.outputConfig.opsgenie.europeanServiceRegion,
               },
             },
           },

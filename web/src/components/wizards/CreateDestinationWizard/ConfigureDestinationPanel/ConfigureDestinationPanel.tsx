@@ -41,7 +41,7 @@ const initialValues: Omit<DestinationInput, 'outputType'> = {
       assigneeId: '',
       issueType: '',
     },
-    opsgenie: { apiKey: '' },
+    opsgenie: { apiKey: '', europeanServiceRegion: false },
     slack: { webhookURL: '' },
     msTeams: { webhookURL: '' },
     sns: { topicArn: '' },

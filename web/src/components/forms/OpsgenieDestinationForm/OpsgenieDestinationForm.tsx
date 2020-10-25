@@ -26,7 +26,8 @@ import BaseDestinationForm, {
   BaseDestinationFormValues,
   defaultValidationSchema,
 } from 'Components/forms/BaseDestinationForm';
-import { SimpleGrid } from 'pouncejs';
+import { FormHelperText, SimpleGrid } from 'pouncejs';
+import FormikSwitch from 'Components/fields/Switch';
 
 type OpsgenieFieldValues = Pick<DestinationConfigInput, 'opsgenie'>;
 
@@ -45,6 +46,7 @@ const OpsgenieDestinationForm: React.FC<OpsgenieDestinationFormProps> = ({
     outputConfig: Yup.object().shape({
       opsgenie: Yup.object().shape({
         apiKey: existing ? Yup.string() : Yup.string().required(),
+        europeanServiceRegion: Yup.boolean(),
       }),
     }),
   });
@@ -74,6 +76,16 @@ const OpsgenieDestinationForm: React.FC<OpsgenieDestinationFormProps> = ({
           required={!existing}
           autoComplete="new-password"
         />
+        <Field
+          as={FormikSwitch}
+          name="outputConfig.opsgenie.europeanServiceRegion"
+          label="European Service Region"
+          aria-describedby="european-service-region-helper"
+        />
+        <FormHelperText mt={0} id="european-service-region-helper-text">
+          Enable this option if you are registered to Opsgenie Europe (app.eu.opsgenie.com). Panther
+          will send alerts using the EU API domain (api.eu.opsgenie.com).
+        </FormHelperText>
       </SimpleGrid>
     </BaseDestinationForm>
   );

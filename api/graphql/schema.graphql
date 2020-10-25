@@ -602,6 +602,7 @@ type SqsDestinationConfig {
 
 type OpsgenieConfig {
   apiKey: String!
+  europeanServiceRegion: Boolean!
 }
 
 type MsTeamsConfig {
@@ -670,6 +671,7 @@ input SqsConfigInput {
 
 input OpsgenieConfigInput {
   apiKey: String!
+  europeanServiceRegion: Boolean!
 }
 
 input MsTeamsConfigInput {

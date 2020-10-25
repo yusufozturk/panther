@@ -785,10 +785,12 @@ export type MutationUpdateGlobalPythonlModuleArgs = {
 export type OpsgenieConfig = {
   __typename?: 'OpsgenieConfig';
   apiKey: Scalars['String'];
+  europeanServiceRegion: Scalars['Boolean'];
 };
 
 export type OpsgenieConfigInput = {
   apiKey: Scalars['String'];
+  europeanServiceRegion: Scalars['Boolean'];
 };
 
 export type OrganizationReportBySeverity = {
@@ -2331,6 +2333,7 @@ export type OpsgenieConfigResolvers<
   ParentType extends ResolversParentTypes['OpsgenieConfig'] = ResolversParentTypes['OpsgenieConfig']
 > = {
   apiKey?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  europeanServiceRegion?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 

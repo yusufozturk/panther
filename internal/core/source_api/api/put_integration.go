@@ -244,9 +244,12 @@ func generateNewIntegration(input *models.PutIntegrationInput) *models.SourceInt
 	case models.IntegrationTypeAWSScan:
 		metadata.AWSAccountID = input.AWSAccountID
 		metadata.CWEEnabled = input.CWEEnabled
+		metadata.LogProcessingRole = env.InputDataRoleArn
 		metadata.RemediationEnabled = input.RemediationEnabled
 		metadata.ScanIntervalMins = input.ScanIntervalMins
 		metadata.StackName = getStackName(input.IntegrationType, input.IntegrationLabel)
+		metadata.S3Bucket = env.InputDataBucketName
+		metadata.S3Prefix = models.CloudSecurityS3Prefix
 	case models.IntegrationTypeAWS3:
 		metadata.AWSAccountID = input.AWSAccountID
 		metadata.S3Bucket = input.S3Bucket
@@ -272,10 +275,6 @@ func generateNewIntegration(input *models.PutIntegrationInput) *models.SourceInt
 }
 
 func createTables(integration *models.SourceIntegration) error {
-	if !integration.IsLogAnalysisIntegration() {
-		return nil
-	}
-
 	m := process.CreateTablesMessage{
 		LogTypes: integration.RequiredLogTypes(),
 	}

@@ -28,8 +28,10 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.6.1
 	github.com/tidwall/gjson v1.6.1
+	github.com/tidwall/sjson v1.1.2
 	go.uber.org/multierr v1.5.0
 	go.uber.org/zap v1.16.0
+	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
 	golang.org/x/tools v0.0.0-20200914175622-c9b80dc7fda4
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect

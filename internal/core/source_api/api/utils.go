@@ -46,13 +46,16 @@ func integrationToItem(input *models.SourceIntegration) *ddb.Integration {
 	case models.IntegrationTypeAWSScan:
 		item.AWSAccountID = input.AWSAccountID
 		item.CWEEnabled = input.CWEEnabled
-		item.RemediationEnabled = input.RemediationEnabled
-		item.ScanIntervalMins = input.ScanIntervalMins
-		item.ScanStatus = input.ScanStatus
 		item.EventStatus = input.EventStatus
 		item.LastScanErrorMessage = input.LastScanErrorMessage
-		item.LastScanStartTime = input.LastScanStartTime
 		item.LastScanEndTime = input.LastScanEndTime
+		item.LastScanStartTime = input.LastScanStartTime
+		item.LogProcessingRole = input.LogProcessingRole
+		item.RemediationEnabled = input.RemediationEnabled
+		item.S3Bucket = input.S3Bucket
+		item.S3Prefix = input.S3Prefix
+		item.ScanIntervalMins = input.ScanIntervalMins
+		item.ScanStatus = input.ScanStatus
 		item.StackName = input.StackName
 	case models.IntegrationTypeSqs:
 		item.SqsConfig = &ddb.SqsConfig{
@@ -93,6 +96,9 @@ func itemToIntegration(item *ddb.Integration) *models.SourceIntegration {
 		integration.RemediationEnabled = item.RemediationEnabled
 		integration.ScanIntervalMins = item.ScanIntervalMins
 		integration.ScanStatus = item.ScanStatus
+		integration.S3Bucket = item.S3Bucket
+		integration.S3Prefix = item.S3Prefix
+		integration.LogProcessingRole = item.LogProcessingRole
 		integration.EventStatus = item.EventStatus
 		integration.LastScanStartTime = item.LastScanStartTime
 		integration.LastScanEndTime = item.LastScanEndTime

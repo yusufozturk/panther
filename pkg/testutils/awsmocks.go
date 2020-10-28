@@ -18,6 +18,15 @@ package testutils
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * Copyright (C) 2020 Panther Labs Inc
+ *
+ * Panther Enterprise is licensed under the terms of a commercial license available from
+ * Panther Labs Inc ("Panther Commercial License") by contacting contact@runpanther.com.
+ * All use, distribution, and/or modification of this software, whether commercial or non-commercial,
+ * falls under the Panther Commercial License to the extent it is permitted.
+ */
+
 import (
 	"errors"
 
@@ -59,6 +68,11 @@ func (m *S3UploaderMock) Upload(input *s3manager.UploadInput, f ...func(*s3manag
 type S3Mock struct {
 	s3iface.S3API
 	mock.Mock
+}
+
+func (m *S3Mock) DeleteObjects(input *s3.DeleteObjectsInput) (*s3.DeleteObjectsOutput, error) {
+	args := m.Called(input)
+	return args.Get(0).(*s3.DeleteObjectsOutput), args.Error(1)
 }
 
 func (m *S3Mock) GetObject(input *s3.GetObjectInput) (*s3.GetObjectOutput, error) {
@@ -142,6 +156,11 @@ func (m *DynamoDBMock) GetItem(input *dynamodb.GetItemInput) (*dynamodb.GetItemO
 func (m *DynamoDBMock) DeleteItem(input *dynamodb.DeleteItemInput) (*dynamodb.DeleteItemOutput, error) {
 	args := m.Called(input)
 	return args.Get(0).(*dynamodb.DeleteItemOutput), args.Error(1)
+}
+
+func (m *DynamoDBMock) Query(input *dynamodb.QueryInput) (*dynamodb.QueryOutput, error) {
+	args := m.Called(input)
+	return args.Get(0).(*dynamodb.QueryOutput), args.Error(1)
 }
 
 func (m *DynamoDBMock) Scan(input *dynamodb.ScanInput) (*dynamodb.ScanOutput, error) {
@@ -323,11 +342,28 @@ type FirehoseMock struct {
 	mock.Mock
 }
 
+const (
+	// https://docs.aws.amazon.com/firehose/latest/dev/limits.html
+	firehoseMaxBatchSize = 4190000
+	firehoseMaxMessages  = 500
+)
+
 func (m *FirehoseMock) PutRecordBatchWithContext(
 	ctx aws.Context,
 	input *firehose.PutRecordBatchInput,
 	options ...request.Option) (*firehose.PutRecordBatchOutput, error) {
 
 	args := m.Called(ctx, input, options)
+	// Enforce firehose limits
+	if len(input.Records) > firehoseMaxMessages {
+		return nil, errors.New("too many messages sent")
+	}
+	size := 0
+	for _, record := range input.Records {
+		size += len(record.Data)
+	}
+	if size > firehoseMaxBatchSize {
+		return nil, errors.New("messages size too big")
+	}
 	return args.Get(0).(*firehose.PutRecordBatchOutput), args.Error(1)
 }

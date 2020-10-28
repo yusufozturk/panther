@@ -18,6 +18,15 @@ package firehosebatch
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * Copyright (C) 2020 Panther Labs Inc
+ *
+ * Panther Enterprise is licensed under the terms of a commercial license available from
+ * Panther Labs Inc ("Panther Commercial License") by contacting contact@runpanther.com.
+ * All use, distribution, and/or modification of this software, whether commercial or non-commercial,
+ * falls under the Panther Commercial License to the extent it is permitted.
+ */
+
 import (
 	"context"
 	"errors"
@@ -25,13 +34,14 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/firehose"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
 	"github.com/panther-labs/panther/pkg/testutils"
 )
 
-func TestRetryInCaseOfError(t *testing.T) {
+func TestRetrySendInCaseOfError(t *testing.T) {
 	t.Parallel()
 	mockClient := &testutils.FirehoseMock{}
 	input := firehose.PutRecordBatchInput{
@@ -44,7 +54,7 @@ func TestRetryInCaseOfError(t *testing.T) {
 	mockClient.AssertExpectations(t)
 }
 
-func TestDoNotRetryIfContextCancelled(t *testing.T) {
+func TestDoNotRetrySendIfContextCancelled(t *testing.T) {
 	t.Parallel()
 	mockClient := &testutils.FirehoseMock{}
 	input := firehose.PutRecordBatchInput{
@@ -61,7 +71,7 @@ func TestDoNotRetryIfContextCancelled(t *testing.T) {
 	mockClient.AssertExpectations(t)
 }
 
-func TestRetryIfPartialFailure(t *testing.T) {
+func TestRetrySendIfPartialFailure(t *testing.T) {
 	t.Parallel()
 	mockClient := &testutils.FirehoseMock{}
 	input := firehose.PutRecordBatchInput{
@@ -103,7 +113,7 @@ func TestRetryIfPartialFailure(t *testing.T) {
 	mockClient.AssertExpectations(t)
 }
 
-func TestFailIfPartialRetriesFailed(t *testing.T) {
+func TestSendFailIfPartialRetriesFailed(t *testing.T) {
 	t.Parallel()
 	mockClient := &testutils.FirehoseMock{}
 	input := firehose.PutRecordBatchInput{
@@ -136,5 +146,103 @@ func TestFailIfPartialRetriesFailed(t *testing.T) {
 		Return(partialFailureOutput, nil).Twice()
 
 	require.Error(t, Send(context.TODO(), mockClient, input, 2))
+	mockClient.AssertExpectations(t)
+}
+
+func TestSendBatchBreakUpRequests(t *testing.T) {
+	t.Parallel()
+	mockClient := &testutils.FirehoseMock{}
+	bigData := make([]byte, maxBytes-10)
+	// These inputs are too big to send together, but can be sent separately
+	totalInput := firehose.PutRecordBatchInput{
+		DeliveryStreamName: aws.String("stream"),
+		Records: []*firehose.Record{
+			{Data: []byte("enough bytes to have the next request push us over")},
+			{Data: bigData},
+			{Data: []byte("smol")},
+		},
+	}
+	batchOneInput := firehose.PutRecordBatchInput{
+		DeliveryStreamName: aws.String("stream"),
+		Records:            totalInput.Records[0:1],
+	}
+	batchTwoInput := firehose.PutRecordBatchInput{
+		DeliveryStreamName: aws.String("stream"),
+		Records:            totalInput.Records[1:3],
+	}
+	batchOneOutput := &firehose.PutRecordBatchOutput{
+		RequestResponses: []*firehose.PutRecordBatchResponseEntry{
+			{RecordId: aws.String("1")},
+		},
+	}
+	batchTwoOutput := &firehose.PutRecordBatchOutput{
+		RequestResponses: []*firehose.PutRecordBatchResponseEntry{
+			{RecordId: aws.String("2")},
+			{RecordId: aws.String("3")},
+		},
+	}
+	mockClient.On("PutRecordBatchWithContext", mock.Anything, &batchOneInput, mock.Anything).
+		Return(batchOneOutput, nil)
+	mockClient.On("PutRecordBatchWithContext", mock.Anything, &batchTwoInput, mock.Anything).
+		Return(batchTwoOutput, nil)
+
+	tooBig, err := BatchSend(context.TODO(), mockClient, totalInput, 10)
+	assert.NoError(t, err)
+	assert.Empty(t, tooBig)
+	mockClient.AssertExpectations(t)
+
+	// Now just to be sure, lets check that the underlying Send call would choke on this
+	// (this will error despite the mock Return because the mocked function enforces the limits)
+	mockClient.On("PutRecordBatchWithContext", mock.Anything, &totalInput, mock.Anything).
+		Return(batchOneOutput, nil)
+	err = Send(context.TODO(), mockClient, totalInput, 10)
+	assert.Error(t, err)
+	mockClient.AssertExpectations(t)
+}
+
+func TestSendBatchSkipsTooBig(t *testing.T) {
+	t.Parallel()
+	mockClient := &testutils.FirehoseMock{}
+	bigData := make([]byte, maxBytes+10)
+	// The middle input is too big, and should be skipped
+	totalInput := firehose.PutRecordBatchInput{
+		DeliveryStreamName: aws.String("stream"),
+		Records: []*firehose.Record{
+			{Data: []byte("small data")},
+			{Data: bigData},
+			{Data: []byte("smol")},
+		},
+	}
+	batchOneInput := firehose.PutRecordBatchInput{
+		DeliveryStreamName: aws.String("stream"),
+		Records:            totalInput.Records[0:1],
+	}
+	batchTwoInput := firehose.PutRecordBatchInput{
+		DeliveryStreamName: aws.String("stream"),
+		Records:            totalInput.Records[2:3],
+	}
+	batchOneOutput := &firehose.PutRecordBatchOutput{
+		RequestResponses: []*firehose.PutRecordBatchResponseEntry{
+			{
+				RecordId: aws.String("1"),
+			},
+		},
+	}
+	batchTwoOutput := &firehose.PutRecordBatchOutput{
+		RequestResponses: []*firehose.PutRecordBatchResponseEntry{
+			{
+				RecordId: aws.String("3"),
+			},
+		},
+	}
+	mockClient.On("PutRecordBatchWithContext", mock.Anything, &batchOneInput, mock.Anything).
+		Return(batchOneOutput, nil)
+	mockClient.On("PutRecordBatchWithContext", mock.Anything, &batchTwoInput, mock.Anything).
+		Return(batchTwoOutput, nil)
+
+	tooBig, err := BatchSend(context.TODO(), mockClient, totalInput, 10)
+	assert.NoError(t, err)
+	require.Len(t, tooBig, 1)
+	assert.Equal(t, totalInput.Records[1], tooBig[0])
 	mockClient.AssertExpectations(t)
 }

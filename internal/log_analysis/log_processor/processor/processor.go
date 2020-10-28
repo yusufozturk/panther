@@ -139,7 +139,7 @@ func NewFactory(resolver logtypes.Resolver) Factory {
 					LoadSource: sources.LoadSource,
 				},
 			}, nil
-		case models.IntegrationTypeAWS3:
+		case models.IntegrationTypeAWS3, models.IntegrationTypeAWSScan:
 			c, err := sources.BuildClassifier(src, resolver)
 			if err != nil {
 				return nil, err

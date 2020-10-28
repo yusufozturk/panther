@@ -275,6 +275,7 @@ Resources:
         CloudWatchLogRetentionDays: !Ref CloudWatchLogRetentionDays
         CustomResourceVersion: !FindInMap [Constants, Panther, Version]
         Debug: !Ref Debug
+        InputDataBucket: !GetAtt Bootstrap.Outputs.InputDataBucket
         LayerVersionArns: !Join [',', !Ref LayerVersionArns]
         ProcessedDataBucket: !GetAtt Bootstrap.Outputs.ProcessedDataBucket
         ProcessedDataTopicArn: !GetAtt Bootstrap.Outputs.ProcessedDataTopicArn

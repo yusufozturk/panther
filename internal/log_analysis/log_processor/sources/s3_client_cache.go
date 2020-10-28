@@ -311,7 +311,7 @@ func getSourceS3Info(source *models.SourceIntegration) (string, string) {
 
 func getSourceLogProcessingRole(source *models.SourceIntegration) (roleArn string) {
 	switch source.IntegrationType {
-	case models.IntegrationTypeAWS3:
+	case models.IntegrationTypeAWS3, models.IntegrationTypeAWSScan:
 		roleArn = source.LogProcessingRole
 	case models.IntegrationTypeSqs:
 		roleArn = source.SqsConfig.LogProcessingRole

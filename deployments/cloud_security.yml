@@ -148,7 +148,7 @@ Resources:
     Properties:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
-      QueueName: !GetAtt AlertProcessorQueue.QueueName
+      QueueName: panther-alert-processor-queue
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
   AlertProcessorDLQ:
@@ -170,7 +170,7 @@ Resources:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
       IsDLQ: true
-      QueueName: !GetAtt AlertProcessorDLQ.QueueName
+      QueueName: panther-alert-processor-queue-dlq
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
   AlertProcessorLogGroup:
@@ -198,7 +198,7 @@ Resources:
           REMEDIATION_SERVICE_PATH: v1
           POLICY_SERVICE_HOST: !Sub '${AnalysisApiId}.execute-api.${AWS::Region}.${AWS::URLSuffix}'
           POLICY_SERVICE_PATH: v1
-          TABLE_NAME: !Ref AlertForwarderTable
+          TABLE_NAME: panther-alert-forwarder
       Events:
         Queue:
           Type: SQS
@@ -222,15 +222,9 @@ Resources:
       Timeout: !FindInMap [Functions, AlertProcessor, Timeout]
       Tracing: !If [TracingEnabled, !Ref TracingMode, !Ref 'AWS::NoValue']
       Policies:
-        - Id: ReadFromSQS
+        - Id: DecryptFromSQS
           Version: 2012-10-17
           Statement:
-            - Effect: Allow
-              Action:
-                - sqs:DeleteMessage
-                - sqs:GetQueueAttributes
-                - sqs:ReceiveMessage
-              Resource: !GetAtt AlertProcessorQueue.Arn
             - Effect: Allow
               Action: kms:Decrypt
               Resource: !Sub arn:${AWS::Partition}:kms:${AWS::Region}:${AWS::AccountId}:key/${SqsKeyId}
@@ -239,7 +233,7 @@ Resources:
           Statement:
             - Effect: Allow
               Action: dynamodb:UpdateItem
-              Resource: !GetAtt AlertForwarderTable.Arn
+              Resource: !Sub arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/panther-alert-forwarder
         - Id: InvokeApis
           Version: 2012-10-17
           Statement:
@@ -258,7 +252,7 @@ Resources:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
       FunctionMemoryMB: !FindInMap [Functions, AlertProcessor, Memory]
-      FunctionName: !Ref AlertProcessorFunction
+      FunctionName: panther-alert-processor
       FunctionTimeoutSec: !FindInMap [Functions, AlertProcessor, Timeout]
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
@@ -297,7 +291,7 @@ Resources:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
-      TableName: !Ref AlertForwarderTable
+      TableName: panther-alert-forwarder
 
   AlertForwarderLogGroup:
     Type: AWS::Logs::LogGroup
@@ -343,16 +337,6 @@ Resources:
       Layers: !If [AttachLayers, !Ref LayerVersionArns, !Ref 'AWS::NoValue']
       Timeout: !FindInMap [Functions, AlertForwarder, Timeout]
       Policies:
-        - Id: ReadTableStreams
-          Version: 2012-10-17
-          Statement:
-            - Effect: Allow
-              Action:
-                - dynamodb:DescribeStream
-                - dynamodb:GetRecords
-                - dynamodb:GetShardIterator
-                - dynamodb:ListStreams
-              Resource: !Sub ${AlertForwarderTable.Arn}/stream/*
         - Id: PublishToAlertQueue
           Version: 2012-10-17
           Statement:
@@ -373,7 +357,7 @@ Resources:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
       FunctionMemoryMB: !FindInMap [Functions, AlertForwarder, Memory]
-      FunctionName: !Ref AlertForwarderFunction
+      FunctionName: panther-alert-forwarder
       FunctionTimeoutSec: !FindInMap [Functions, AlertForwarder, Timeout]
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
@@ -405,7 +389,7 @@ Resources:
     Properties:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
-      QueueName: !GetAtt EventQueue.QueueName
+      QueueName: panther-aws-events-queue
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
   EventDLQ:
@@ -427,7 +411,7 @@ Resources:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
       IsDLQ: true
-      QueueName: !GetAtt EventDLQ.QueueName
+      QueueName: panther-aws-events-queue-dlq
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
   SnsSubscription:
@@ -524,12 +508,6 @@ Resources:
               Resource: !Sub arn:${AWS::Partition}:kms:${AWS::Region}:${AWS::AccountId}:key/${SqsKeyId}
             - Effect: Allow
               Action:
-                - sqs:DeleteMessage
-                - sqs:GetQueueAttributes
-                - sqs:ReceiveMessage
-              Resource: !GetAtt EventQueue.Arn
-            - Effect: Allow
-              Action:
                 - sqs:SendMessage
                 - sqs:SendMessageBatch
               Resource: !Sub arn:${AWS::Partition}:sqs:${AWS::Region}:${AWS::AccountId}:panther-snapshot-queue
@@ -564,7 +542,7 @@ Resources:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
       FunctionMemoryMB: !FindInMap [Functions, EventProcessor, Memory]
-      FunctionName: !Ref EventProcessorFunction
+      FunctionName: panther-aws-event-processor
       FunctionTimeoutSec: !FindInMap [Functions, EventProcessor, Timeout]
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
@@ -576,7 +554,7 @@ Resources:
       Description: Compliance API
       Environment:
         Variables:
-          COMPLIANCE_TABLE: !Ref ComplianceTable
+          COMPLIANCE_TABLE: panther-compliance
           DEBUG: !Ref Debug
           INDEX_NAME: policy-index
       FunctionName: panther-compliance-api
@@ -604,10 +582,8 @@ Resources:
                 - dynamodb:*Item
                 - dynamodb:Scan
               Resource:
-                - !GetAtt ComplianceTable.Arn
-                - !Sub
-                  - '${arn}/index/*'
-                  - arn: !GetAtt ComplianceTable.Arn
+                - !Sub arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/panther-compliance
+                - !Sub arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/panther-compliance/index/*
 
   ComplianceApiLogGroup:
     Type: AWS::Logs::LogGroup
@@ -628,7 +604,7 @@ Resources:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
       FunctionMemoryMB: !FindInMap [Functions, ComplianceApi, Memory]
-      FunctionName: !Ref ComplianceApiFunction
+      FunctionName: panther-compliance-api
       FunctionTimeoutSec: !FindInMap [Functions, ComplianceApi, Timeout]
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
@@ -675,14 +651,14 @@ Resources:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
-      TableName: !Ref ComplianceTable
+      TableName: panther-compliance
 
   ##### Remediation API #####
   RemediationGatewayInvocation:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !Ref RemediationApiFunction
+      FunctionName: panther-remediation-api
       Principal: apigateway.amazonaws.com
       SourceArn: !Sub arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${RemediationApiId}/*
 
@@ -694,8 +670,8 @@ Resources:
       Environment:
         Variables:
           DEBUG: !Ref Debug
-          SQS_QUEUE_URL: !Ref RemediationQueue
-          REMEDIATION_LAMBDA_ARN: !GetAtt RemediationFunction.Arn
+          SQS_QUEUE_URL: !Sub https://sqs.${AWS::Region}.${AWS::URLSuffix}/${AWS::AccountId}/panther-remediation-queue
+          REMEDIATION_LAMBDA_ARN: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-aws-remediation
           POLICIES_SERVICE_HOSTNAME: !Sub '${AnalysisApiId}.execute-api.${AWS::Region}.${AWS::URLSuffix}'
           POLICIES_SERVICE_PATH: v1
           RESOURCES_SERVICE_HOSTNAME: !Sub '${ResourcesApiId}.execute-api.${AWS::Region}.${AWS::URLSuffix}'
@@ -726,7 +702,7 @@ Resources:
               Action:
                 - sqs:SendMessage
                 - sqs:SendMessageBatch
-              Resource: !GetAtt RemediationQueue.Arn
+              Resource: !Sub arn:${AWS::Partition}:sqs:${AWS::Region}:${AWS::AccountId}:panther-remediation-queue
         - Id: InvokeAPIs
           Version: 2012-10-17
           Statement:
@@ -737,7 +713,7 @@ Resources:
                 - !Sub arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${ResourcesApiId}/v1/GET/resource
             - Effect: Allow
               Action: lambda:InvokeFunction
-              Resource: !GetAtt RemediationFunction.Arn
+              Resource: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-aws-remediation
 
   RemediationApiLogGroup:
     Type: AWS::Logs::LogGroup
@@ -758,7 +734,7 @@ Resources:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
       FunctionMemoryMB: !FindInMap [Functions, RemediationApi, Memory]
-      FunctionName: !Ref RemediationApiFunction
+      FunctionName: panther-remediation-api
       FunctionTimeoutSec: !FindInMap [Functions, RemediationApi, Timeout]
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
@@ -787,7 +763,7 @@ Resources:
     Properties:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
-      QueueName: !GetAtt RemediationQueue.QueueName
+      QueueName: panther-remediation-queue
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
   RemediationDLQ:
@@ -809,7 +785,7 @@ Resources:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
       IsDLQ: true
-      QueueName: !GetAtt RemediationDLQ.QueueName
+      QueueName: panther-remediation-queue-dlq
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
   RemediationProcessorLogGroup:
@@ -863,12 +839,6 @@ Resources:
           Version: 2012-10-17
           Statement:
             - Effect: Allow
-              Action:
-                - sqs:DeleteMessage
-                - sqs:GetQueueAttributes
-                - sqs:ReceiveMessage
-              Resource: !GetAtt RemediationQueue.Arn
-            - Effect: Allow
               Action: kms:Decrypt
               Resource: !Sub arn:${AWS::Partition}:kms:${AWS::Region}:${AWS::AccountId}:key/${SqsKeyId}
             - Effect: Allow
@@ -878,7 +848,7 @@ Resources:
                 - !Sub arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${ResourcesApiId}/v1/GET/resource
             - Effect: Allow
               Action: lambda:InvokeFunction
-              Resource: !GetAtt RemediationFunction.Arn
+              Resource: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-aws-remediation
 
   RemediationProcessorAlarms:
     Type: Custom::LambdaAlarms
@@ -886,7 +856,7 @@ Resources:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
       FunctionMemoryMB: !FindInMap [Functions, RemediationProcessor, Memory]
-      FunctionName: !Ref RemediationProcessorFunction
+      FunctionName: panther-remediation-processor
       FunctionTimeoutSec: !FindInMap [Functions, RemediationProcessor, Timeout]
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
@@ -949,7 +919,7 @@ Resources:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
       FunctionMemoryMB: !FindInMap [Functions, Remediation, Memory]
-      FunctionName: !Ref RemediationFunction
+      FunctionName: panther-aws-remediation
       FunctionTimeoutSec: !FindInMap [Functions, Remediation, Timeout]
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
@@ -970,8 +940,8 @@ Resources:
       Environment:
         Variables:
           DEBUG: !Ref Debug
-          RESOURCES_QUEUE_URL: !Ref ResourcesQueue
-          RESOURCES_TABLE: !Ref ResourcesTable
+          RESOURCES_QUEUE_URL: !Sub https://sqs.${AWS::Region}.${AWS::URLSuffix}/${AWS::AccountId}/panther-resources-queue
+          RESOURCES_TABLE: panther-resources
       FunctionName: panther-resources-api
       # <cfndoc>
       # The `panther-resources-api` lambda implements the resources API.
@@ -1001,7 +971,7 @@ Resources:
                 - dynamodb:Query
                 - dynamodb:Scan
                 - dynamodb:*Item
-              Resource: !GetAtt ResourcesTable.Arn
+              Resource: !Sub arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/panther-resources
         - Id: PublishToResourceQueue
           Version: 2012-10-17
           Statement:
@@ -1009,7 +979,7 @@ Resources:
               Action:
                 - sqs:SendMessage
                 - sqs:SendMessageBatch
-              Resource: !GetAtt ResourcesQueue.Arn
+              Resource: !Sub arn:${AWS::Partition}:sqs:${AWS::Region}:${AWS::AccountId}:panther-resources-queue
             - Effect: Allow
               Action:
                 - kms:Decrypt
@@ -1035,7 +1005,7 @@ Resources:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
       FunctionMemoryMB: !FindInMap [Functions, ResourcesApi, Memory]
-      FunctionName: !Ref ResourcesApiFunction
+      FunctionName: panther-resources-api
       FunctionTimeoutSec: !FindInMap [Functions, ResourcesApi, Timeout]
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
@@ -1072,7 +1042,7 @@ Resources:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
-      TableName: !Ref ResourcesTable
+      TableName: panther-resources
 
   ##### Resource Processor #####
   ResourcesQueue:
@@ -1099,7 +1069,7 @@ Resources:
     Properties:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
-      QueueName: !GetAtt ResourcesQueue.QueueName
+      QueueName: panther-resources-queue
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
   ResourcesDLQ:
@@ -1121,7 +1091,7 @@ Resources:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
       IsDLQ: true
-      QueueName: !GetAtt ResourcesDLQ.QueueName
+      QueueName: panther-resources-queue-dlq
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
   ResourceProcessorLogGroup:
@@ -1179,12 +1149,6 @@ Resources:
           Statement:
             - Effect: Allow
               Action:
-                - sqs:DeleteMessage
-                - sqs:GetQueueAttributes
-                - sqs:ReceiveMessage
-              Resource: !GetAtt ResourcesQueue.Arn
-            - Effect: Allow
-              Action:
                 - sqs:SendMessage
                 - sqs:SendMessageBatch
               Resource: !Sub arn:${AWS::Partition}:sqs:${AWS::Region}:${AWS::AccountId}:panther-alert-processor-queue
@@ -1220,7 +1184,7 @@ Resources:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
       FunctionMemoryMB: !FindInMap [Functions, ResourceProcessor, Memory]
-      FunctionName: !Ref ResourceProcessorFunction
+      FunctionName: panther-resource-processor
       FunctionTimeoutSec: !FindInMap [Functions, ResourceProcessor, Timeout]
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
@@ -1249,7 +1213,7 @@ Resources:
           Statement:
             - Effect: Allow
               Action: dynamodb:GetItem
-              Resource: !GetAtt ResourcesTable.Arn
+              Resource: !Sub arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/panther-resources
         - Id: KeyValueStore
           Version: 2012-10-17
           Statement:
@@ -1304,7 +1268,7 @@ Resources:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
       FunctionMemoryMB: !FindInMap [Functions, PolicyEngine, Memory]
-      FunctionName: !Ref PolicyEngineFunction
+      FunctionName: panther-policy-engine
       FunctionTimeoutSec: !FindInMap [Functions, PolicyEngine, Timeout]
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
@@ -1331,7 +1295,7 @@ Resources:
     Properties:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
-      QueueName: !GetAtt SnapshotQueue.QueueName
+      QueueName: panther-snapshot-queue
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
   SnapshotDLQ:
@@ -1353,7 +1317,7 @@ Resources:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
       IsDLQ: true
-      QueueName: !GetAtt SnapshotDLQ.QueueName
+      QueueName: panther-snapshot-queue-dlq
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
   PollerFunction:
@@ -1367,7 +1331,7 @@ Resources:
           DEBUG: !Ref Debug
           RESOURCES_API_FQDN: !Sub '${ResourcesApiId}.execute-api.${AWS::Region}.${AWS::URLSuffix}'
           RESOURCES_API_PATH: v1
-          SNAPSHOT_QUEUE_URL: !Ref SnapshotQueue
+          SNAPSHOT_QUEUE_URL: !Ref SnapshotQueue # queue is an event source; needs to exist first
       Events:
         SQS:
           Type: SQS
@@ -1444,7 +1408,7 @@ Resources:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
       FunctionMemoryMB: !FindInMap [Functions, Poller, Memory]
-      FunctionName: !Ref PollerFunction
+      FunctionName: panther-snapshot-pollers
       FunctionTimeoutSec: !FindInMap [Functions, Poller, Timeout]
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources
 
@@ -1457,7 +1421,7 @@ Resources:
       Environment:
         Variables:
           DEBUG: !Ref Debug
-          SNAPSHOT_POLLERS_QUEUE_URL: !Ref SnapshotQueue
+          SNAPSHOT_POLLERS_QUEUE_URL: !Sub https://sqs.${AWS::Region}.${AWS::URLSuffix}/${AWS::AccountId}/panther-snapshot-queue
       Events:
         ScheduleScans:
           Type: Schedule
@@ -1478,7 +1442,7 @@ Resources:
       Timeout: !FindInMap [Functions, SnapshotScheduler, Timeout]
       Tracing: !If [TracingEnabled, !Ref TracingMode, !Ref 'AWS::NoValue']
       Policies:
-        - Id: InvokeSnapshotAPI
+        - Id: InvokeSourceAPI
           Version: 2012-10-17
           Statement:
             - Effect: Allow
@@ -1491,7 +1455,7 @@ Resources:
               Action:
                 - sqs:SendMessage
                 - sqs:SendMessageBatch
-              Resource: !GetAtt SnapshotQueue.Arn
+              Resource: !Sub arn:${AWS::Partition}:sqs:${AWS::Region}:${AWS::AccountId}:panther-snapshot-queue
             - Effect: Allow
               Action:
                 - kms:Decrypt
@@ -1517,6 +1481,6 @@ Resources:
       AlarmTopicArn: !Ref AlarmTopicArn
       CustomResourceVersion: !Ref CustomResourceVersion
       FunctionMemoryMB: !FindInMap [Functions, SnapshotScheduler, Memory]
-      FunctionName: !Ref SnapshotSchedulerFunction
+      FunctionName: panther-snapshot-scheduler
       FunctionTimeoutSec: !FindInMap [Functions, SnapshotScheduler, Timeout]
       ServiceToken: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-cfn-custom-resources

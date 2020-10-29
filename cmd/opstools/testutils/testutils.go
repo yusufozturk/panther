@@ -19,6 +19,8 @@ package testutils
  */
 
 import (
+	"github.com/aws/aws-sdk-go/service/sns"
+	"github.com/aws/aws-sdk-go/service/sns/snsiface"
 	"strconv"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -26,6 +28,21 @@ import (
 	"github.com/aws/aws-sdk-go/service/sqs/sqsiface"
 	"github.com/pkg/errors"
 )
+
+func CreateTopic(client snsiface.SNSAPI, topic string) (output *sns.CreateTopicOutput, err error) {
+	output, err = client.CreateTopic(&sns.CreateTopicInput{
+		Name: &topic,
+		Attributes: nil,
+	})
+	return output, err
+}
+
+func DeleteTopic(client snsiface.SNSAPI,  topicArn string) (err error) {
+	_, err = client.DeleteTopic(&sns.DeleteTopicInput{
+		TopicArn: &topicArn,
+	})
+	return err
+}
 
 func CreateQueue(client sqsiface.SQSAPI, qname string) (err error) {
 	_, err = client.CreateQueue(&sqs.CreateQueueInput{

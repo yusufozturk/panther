@@ -182,7 +182,8 @@ func publishNotifications(snsClient snsiface.SNSAPI, topicARN string,
 
 		zap.L().Debug("sending file to SNS",
 			zap.String("bucket", s3Event.Records[0].S3.Bucket.Name),
-			zap.String("key", s3Event.Records[0].S3.Object.Key))
+			zap.String("key", s3Event.Records[0].S3.Object.Key),
+			zap.Int64("size", s3Event.Records[0].S3.Object.Size))
 
 		s3Notification := process.NewS3ObjectPutNotification(s3Event.Records[0].S3.Bucket.Name,
 			s3Event.Records[0].S3.Object.Key, int(s3Event.Records[0].S3.Object.Size))

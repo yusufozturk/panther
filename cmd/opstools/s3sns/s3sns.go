@@ -35,6 +35,8 @@ import (
 	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
+
+	"github.com/panther-labs/panther/internal/log_analysis/datacatalog_updater/process"
 )
 
 const (
@@ -149,7 +151,8 @@ func listPath(s3Client s3iface.S3API, s3path string, limit uint64,
 									Name: bucket,
 								},
 								Object: events.S3Object{
-									Key: *value.Key,
+									Key:  *value.Key,
+									Size: *value.Size,
 								},
 							},
 						},
@@ -172,14 +175,17 @@ func publishNotifications(snsClient snsiface.SNSAPI, topicARN string,
 	notifyChan chan *events.S3Event, errChan chan error) {
 
 	var failed bool
-	for s3Notification := range notifyChan {
+	for s3Event := range notifyChan {
 		if failed { // drain channel
 			continue
 		}
 
 		zap.L().Debug("sending file to SNS",
-			zap.String("bucket", s3Notification.Records[0].S3.Bucket.Name),
-			zap.String("key", s3Notification.Records[0].S3.Object.Key))
+			zap.String("bucket", s3Event.Records[0].S3.Bucket.Name),
+			zap.String("key", s3Event.Records[0].S3.Object.Key))
+
+		s3Notification := process.NewS3ObjectPutNotification(s3Event.Records[0].S3.Bucket.Name,
+			s3Event.Records[0].S3.Object.Key, int(s3Event.Records[0].S3.Object.Size))
 
 		notifyJSON, err := jsoniter.MarshalToString(s3Notification)
 		if err != nil {

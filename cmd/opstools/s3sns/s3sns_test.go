@@ -19,15 +19,16 @@ package s3sns
  */
 
 import (
-	"github.com/aws/aws-sdk-go/service/sns"
-	"github.com/panther-labs/panther/pkg/testutils"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/sns"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
+	"github.com/panther-labs/panther/pkg/testutils"
 )
 
 const (
@@ -81,7 +82,7 @@ func TestS3QueueLimit(t *testing.T) {
 	snsClient.On("Publish", mock.Anything).Return(&sns.PublishOutput{}, nil).Once()
 
 	stats := &Stats{}
-	err := s3sns(s3Client, snsClient, testAccount, testS3Path, topic, topicRegion,1, 1, stats)
+	err := s3sns(s3Client, snsClient, testAccount, testS3Path, topic, topicRegion, 1, 1, stats)
 	require.NoError(t, err)
 	s3Client.AssertExpectations(t)
 	snsClient.AssertExpectations(t)

@@ -20,6 +20,11 @@ package s3sns
 
 import (
 	"fmt"
+	"log"
+	"math"
+	"net/url"
+	"sync"
+
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -30,16 +35,12 @@ import (
 	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
-	"log"
-	"math"
-	"net/url"
-	"sync"
 )
 
 const (
-	pageSize             = 1000
+	pageSize         = 1000
 	topicArnTemplate = "arn:aws:sns:%s:%s:%s"
-	progressNotify       = 5000                                                  // log a line every this many to show progress
+	progressNotify   = 5000 // log a line every this many to show progress
 )
 
 type Stats struct {
@@ -188,11 +189,11 @@ func publishNotifications(snsClient snsiface.SNSAPI, topicARN string,
 		}
 
 		publishInput := &sns.PublishInput{
-			Message:           &notifyJSON,
-			TopicArn:          &topicARN,
+			Message:  &notifyJSON,
+			TopicArn: &topicARN,
 		}
 
-		_, err = snsClient.Publish(publishInput )
+		_, err = snsClient.Publish(publishInput)
 		if err != nil {
 			errChan <- errors.Wrapf(err, "failed to publish %#v", *publishInput)
 			failed = true

@@ -19,6 +19,10 @@ package s3sns
  */
 
 import (
+	"os"
+	"strings"
+	"testing"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -26,26 +30,21 @@ import (
 	"github.com/aws/aws-sdk-go/service/sts"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"os"
-	"strings"
-	"testing"
 
 	"github.com/panther-labs/panther/cmd/opstools/testutils"
 )
 
 const (
-	topicPrefix              = "panther-test-s3sns"
-	s3Path                   = "s3://panther-public-cloudformation-templates/" // this is a public Panther bucket with CF files we can use
-	s3Region                 = "us-west-2"                                     // region of above bucket
-	numberOfFiles            = 10                                              // we expect at least this many
-	messageBatchSize         = 10
-	visibilityTimeoutSeconds = 10
-	concurrency              = 10
+	topicPrefix   = "panther-test-s3sns"
+	s3Path        = "s3://panther-public-cloudformation-templates/" // this is a public Panther bucket with CF files we can use
+	s3Region      = "us-west-2"                                     // region of above bucket
+	numberOfFiles = 10                                              // we expect at least this many
+	concurrency   = 10
 )
 
 var (
 	integrationTest bool
-	account string
+	account         string
 	awsSession      *session.Session
 	s3Client        *s3.S3
 	snsClient       *sns.SNS
@@ -60,7 +59,7 @@ func TestMain(m *testing.M) {
 
 		identity, err := sts.New(awsSession).GetCallerIdentity(&sts.GetCallerIdentityInput{})
 		if err != nil {
-			panic( err)
+			panic(err)
 		}
 		account = *identity.Account
 	}

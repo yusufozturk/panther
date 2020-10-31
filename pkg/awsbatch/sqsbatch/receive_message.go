@@ -25,23 +25,16 @@ import (
 	"github.com/pkg/errors"
 )
 
-func ReceiveMessage(sqsClient sqsiface.SQSAPI, queueURL string, waitTimeSeconds int64) (messages []*sqs.Message,
-	messageReceipts []*string, err error) {
-
+func ReceiveMessage(sqsClient sqsiface.SQSAPI, queueURL string, waitTimeSeconds int64) (messages []*sqs.Message, err error) {
 	receiveMessageOutput, err := sqsClient.ReceiveMessage(&sqs.ReceiveMessageInput{
-		WaitTimeSeconds:     aws.Int64(waitTimeSeconds), // wait this long UNLESS MaxNumberOfMessages read
-		MaxNumberOfMessages: aws.Int64(maxMessages),     // max size allowed
-		QueueUrl:            aws.String(queueURL),
+		WaitTimeSeconds:     &waitTimeSeconds,       // wait this long UNLESS MaxNumberOfMessages read
+		MaxNumberOfMessages: aws.Int64(maxMessages), // max size allowed
+		QueueUrl:            &queueURL,
 	})
 	if err != nil {
 		err = errors.Wrapf(err, "failure receiving messages from %s", queueURL)
-		return nil, nil, err
+		return nil, err
 	}
 
-	messageReceipts = make([]*string, len(receiveMessageOutput.Messages))
-	for i := range receiveMessageOutput.Messages {
-		messageReceipts[i] = receiveMessageOutput.Messages[i].ReceiptHandle
-	}
-
-	return receiveMessageOutput.Messages, messageReceipts, err
+	return receiveMessageOutput.Messages, err
 }

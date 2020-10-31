@@ -19,6 +19,7 @@ package processor
  */
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"strconv"
@@ -105,7 +106,7 @@ func TestStreamEvents(t *testing.T) {
 	// will be called by scalingDecisions() on exit
 	streamTestSqsClient.On("GetQueueAttributes", mock.Anything).Return(streamTestNotEmptyQueue, nil).Once()
 
-	sqsMessageCount, err := streamEvents(streamTestSqsClient, streamTestLambdaClient, streamTestDeadline,
+	sqsMessageCount, err := streamEvents(context.Background(), streamTestSqsClient, streamTestLambdaClient, streamTestDeadline,
 		noopProcessorFunc, noopReadSnsMessagesFunc)
 	require.NoError(t, err)
 	assert.Equal(t, len(streamTestReceiveMessageOutput.Messages), sqsMessageCount)
@@ -123,7 +124,7 @@ func TestStreamEventsProcessingTimeLimitExceeded(t *testing.T) {
 	// will be called by scalingDecisions() on exit
 	streamTestSqsClient.On("GetQueueAttributes", mock.Anything).Return(streamTestNotEmptyQueue, nil).Once()
 
-	sqsMessageCount, err := streamEvents(streamTestSqsClient, streamTestLambdaClient, deadline,
+	sqsMessageCount, err := streamEvents(context.Background(), streamTestSqsClient, streamTestLambdaClient, deadline,
 		noopProcessorFunc, noopReadSnsMessagesFunc)
 	require.NoError(t, err)
 	assert.Equal(t, 0, sqsMessageCount)
@@ -142,7 +143,7 @@ func TestStreamEventsReadEventError(t *testing.T) {
 	// will be called by scalingDecisions() on exit
 	streamTestSqsClient.On("GetQueueAttributes", mock.Anything).Return(streamTestNotEmptyQueue, nil).Once()
 
-	_, err := streamEvents(streamTestSqsClient, streamTestLambdaClient, streamTestDeadline,
+	_, err := streamEvents(context.Background(), streamTestSqsClient, streamTestLambdaClient, streamTestDeadline,
 		noopProcessorFunc, failReadSnsMessagesFunc)
 	require.Error(t, err)
 	assert.Equal(t, "readEventError", err.Error())
@@ -160,7 +161,7 @@ func TestStreamEventsProcessError(t *testing.T) {
 	// will be called by scalingDecisions() on exit
 	streamTestSqsClient.On("GetQueueAttributes", mock.Anything).Return(streamTestNotEmptyQueue, nil).Once()
 
-	_, err := streamEvents(streamTestSqsClient, streamTestLambdaClient, deadline,
+	_, err := streamEvents(context.Background(), streamTestSqsClient, streamTestLambdaClient, deadline,
 		failProcessorFunc, noopReadSnsMessagesFunc)
 	require.Error(t, err)
 	assert.Equal(t, "processError", err.Error())
@@ -179,7 +180,7 @@ func TestStreamEventsProcessErrorAndReadEventError(t *testing.T) {
 	// will be called by scalingDecisions() on exit
 	streamTestSqsClient.On("GetQueueAttributes", mock.Anything).Return(streamTestNotEmptyQueue, nil).Once()
 
-	_, err := streamEvents(streamTestSqsClient, streamTestLambdaClient, streamTestDeadline,
+	_, err := streamEvents(context.Background(), streamTestSqsClient, streamTestLambdaClient, streamTestDeadline,
 		failProcessorFunc, failReadSnsMessagesFunc)
 	require.Error(t, err)
 	assert.Equal(t, "processError", err.Error()) // expect the processError NOT readEventError
@@ -200,7 +201,7 @@ func TestStreamEventsReceiveSQSError(t *testing.T) {
 	// will be called by scalingDecisions() on exit
 	streamTestSqsClient.On("GetQueueAttributes", mock.Anything).Return(streamTestNotEmptyQueue, nil).Once()
 
-	sqsMessageCount, err := streamEvents(streamTestSqsClient, streamTestLambdaClient, streamTestDeadline,
+	sqsMessageCount, err := streamEvents(context.Background(), streamTestSqsClient, streamTestLambdaClient, streamTestDeadline,
 		noopProcessorFunc, noopReadSnsMessagesFunc)
 	assert.Error(t, err)
 	assert.Equal(t, 0, sqsMessageCount)
@@ -229,7 +230,7 @@ func TestStreamEventsDeleteSQSError(t *testing.T) {
 	// will be called by scalingDecisions() on exit
 	streamTestSqsClient.On("GetQueueAttributes", mock.Anything).Return(streamTestNotEmptyQueue, nil).Once()
 
-	sqsMessageCount, err := streamEvents(streamTestSqsClient, streamTestLambdaClient, streamTestDeadline,
+	sqsMessageCount, err := streamEvents(context.Background(), streamTestSqsClient, streamTestLambdaClient, streamTestDeadline,
 		noopProcessorFunc, noopReadSnsMessagesFunc)
 
 	// keep sure we get error logging
@@ -274,9 +275,9 @@ func TestScaleup(t *testing.T) {
 		processingScaleDecisionInterval = defaultProcessingScaleDecisionInterval
 	}()
 
-	delayReadSNSMessage := func(messages []string) ([]*common.DataStream, error) {
+	delayReadSNSMessage := func(message string) ([]*common.DataStream, error) {
 		time.Sleep(scaleupTestDuration)
-		return make([]*common.DataStream, len(messages)), nil
+		return make([]*common.DataStream, 1), nil
 	}
 
 	// this is what we return showing a queue size big enough to scale
@@ -307,7 +308,7 @@ func TestScaleup(t *testing.T) {
 	// will be called by scalingDecisions() on exit
 	streamTestSqsClient.On("GetQueueAttributes", mock.Anything).Return(streamTestNotEmptyQueue, nil).Once()
 
-	sqsMessageCount, err := streamEvents(streamTestSqsClient, streamTestLambdaClient, streamTestDeadline,
+	sqsMessageCount, err := streamEvents(context.Background(), streamTestSqsClient, streamTestLambdaClient, streamTestDeadline,
 		noopProcessorFunc, delayReadSNSMessage)
 	require.NoError(t, err)
 	assert.Equal(t, len(streamTestReceiveMessageOutput.Messages), sqsMessageCount)
@@ -338,11 +339,11 @@ func failProcessorFunc(_ <-chan *common.DataStream, _ destinations.Destination) 
 	return fmt.Errorf("processError")
 }
 
-func noopReadSnsMessagesFunc(messages []string) ([]*common.DataStream, error) {
-	return make([]*common.DataStream, len(messages)), nil
+func noopReadSnsMessagesFunc(message string) ([]*common.DataStream, error) {
+	return make([]*common.DataStream, 1), nil
 }
 
 // simulated error parsing sqs message or reading s3 object
-func failReadSnsMessagesFunc(_ []string) ([]*common.DataStream, error) {
+func failReadSnsMessagesFunc(_ string) ([]*common.DataStream, error) {
 	return nil, fmt.Errorf("readEventError")
 }

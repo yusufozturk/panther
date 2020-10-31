@@ -19,6 +19,7 @@ package processor
  */
 
 import (
+	"context"
 	"runtime"
 	"strconv"
 	"time"
@@ -29,6 +30,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/sqs/sqsiface"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/panther-labs/panther/internal/log_analysis/log_processor/common"
 	"github.com/panther-labs/panther/internal/log_analysis/log_processor/destinations"
@@ -55,6 +57,7 @@ the lambda will continue to read events and maximally aggregate data to produce 
 Fewer, bigger files makes Athena queries much faster.
 */
 func StreamEvents(
+	ctx context.Context,
 	sqsClient sqsiface.SQSAPI,
 	lambdaClient lambdaiface.LambdaAPI,
 	resolver logtypes.Resolver,
@@ -65,34 +68,30 @@ func StreamEvents(
 	process := func(streams <-chan *common.DataStream, dest destinations.Destination) error {
 		return Process(streams, dest, newProcessor)
 	}
-	return streamEvents(sqsClient, lambdaClient, deadlineTime, process, sources.ReadSnsMessages)
+	return streamEvents(ctx, sqsClient, lambdaClient, deadlineTime, process, sources.ReadSnsMessages)
 }
 
 // entry point for unit testing, pass in read/process functions
 func streamEvents(
+	ctx context.Context,
 	sqsClient sqsiface.SQSAPI,
 	lambdaClient lambdaiface.LambdaAPI,
 	deadlineTime time.Time,
 	processFunc ProcessFunc,
-	generateDataStreamsFunc func([]string) ([]*common.DataStream, error)) (int, error) {
-
-	// this cannot be a named return var because it would cause a data race
-	var sqsMessageCount int
+	generateDataStreamsFunc func(string) ([]*common.DataStream, error)) (int, error) {
 
 	streamChan := make(chan *common.DataStream, 2*sqsMaxBatchSize) // use small buffer to pipeline events
 	processingDeadlineTime := processingDeadlineTime(deadlineTime)
 
 	var accumulatedMessageReceipts []*string // accumulate message receipts for delete at the end
-
-	readEventErrorChan := make(chan error, 1) // below go routine closes over this for errors, 1 deep buffer
-	go func() {
+	group, _ := errgroup.WithContext(ctx)
+	group.Go(func() error {
+		ctx, cancel := context.WithCancel(ctx)
 		// runs periodically during processing making scaling decisions
-		stopScaling := scalingDecisions(sqsClient, lambdaClient)
-
+		scalingDecisions(ctx, sqsClient, lambdaClient)
 		defer func() {
-			stopScaling <- true       // terminate the scaling go routine
-			close(streamChan)         // done reading messages, this will cause processFunc() to return
-			close(readEventErrorChan) // no more writes on err chan
+			cancel() // cancel scaling Decisions
+			close(streamChan) // done reading messages, this will cause processFunc() to return
 		}()
 
 		// continue to read until either there are no sqs messages or we have exceeded the processing time/file limit
@@ -112,43 +111,37 @@ func streamEvents(
 			}
 
 			// under no load we do not read from the sqs queue and just exit
-			totalQueuedMessages, err := queueDepth(sqsClient) // this includes queued and delayed messages
+			totalQueuedMessages, err := queueDepth(ctx, sqsClient) // this includes queued and delayed messages
 			if err != nil {
-				readEventErrorChan <- err
-				return
+				return err
 			}
 			if totalQueuedMessages == 0 {
 				break
 			}
 
 			// keep reading from SQS to maximize output aggregation
-			messages, messageReceipts, err := sqsbatch.ReceiveMessage(sqsClient, common.Config.SqsQueueURL, 0)
+			messages, err := sqsbatch.ReceiveMessage(sqsClient, common.Config.SqsQueueURL, 0)
 			if err != nil {
-				readEventErrorChan <- err
-				return
+				return err
 			}
 
 			if len(messages) == 0 { // no work to do but maybe more later OR reached the max sqs messages allowed in flight, either way need to break
 				break
 			}
 
-			// remember so we can delete when done
-			accumulatedMessageReceipts = append(accumulatedMessageReceipts, messageReceipts...)
-
-			// extract from sqs read responses
-			dataStreams, err := sqsDataStreams(messages, generateDataStreamsFunc)
-			if err != nil {
-				readEventErrorChan <- err
-				return
-			}
-
-			// process sqs messages
-			sqsMessageCount += len(dataStreams)
-			for _, dataStream := range dataStreams {
-				streamChan <- dataStream
+			for _, msg := range messages {
+				accumulatedMessageReceipts = append(accumulatedMessageReceipts, msg.ReceiptHandle)
+				dataStreams, err := generateDataStreamsFunc(*msg.Body)
+				if err != nil {
+					return err
+				}
+				for _, dataStream := range dataStreams {
+					streamChan <- dataStream
+				}
 			}
 		}
-	}()
+		return nil
+	})
 
 	// Use a properly configured JSON API for Athena quirks
 	jsonAPI := common.BuildJSON()
@@ -157,14 +150,13 @@ func streamEvents(
 	if err := processFunc(streamChan, dest); err != nil {
 		return 0, err
 	}
-	readEventError := <-readEventErrorChan
-	if readEventError != nil {
-		return 0, readEventError
+	if err := group.Wait(); err != nil {
+		return 0, err
 	}
 
 	// delete messages from sqs q on success (best effort)
 	sqsbatch.DeleteMessageBatch(sqsClient, common.Config.SqsQueueURL, accumulatedMessageReceipts)
-	return sqsMessageCount, nil
+	return len(accumulatedMessageReceipts), nil
 }
 
 // processingDeadlineTime calcs a time less than the deadllineTime to allow time for buffers to flush
@@ -177,24 +169,14 @@ func isProcessingTimeRemaining(deadline time.Time) bool {
 	return time.Since(deadline) < 0 // deadline is in future, will be positive once passed
 }
 
-func sqsDataStreams(messages []*sqs.Message,
-	readSnsMessagesFunc func([]string) ([]*common.DataStream, error)) ([]*common.DataStream, error) {
-
-	eventMessages := make([]string, len(messages))
-	for i, message := range messages {
-		eventMessages[i] = *message.Body
-	}
-	return readSnsMessagesFunc(eventMessages)
-}
-
-func queueDepth(sqsClient sqsiface.SQSAPI) (totalQueuedMessages int, err error) {
+func queueDepth(ctx context.Context, sqsClient sqsiface.SQSAPI) (totalQueuedMessages int, err error) {
 	getQueueAttributesInput := &sqs.GetQueueAttributesInput{
 		AttributeNames: []*string{
 			aws.String(sqs.QueueAttributeNameApproximateNumberOfMessages), // tells us there is waiting events now
 		},
 		QueueUrl: &common.Config.SqsQueueURL,
 	}
-	getQueueAttributesOutput, err := sqsClient.GetQueueAttributes(getQueueAttributesInput)
+	getQueueAttributesOutput, err := sqsClient.GetQueueAttributesWithContext(ctx, getQueueAttributesInput)
 	if err != nil {
 		err = errors.Wrapf(err, "failure getting message count from %s", common.Config.SqsQueueURL)
 		return 0, err

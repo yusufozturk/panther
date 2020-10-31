@@ -157,7 +157,7 @@ func TestHandleUnsupportedFileType(t *testing.T) {
 	getObjectOutput := &s3.GetObjectOutput{Body: ioutil.NopCloser(bytes.NewReader(objectData))}
 	s3Mock.On("GetObject", mock.Anything).Return(getObjectOutput, nil)
 
-	dataStreams, err := ReadSnsMessages([]string{marshaledNotification})
+	dataStreams, err := ReadSnsMessages(marshaledNotification)
 	// Method shouldn't return error
 	require.NoError(t, err)
 	// Method should not return data stream
@@ -183,7 +183,7 @@ func TestHandleS3Folder(t *testing.T) {
 	marshaledNotification, err := jsoniter.MarshalToString(notification)
 	require.NoError(t, err)
 
-	dataStreams, err := ReadSnsMessages([]string{marshaledNotification})
+	dataStreams, err := ReadSnsMessages(marshaledNotification)
 	// Method shouldn't return error
 	require.NoError(t, err)
 	// Method should not return data stream
@@ -221,7 +221,7 @@ func TestHandleUnregisteredSource(t *testing.T) {
 	// Getting the list of available sources
 	lambdaMock.On("Invoke", mock.Anything).Return(lambdaOutput, nil).Once()
 
-	dataStreams, err := ReadSnsMessages([]string{marshaledNotification})
+	dataStreams, err := ReadSnsMessages(marshaledNotification)
 	// Method shouldn't return error
 	require.NoError(t, err)
 	// Method should not return data stream

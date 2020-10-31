@@ -44,31 +44,27 @@ const (
 )
 
 // ReadSnsMessages reads incoming messages containing SNS notifications and returns a slice of DataStream items
-func ReadSnsMessages(messages []string) (result []*common.DataStream, err error) {
-	zap.L().Debug("reading data from messages", zap.Int("numMessages", len(messages)))
-	for _, message := range messages {
-		snsNotificationMessage := &SnsNotification{}
-		if err := jsoniter.UnmarshalFromString(message, snsNotificationMessage); err != nil {
+func ReadSnsMessages(message string) (result []*common.DataStream, err error) {
+	zap.L().Debug("reading data from message")
+	snsNotificationMessage := &SnsNotification{}
+	if err := jsoniter.UnmarshalFromString(message, snsNotificationMessage); err != nil {
+		return nil, err
+	}
+	switch snsNotificationMessage.Type {
+	case "Notification":
+		streams, err := handleNotificationMessage(snsNotificationMessage)
+		if err != nil {
 			return nil, err
 		}
-
-		switch snsNotificationMessage.Type {
-		case "Notification":
-			streams, err := handleNotificationMessage(snsNotificationMessage)
-			if err != nil {
-				return nil, err
-			}
-			result = append(result, streams...)
-		case "SubscriptionConfirmation":
-			err := ConfirmSubscription(snsNotificationMessage)
-			if err != nil {
-				return nil, err
-			}
-		default:
-			return nil, errors.New("received unexpected message in SQS queue")
+		return streams, nil
+	case "SubscriptionConfirmation":
+		if err := ConfirmSubscription(snsNotificationMessage); err != nil {
+			return nil, err
 		}
+		return nil, nil
+	default:
+		return nil, errors.New("received unexpected message in SQS queue")
 	}
-	return result, nil
 }
 
 // ConfirmSubscription will confirm the SNS->SQS subscription

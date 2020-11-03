@@ -123,13 +123,7 @@ Parameters:
     Description: Log processor Lambda memory allocation. Increase to eliminate out-of-memory errors or reduce processing time (in exchange for higher cost)
     MinValue: 256 # 128 is too small, risks OOM errors
     MaxValue: 3008
-    Default: 1024
-  LogProcessorSQSDelaySeconds:
-    Type: Number
-    Description: The number of seconds to delay events into the log processor queue
-    Default: 5
-    MinValue: 0 # no delay, poor aggregation
-    MaxValue: 20 # this is the max time we can long poll sqs
+    Default: 2048
   LogSubscriptionPrincipals:
     Type: CommaDelimitedList
     Description: Comma-separated list of AWS principal ARNs which will be authorized to subscribe to processed log data S3 notifications
@@ -231,6 +225,7 @@ Resources:
         LayerVersionArns: !Join [',', !Ref LayerVersionArns]
         ProcessedDataBucket: !GetAtt Bootstrap.Outputs.ProcessedDataBucket
         PythonLayerVersionArn: !Ref PythonLayerVersionArn
+        SqsKeyId: !GetAtt Bootstrap.Outputs.QueueEncryptionKeyId
         TracingMode: !Ref TracingMode
         UserPoolId: !GetAtt Bootstrap.Outputs.UserPoolId
       Tags:
@@ -251,10 +246,8 @@ Resources:
         AlarmTopicArn: !GetAtt Bootstrap.Outputs.AlarmTopicArn
         AnalysisApi: !Sub https://${BootstrapGateway.Outputs.AnalysisApiEndpoint}
         ApiId: !GetAtt Bootstrap.Outputs.GraphQLApiId
-        ComplianceApi: !Sub https://${BootstrapGateway.Outputs.ComplianceApiEndpoint}
         CustomResourceVersion: !FindInMap [Constants, Panther, Version]
         RemediationApi: !Sub https://${BootstrapGateway.Outputs.RemediationApiEndpoint}
-        ResourcesApi: !Sub https://${BootstrapGateway.Outputs.ResourcesApiEndpoint}
         ServiceRole: !GetAtt Bootstrap.Outputs.AppsyncServiceRoleArn
       Tags:
         - Key: Application
@@ -274,7 +267,6 @@ Resources:
         AlarmTopicArn: !GetAtt Bootstrap.Outputs.AlarmTopicArn
         AnalysisApiId: !GetAtt BootstrapGateway.Outputs.AnalysisApiId
         CloudWatchLogRetentionDays: !Ref CloudWatchLogRetentionDays
-        ComplianceApiId: !GetAtt BootstrapGateway.Outputs.ComplianceApiId
         CustomResourceVersion: !FindInMap [Constants, Panther, Version]
         Debug: !Ref Debug
         LayerVersionArns: !Join [',', !Ref LayerVersionArns]
@@ -282,7 +274,6 @@ Resources:
         ProcessedDataTopicArn: !GetAtt Bootstrap.Outputs.ProcessedDataTopicArn
         PythonLayerVersionArn: !GetAtt BootstrapGateway.Outputs.PythonLayerVersionArn
         RemediationApiId: !GetAtt BootstrapGateway.Outputs.RemediationApiId
-        ResourcesApiId: !GetAtt BootstrapGateway.Outputs.ResourcesApiId
         SqsKeyId: !GetAtt Bootstrap.Outputs.QueueEncryptionKeyId
         TracingMode: !Ref TracingMode
       Tags:
@@ -307,7 +298,6 @@ Resources:
         CloudWatchLogRetentionDays: !Ref CloudWatchLogRetentionDays
         CompanyDisplayName: !Ref CompanyDisplayName
         CompanyEmail: !Ref FirstUserEmail
-        ComplianceApiId: !GetAtt BootstrapGateway.Outputs.ComplianceApiId
         CustomResourceVersion: !FindInMap [Constants, Panther, Version]
         Debug: !Ref Debug
         DynamoScalingRoleArn: !GetAtt Bootstrap.Outputs.DynamoScalingRoleArn
@@ -343,12 +333,14 @@ Resources:
           Value: panther-cw-dashboards
 
   LogAnalysis:
+    DependsOn: Core
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: ../../deployments/log_analysis.yml
       Parameters:
         AlarmTopicArn: !GetAtt Bootstrap.Outputs.AlarmTopicArn
         AnalysisApiId: !GetAtt BootstrapGateway.Outputs.AnalysisApiId
+        AthenaWorkGroup: !GetAtt BootstrapGateway.Outputs.AthenaWorkGroup
         AthenaResultsBucket: !GetAtt Bootstrap.Outputs.AthenaResultsBucket
         CloudWatchLogRetentionDays: !Ref CloudWatchLogRetentionDays
         CustomResourceVersion: !FindInMap [Constants, Panther, Version]
@@ -357,7 +349,6 @@ Resources:
         InputDataTopicArn: !GetAtt Bootstrap.Outputs.InputDataTopicArn
         LayerVersionArns: !Join [',', !Ref LayerVersionArns]
         LogProcessorLambdaMemorySize: !Ref LogProcessorLambdaMemorySize
-        LogProcessorSQSDelaySeconds: !Ref LogProcessorSQSDelaySeconds
         ProcessedDataBucket: !GetAtt Bootstrap.Outputs.ProcessedDataBucket
         ProcessedDataTopicArn: !GetAtt Bootstrap.Outputs.ProcessedDataTopicArn
         PythonLayerVersionArn: !GetAtt BootstrapGateway.Outputs.PythonLayerVersionArn

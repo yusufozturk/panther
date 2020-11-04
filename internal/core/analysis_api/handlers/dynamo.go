@@ -38,6 +38,7 @@ const (
 	typePolicy       = string(models.AnalysisTypePOLICY)
 	typeGlobal       = string(models.AnalysisTypeGLOBAL)
 	typeRule         = string(models.AnalysisTypeRULE)
+	typeDataModel    = string(models.AnalysisTypeDATAMODEL)
 	maxDynamoBackoff = 30 * time.Second
 )
 
@@ -66,6 +67,7 @@ type tableItem struct {
 	LowerID          string   `json:"lowerId,omitempty"`
 	LowerTags        []string `json:"lowerTags,omitempty" dynamodbav:"lowerTags,stringset,omitempty"`
 
+	Mappings      []*models.Mapping   `json:"mappings,omitempty"`
 	OutputIds     models.OutputIds    `json:"outputIds,omitempty" dynamodbav:"outputIds,stringset,omitempty"`
 	Reference     models.Reference    `json:"reference,omitempty"`
 	Reports       models.Reports      `json:"reports,omitempty"`
@@ -187,6 +189,26 @@ func (r *tableItem) Global() *models.Global {
 		LastModified:   r.LastModified,
 		LastModifiedBy: r.LastModifiedBy,
 		Tags:           r.Tags,
+		VersionID:      r.VersionID,
+	}
+	gatewayapi.ReplaceMapSliceNils(result)
+	return result
+}
+
+// DataModel converts a Dynamo row into a DataModel external model.
+func (r *tableItem) DataModel() *models.DataModel {
+	r.normalize()
+	result := &models.DataModel{
+		Body:           r.Body,
+		CreatedAt:      r.CreatedAt,
+		CreatedBy:      r.CreatedBy,
+		Description:    r.Description,
+		Enabled:        r.Enabled,
+		ID:             r.ID,
+		LastModified:   r.LastModified,
+		LastModifiedBy: r.LastModifiedBy,
+		LogTypes:       r.ResourceTypes,
+		Mappings:       r.Mappings,
 		VersionID:      r.VersionID,
 	}
 	gatewayapi.ReplaceMapSliceNils(result)

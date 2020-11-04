@@ -47,6 +47,12 @@ var methodHandlers = map[string]gatewayapi.RequestHandler{
 	"POST /global/update": handlers.ModifyGlobal,
 	"POST /global/delete": handlers.DeleteGlobal,
 
+	// DataModels only
+	"GET /datamodel":         handlers.GetDataModel,
+	"POST /datamodel":        handlers.CreateDataModel,
+	"GET /datamodel/list":    handlers.ListDataModels,
+	"POST /datamodel/update": handlers.ModifyDataModel,
+
 	// Rules and Policies
 	"POST /delete": handlers.DeletePolicies,
 	"GET /enabled": handlers.GetEnabledAnalyses,

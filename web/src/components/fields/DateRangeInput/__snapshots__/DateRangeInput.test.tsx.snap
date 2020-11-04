@@ -1,0 +1,288 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FormikDateRangeInput renders 1`] = `
+.panther-2 {
+  position: relative;
+}
+
+
+
+.panther-13 {
+  position: relative;
+  z-index: 1;
+}
+
+.panther-7 {
+  min-height: 47px;
+  position: relative;
+  border: 1px solid;
+  -webkit-transition: border-color 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  transition: border-color 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  background-color: transparent;
+  border-radius: 4px;
+  border-color: #3e516b;
+}
+
+.panther-7:hover {
+  border-color: #0081c5;
+}
+
+.panther-7:focus-within {
+  border-color: #0081c5;
+}
+
+.panther-7:focus-within label {
+  font-weight: 500;
+  -webkit-transform: translate(6px, 4px) scale(0.65);
+  -moz-transform: translate(6px, 4px) scale(0.65);
+  -ms-transform: translate(6px, 4px) scale(0.65);
+  transform: translate(6px, 4px) scale(0.65);
+}
+
+.panther-6 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.panther-0 {
+  vertical-align: top;
+  width: 100%;
+  height: 100%;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 20px;
+  padding-bottom: 8px;
+  position: relative;
+  color: #f6f6f6;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background-color: transparent;
+  border: 0;
+}
+
+.panther-0::-webkit-input-placeholder {
+  opacity: 0;
+  color: #f6f6f6;
+  -webkit-transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  font-weight: 500;
+}
+
+.panther-0::-moz-placeholder {
+  opacity: 0;
+  color: #f6f6f6;
+  -webkit-transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  font-weight: 500;
+}
+
+.panther-0:-ms-input-placeholder {
+  opacity: 0;
+  color: #f6f6f6;
+  -webkit-transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  font-weight: 500;
+}
+
+.panther-0::placeholder {
+  opacity: 0;
+  color: #f6f6f6;
+  -webkit-transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  font-weight: 500;
+}
+
+
+
+.panther-0:focus::-webkit-input-placeholder {
+  opacity: 0.4;
+}
+
+.panther-0:focus::-moz-placeholder {
+  opacity: 0.4;
+}
+
+.panther-0:focus:-ms-input-placeholder {
+  opacity: 0.4;
+}
+
+.panther-0:focus::placeholder {
+  opacity: 0.4;
+}
+
+.panther-0:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px #192231 inset;
+  -webkit-text-fill-color: #f6f6f6;
+  border-radius: 4px;
+}
+
+.panther-1 {
+  pointer-events: none;
+  font-size: 0.875rem;
+  padding-left: 16px;
+  padding-right: 16px;
+  color: #bdbdbd;
+  top: 0;
+  left: 0;
+  position: absolute;
+  transform-origin: center left;
+  -webkit-transform: translate(0, 14px) scale(1);
+  -moz-transform: translate(0, 14px) scale(1);
+  -ms-transform: translate(0, 14px) scale(1);
+  transform: translate(0, 14px) scale(1);
+  -webkit-transition: -webkit-transform 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  transition: transform 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  font-weight: 400;
+}
+
+.panther-12 {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  z-index: 2;
+}
+
+.panther-11 {
+  outline: none;
+  line-height: 1;
+  height: 32px;
+  width: 32px;
+  cursor: pointer;
+  color: #f6f6f6;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  background-color: transparent;
+  -webkit-transition: all 0.1s linear;
+  transition: all 0.1s linear;
+}
+
+.panther-11:focus {
+  border-radius: 99999px;
+  background-color: rgba(255,255,255,0.1);
+}
+
+.panther-10 {
+  display: inline-block;
+  vertical-align: sub;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: currentColor;
+}
+
+<div>
+  <header
+    id="main-header"
+  />
+  <div
+    class="panther-2"
+  >
+    <form
+      action="#"
+    >
+      <div
+        class="panther-9"
+      >
+        <div
+          class="panther-13"
+        >
+          <div
+            class="panther-9"
+          >
+            <fieldset
+              class="panther-2"
+            >
+              <div
+                class="panther-7"
+              >
+                <div
+                  class="panther-6"
+                >
+                  <div
+                    class="panther-2"
+                  >
+                    <input
+                      aria-invalid="false"
+                      aria-readonly="true"
+                      autocomplete="off"
+                      class="panther-0"
+                      id="start-end-from"
+                      name="start-end-from"
+                      readonly=""
+                      type="text"
+                      value=""
+                    />
+                    <label
+                      class="panther-1"
+                      for="start-end-from"
+                    >
+                      Date Start
+                    </label>
+                  </div>
+                  <div
+                    class="panther-2"
+                  >
+                    <input
+                      aria-invalid="false"
+                      aria-readonly="true"
+                      autocomplete="off"
+                      class="panther-0"
+                      id="start-end-to"
+                      name="start-end-to"
+                      readonly=""
+                      type="text"
+                      value=""
+                    />
+                    <label
+                      class="panther-1"
+                      for="start-end-to"
+                    >
+                      Date End
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+          <div
+            class="panther-12"
+          >
+            <button
+              aria-label="Toggle picker"
+              aria-pressed="false"
+              class="panther-11"
+              type="button"
+            >
+              <svg
+                class="panther-10"
+                role="presentation"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M19,4 L18,4 L18,2 L16,2 L16,4 L8,4 L8,2 L6,2 L6,4 L5,4 C3.89,4 3.01,4.9 3.01,6 L3,20 C3,21.1 3.89,22 5,22 L19,22 C20.1,22 21,21.1 21,20 L21,6 C21,4.9 20.1,4 19,4 Z M19,20 L5,20 L5,9 L19,9 L19,20 Z"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <button
+        type="submit"
+      >
+        Submit
+      </button>
+    </form>
+  </div>
+  <footer
+    id="footer"
+  />
+</div>
+`;

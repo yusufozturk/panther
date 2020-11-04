@@ -144,6 +144,7 @@ func (r *tableItem) PolicySummary(status models.ComplianceStatus) *models.Policy
 		Severity:                  r.Severity,
 		Suppressions:              r.Suppressions,
 		Tags:                      r.Tags,
+		Threshold:                 r.Threshold,
 	}
 	gatewayapi.ReplaceMapSliceNils(result)
 	return result

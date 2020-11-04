@@ -43,6 +43,7 @@ const (
 
 var (
 	config = struct {
+		AthenaWorkgroup     string `required:"true" split_words:"true"`
 		SyncWorkersPerTable int    `default:"10" split_words:"true"`
 		ProcessedDataBucket string `split_words:"true"`
 	}{}
@@ -56,11 +57,12 @@ var (
 
 func Setup() {
 	envconfig.MustProcess("", &config)
-	awsSession = session.Must(session.NewSession(request.WithRetryer(aws.NewConfig().WithMaxRetries(maxRetries),
-		awsretry.NewConnectionErrRetryer(maxRetries))))
-	glueClient = glue.New(awsSession)
-	lambdaClient = lambda.New(awsSession)
-	athenaClient = athena.New(awsSession)
+	awsSession = session.Must(session.NewSession()) // use default retries for fetching creds, avoids hangs!
+	clientsSession := awsSession.Copy(request.WithRetryer(aws.NewConfig().WithMaxRetries(maxRetries),
+		awsretry.NewConnectionErrRetryer(maxRetries)))
+	glueClient = glue.New(clientsSession)
+	lambdaClient = lambda.New(clientsSession)
+	athenaClient = athena.New(clientsSession)
 
 	logtypesResolver = registry.NativeLogTypesResolver()
 	listAvailableLogTypes = func(_ context.Context) ([]string, error) {

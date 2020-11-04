@@ -93,10 +93,10 @@ func parseUpdateDataModel(request *events.APIGatewayProxyRequest) (*models.Updat
 	for _, mapping := range result.Mappings {
 		if mapping.Field != "" {
 			if mapping.Method != "" {
-				return nil, errFieldOrMethodMissing
+				return nil, errMappingTooManyOptions
 			}
 		} else if mapping.Method == "" {
-			return nil, errMappingTooManyOptions
+			return nil, errFieldOrMethodMissing
 		}
 	}
 

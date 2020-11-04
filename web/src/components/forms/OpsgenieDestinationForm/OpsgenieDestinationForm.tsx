@@ -67,15 +67,6 @@ const OpsgenieDestinationForm: React.FC<OpsgenieDestinationFormProps> = ({
           placeholder="How should we name this?"
           required
         />
-        <Field
-          as={SensitiveTextInput}
-          shouldMask={!!existing}
-          name="outputConfig.opsgenie.apiKey"
-          label="Opsgenie API key"
-          placeholder="What's your organization's Opsgenie API key?"
-          required={!existing}
-          autoComplete="new-password"
-        />
         <Box as="fieldset">
           <Field
             as={FormikCombobox}
@@ -89,6 +80,15 @@ const OpsgenieDestinationForm: React.FC<OpsgenieDestinationFormProps> = ({
             If you are registered to Opsgenie Europe (app.eu.opsgenie.com), select EU
           </FormHelperText>
         </Box>
+        <Field
+          as={SensitiveTextInput}
+          shouldMask={!!existing}
+          name="outputConfig.opsgenie.apiKey"
+          label="Opsgenie API key"
+          placeholder="What's your organization's Opsgenie API key?"
+          required={!existing}
+          autoComplete="new-password"
+        />
       </SimpleGrid>
     </BaseDestinationForm>
   );

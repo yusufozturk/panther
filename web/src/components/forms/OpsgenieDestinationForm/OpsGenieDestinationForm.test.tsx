@@ -72,13 +72,13 @@ describe('OpsGenieDestinationForm', () => {
       <OpsgenieDestinationForm onSubmit={() => {}} initialValues={emptyInitialValues} />
     );
     const displayNameField = getByLabelText('* Display Name');
+    const serviceRegion = getByLabelText('Service Region', { selector: 'input' });
     const apiKeyField = getByLabelText('Opsgenie API key');
-    const regionSwitch = getByText('Service Region');
     const submitButton = getByText('Add Destination');
     const criticalSeverityCheckBox = document.getElementById(severity);
     expect(criticalSeverityCheckBox).not.toBeNull();
+    expect(serviceRegion).not.toBeNull();
     expect(submitButton).toHaveAttribute('disabled');
-    expect(regionSwitch).not.toBeNull();
     fireEvent.change(displayNameField, { target: { value: displayName } });
     fireEvent.click(criticalSeverityCheckBox);
     await waitMs(50);
@@ -90,19 +90,23 @@ describe('OpsGenieDestinationForm', () => {
 
   it('should trigger submit successfully', async () => {
     const submitMockFunc = jest.fn();
-    const { getByLabelText, getByText } = render(
+    const { getByLabelText, getByText, getByTestId } = render(
       <OpsgenieDestinationForm onSubmit={submitMockFunc} initialValues={emptyInitialValues} />
     );
     const displayNameField = getByLabelText('* Display Name');
+    const serviceRegion = getByLabelText('Service Region', { selector: 'input' });
     const apiKeyField = getByLabelText('Opsgenie API key');
-    const regionSwitch = getByText('Service Region');
     const submitButton = getByText('Add Destination');
     const criticalSeverityCheckBox = document.getElementById(severity);
     expect(criticalSeverityCheckBox).not.toBeNull();
     expect(submitButton).toHaveAttribute('disabled');
 
     fireEvent.change(displayNameField, { target: { value: displayName } });
-    fireEvent.click(regionSwitch);
+
+    fireEvent.mouseDown(serviceRegion);
+    fireEvent.click(getByTestId('service-region-eu'));
+    expect(serviceRegion).toHaveValue(OpsgenieServiceRegionEnum.Eu);
+
     fireEvent.click(criticalSeverityCheckBox);
     fireEvent.change(apiKeyField, { target: { value: '123' } });
     await waitMs(50);
@@ -120,16 +124,21 @@ describe('OpsGenieDestinationForm', () => {
 
   it('should edit Opsgenie Destination successfully', async () => {
     const submitMockFunc = jest.fn();
-    const { getByLabelText, getByText } = render(
+    const { getByLabelText, getByText, getByTestId } = render(
       <OpsgenieDestinationForm onSubmit={submitMockFunc} initialValues={initialValues} />
     );
     const displayNameField = getByLabelText('* Display Name');
+    const serviceRegion = getByLabelText('Service Region', { selector: 'input' });
     const submitButton = getByText('Update Destination');
     expect(displayNameField).toHaveValue(initialValues.displayName);
     expect(submitButton).toHaveAttribute('disabled');
 
     const newDisplayName = 'New Opsgenie Name';
     fireEvent.change(displayNameField, { target: { value: newDisplayName } });
+
+    fireEvent.mouseDown(serviceRegion);
+    fireEvent.click(getByTestId('service-region-us'));
+    expect(serviceRegion).toHaveValue(OpsgenieServiceRegionEnum.Us);
     await waitMs(50);
     expect(submitButton).not.toHaveAttribute('disabled');
 

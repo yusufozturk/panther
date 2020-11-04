@@ -324,6 +324,13 @@ func itemUpdated(oldItem, newItem *tableItem) bool {
 	}
 
 	// Check mappings for equality
+	itemsEqual = mappingEquality(oldItem, newItem)
+
+	// If they're the same, the item wasn't really updated
+	return !itemsEqual
+}
+
+func mappingEquality(oldItem, newItem *tableItem) bool {
 	oldMappings := make(map[models.SourceName]*models.Mapping)
 	for _, mapping := range oldItem.Mappings {
 		oldMappings[mapping.Name] = mapping
@@ -334,12 +341,11 @@ func itemUpdated(oldItem, newItem *tableItem) bool {
 			oldMapping.Name != newMapping.Name ||
 			oldMapping.Field != newMapping.Field ||
 			oldMapping.Method != newMapping.Method {
-			return true
+
+			return false
 		}
 	}
-
-	// If they're the same, the item wasn't really updated
-	return !itemsEqual
+	return true
 }
 
 // Sort a slice of strings ignoring case when possible

@@ -291,7 +291,7 @@ func TestIntegrationAPI(t *testing.T) {
 	// ORDER MATTERS!
 
 	t.Run("TestPolicies", func(t *testing.T) {
-		t.Run("TestPolicyPass", testPolicyPass)
+		t.Run("Pass", testPolicyPass)
 		t.Run("TestPolicyPassAllResourceTypes", testPolicyPassAllResourceTypes)
 		t.Run("TestPolicyFail", testPolicyFail)
 		t.Run("TestPolicyError", testPolicyError)
@@ -1134,7 +1134,6 @@ func createDataModelSuccess(t *testing.T) {
 		model.LastModifiedBy = userID
 		model.VersionID = result.Payload.VersionID
 		assert.Equal(t, model, result.Payload)
-
 	}
 }
 
@@ -1314,7 +1313,6 @@ func getDataModel(t *testing.T) {
 	require.NoError(t, err)
 	assert.NoError(t, result.Payload.Validate(nil))
 	assert.Equal(t, dataModel, result.Payload)
-
 }
 
 // Get a global
@@ -1526,12 +1524,10 @@ func modifyDataModelSuccess(t *testing.T) {
 	dataModel.LastModified = result.Payload.LastModified
 	dataModel.VersionID = result.Payload.VersionID
 	assert.Equal(t, dataModel, result.Payload)
-
 }
 
 // Modify a dataModel - fail
 func modifyDataModelFail(t *testing.T) {
-
 	// Validate updating the logtypes that would create two data models
 	// that cover the same logtypes fails
 	result, err := apiClient.Operations.ModifyDataModel(&operations.ModifyDataModelParams{
@@ -1614,7 +1610,6 @@ func modifyDataModelFail(t *testing.T) {
 	dataModel.LastModified = result.Payload.LastModified
 	dataModel.VersionID = result.Payload.VersionID
 	assert.Equal(t, dataModel, result.Payload)
-
 }
 
 // Modify a global

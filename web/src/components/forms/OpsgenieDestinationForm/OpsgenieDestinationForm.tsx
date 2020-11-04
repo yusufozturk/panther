@@ -21,13 +21,13 @@ import { Field } from 'formik';
 import * as Yup from 'yup';
 import FormikTextInput from 'Components/fields/TextInput';
 import SensitiveTextInput from 'Components/fields/SensitiveTextInput';
-import { DestinationConfigInput } from 'Generated/schema';
+import { DestinationConfigInput, OpsgenieServiceRegionEnum } from 'Generated/schema';
 import BaseDestinationForm, {
   BaseDestinationFormValues,
   defaultValidationSchema,
 } from 'Components/forms/BaseDestinationForm';
-import { FormHelperText, SimpleGrid } from 'pouncejs';
-import FormikSwitch from 'Components/fields/Switch';
+import { Box, FormHelperText, SimpleGrid } from 'pouncejs';
+import FormikCombobox from 'Components/fields/ComboBox';
 
 type OpsgenieFieldValues = Pick<DestinationConfigInput, 'opsgenie'>;
 
@@ -46,7 +46,7 @@ const OpsgenieDestinationForm: React.FC<OpsgenieDestinationFormProps> = ({
     outputConfig: Yup.object().shape({
       opsgenie: Yup.object().shape({
         apiKey: existing ? Yup.string() : Yup.string().required(),
-        europeanServiceRegion: Yup.boolean(),
+        serviceRegion: Yup.string().required(),
       }),
     }),
   });
@@ -59,7 +59,7 @@ const OpsgenieDestinationForm: React.FC<OpsgenieDestinationFormProps> = ({
       validationSchema={mergedValidationSchema}
       onSubmit={onSubmit}
     >
-      <SimpleGrid gap={5} columns={2}>
+      <SimpleGrid gap={5} columns={3}>
         <Field
           name="displayName"
           as={FormikTextInput}
@@ -76,16 +76,19 @@ const OpsgenieDestinationForm: React.FC<OpsgenieDestinationFormProps> = ({
           required={!existing}
           autoComplete="new-password"
         />
-        <Field
-          as={FormikSwitch}
-          name="outputConfig.opsgenie.europeanServiceRegion"
-          label="European Service Region"
-          aria-describedby="european-service-region-helper"
-        />
-        <FormHelperText mt={0} id="european-service-region-helper-text">
-          Enable this option if you are registered to Opsgenie Europe (app.eu.opsgenie.com). Panther
-          will send alerts using the EU API domain (api.eu.opsgenie.com).
-        </FormHelperText>
+        <Box as="fieldset">
+          <Field
+            as={FormikCombobox}
+            name="outputConfig.opsgenie.serviceRegion"
+            items={[OpsgenieServiceRegionEnum.Us, OpsgenieServiceRegionEnum.Eu]}
+            label="Service Region"
+            aria-describedby="serviceRegion-helper"
+            required
+          />
+          <FormHelperText mt={2} id="serviceRegion-helper-text">
+            If you are registered to Opsgenie Europe (app.eu.opsgenie.com), select EU
+          </FormHelperText>
+        </Box>
       </SimpleGrid>
     </BaseDestinationForm>
   );

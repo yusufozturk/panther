@@ -31,7 +31,7 @@ import (
 	outputModels "github.com/panther-labs/panther/api/lambda/outputs/models"
 )
 
-var opsgenieConfig = &outputModels.OpsgenieConfig{APIKey: "apikey", EuropeanServiceRegion: false}
+var opsgenieConfig = &outputModels.OpsgenieConfig{APIKey: "apikey", ServiceRegion: OpsgenieServiceRegionUS}
 
 func TestOpsgenieAlert(t *testing.T) {
 	httpWrapper := &mockHTTPWrapper{}
@@ -68,9 +68,14 @@ func TestOpsgenieAlert(t *testing.T) {
 		AuthorizationHTTPHeader: authorization,
 	}
 
-	requestEndpoint := "https://api.opsgenie.com/v2/alerts"
-	if opsgenieConfig.EuropeanServiceRegion {
+	requestEndpoint := ""
+	switch opsgenieConfig.ServiceRegion {
+	case OpsgenieServiceRegionUS:
+		requestEndpoint = "https://api.opsgenie.com/v2/alerts"
+	case OpsgenieServiceRegionEU:
 		requestEndpoint = "https://api.eu.opsgenie.com/v2/alerts"
+	default:
+		requestEndpoint = "https://api.opsgenie.com/v2/alerts"
 	}
 
 	expectedPostInput := &PostInput{

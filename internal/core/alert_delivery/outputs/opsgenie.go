@@ -26,6 +26,11 @@ import (
 	outputModels "github.com/panther-labs/panther/api/lambda/outputs/models"
 )
 
+const (
+	OpsgenieServiceRegionUS = "US"
+	OpsgenieServiceRegionEU = "EU"
+)
+
 var pantherToOpsGeniePriority = map[string]string{
 	"CRITICAL": "P1",
 	"HIGH":     "P2",
@@ -58,9 +63,14 @@ func (client *OutputClient) Opsgenie(
 		AuthorizationHTTPHeader: authorization,
 	}
 
-	requestEndpoint := "https://api.opsgenie.com/v2/alerts"
-	if config.EuropeanServiceRegion {
+	requestEndpoint := ""
+	switch config.ServiceRegion {
+	case OpsgenieServiceRegionUS:
+		requestEndpoint = "https://api.opsgenie.com/v2/alerts"
+	case OpsgenieServiceRegionEU:
 		requestEndpoint = "https://api.eu.opsgenie.com/v2/alerts"
+	default:
+		requestEndpoint = "https://api.opsgenie.com/v2/alerts"
 	}
 
 	postInput := &PostInput{

@@ -24,7 +24,7 @@ import EditDestination, {
   mockUpdateDestination,
 } from 'Components/wizards/EditDestinationWizard';
 import { DestinationFull } from 'Source/graphql/fragments/DestinationFull.generated';
-import { DestinationTypeEnum, SeverityEnum } from 'Generated/schema';
+import { DestinationTypeEnum, OpsgenieServiceRegionEnum, SeverityEnum } from 'Generated/schema';
 
 const validUrl = faker.internet.url();
 
@@ -465,7 +465,7 @@ describe('EditDestination', () => {
       defaultForSeverity: [SeverityEnum.Critical],
     }) as DestinationFull;
     destination.outputConfig.opsgenie.apiKey = '';
-    destination.outputConfig.opsgenie.europeanServiceRegion = false;
+    destination.outputConfig.opsgenie.serviceRegion = OpsgenieServiceRegionEnum.Us;
 
     const mocks = [
       mockGetDestinationDetails({ data: { destination } }),
@@ -479,7 +479,7 @@ describe('EditDestination', () => {
             outputConfig: {
               opsgenie: {
                 apiKey: destination.outputConfig.opsgenie.apiKey,
-                europeanServiceRegion: destination.outputConfig.opsgenie.europeanServiceRegion,
+                serviceRegion: destination.outputConfig.opsgenie.serviceRegion,
               },
             },
           },

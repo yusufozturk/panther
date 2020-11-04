@@ -18,7 +18,12 @@
 
 import React from 'react';
 import { Box, useSnackbar } from 'pouncejs';
-import { DestinationConfigInput, DestinationInput, DestinationTypeEnum } from 'Generated/schema';
+import {
+  DestinationConfigInput,
+  DestinationInput,
+  DestinationTypeEnum,
+  OpsgenieServiceRegionEnum,
+} from 'Generated/schema';
 import { BaseDestinationFormValues } from 'Components/forms/BaseDestinationForm';
 import DestinationFormSwitcher from 'Components/forms/DestinationFormSwitcher';
 import { capitalize, extractErrorMessage } from 'Helpers/utils';
@@ -41,7 +46,7 @@ const initialValues: Omit<DestinationInput, 'outputType'> = {
       assigneeId: '',
       issueType: '',
     },
-    opsgenie: { apiKey: '', europeanServiceRegion: false },
+    opsgenie: { apiKey: '', serviceRegion: OpsgenieServiceRegionEnum.Us },
     slack: { webhookURL: '' },
     msTeams: { webhookURL: '' },
     sns: { topicArn: '' },

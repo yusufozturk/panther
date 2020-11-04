@@ -95,7 +95,7 @@ const DestinationFormSwitcher: React.FC<DestinationFormSwitcherProps> = ({
             ...commonInitialValues,
             outputConfig: pick(initialValues.outputConfig, [
               'opsgenie.apiKey',
-              'opsgenie.europeanServiceRegion',
+              'opsgenie.serviceRegion',
             ]),
           }}
           onSubmit={onSubmit}

@@ -30,7 +30,7 @@ fragment DestinationFull on Destination {
     }
     opsgenie {
       apiKey
-      europeanServiceRegion
+      serviceRegion
     }
     msTeams {
       webhookURL

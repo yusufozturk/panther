@@ -17,37 +17,8 @@
  */
 
 import React from 'react';
+import { SelectContext } from 'Components/utils/SelectContext';
 
-function useMultiselect<T extends { [key: string]: any }>() {
-  const [selected, setSelected] = React.useState<Array<string>>([]);
+const useSelect = () => React.useContext(SelectContext);
 
-  const addItem = id => {
-    setSelected([...selected, id]);
-  };
-
-  const selectAll = (ids: string[]) => {
-    setSelected(ids);
-  };
-
-  const removeItem = id => {
-    setSelected(selected.filter(i => i !== id));
-  };
-
-  const resetSelection = () => {
-    setSelected([]);
-  };
-
-  // Cache those values as long as selected.length remains the same
-  return React.useMemo(
-    () => ({
-      selected,
-      addItem,
-      removeItem,
-      resetSelection,
-      selectAll,
-    }),
-    [selected.length, addItem, resetSelection, selectAll]
-  );
-}
-
-export default useMultiselect;
+export default useSelect();

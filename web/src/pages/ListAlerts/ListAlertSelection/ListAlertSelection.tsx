@@ -23,6 +23,7 @@ import { AlertStatusesEnum } from 'Generated/schema';
 import FormikCombobox from 'Components/fields/ComboBox';
 import { capitalize } from 'Helpers/utils';
 import SubmitButton from 'Components/buttons/SubmitButton';
+import { useSelect } from 'Components/utils/SelectContext';
 
 const initialValues = {
   status: AlertStatusesEnum.Resolved,
@@ -35,10 +36,8 @@ interface ListAlertSelectionFormValues {
   status: string;
 }
 
-interface ListAlertSelectionProps {
-  selected: string[];
-}
-const ListAlertSelection: React.FC<ListAlertSelectionProps> = ({ selected }) => {
+const ListAlertSelection: React.FC = () => {
+  const { selection } = useSelect();
   return (
     <Flex justify="flex-end" align="center">
       <Formik<ListAlertSelectionFormValues>
@@ -55,7 +54,7 @@ const ListAlertSelection: React.FC<ListAlertSelectionProps> = ({ selected }) => 
       >
         <Form>
           <Flex spacing={4} align="center" pr={4}>
-            <Text>{selected.length} Selected</Text>
+            <Text>{selection.length} Selected</Text>
             <Box width={151}>
               <FastField
                 name="status"

@@ -18,25 +18,23 @@
 
 import React from 'react';
 import { Box, Flex, Heading, Card, Checkbox } from 'pouncejs';
+import { useSelect } from 'Components/utils/SelectContext';
 
 interface PanelProps {
   title: string;
   filters?: React.ReactNode;
   select: React.ReactNode;
-  selected: string[];
   selectAll: () => void;
-  deselectAll: () => void;
 }
 
 const PanelWithSelection: React.FC<PanelProps> = ({
   title,
-  selected,
   select,
   filters,
   children,
   selectAll,
-  deselectAll,
 }) => {
+  const { selection, resetSelection } = useSelect();
   return (
     <Card as="section" width={1}>
       <Flex
@@ -49,10 +47,10 @@ const PanelWithSelection: React.FC<PanelProps> = ({
       >
         <Flex align="center" spacing={2} ml={4}>
           <Checkbox
-            checked={!!selected.length}
+            checked={!!selection.length}
             onClick={() => {
-              if (selected.length) {
-                deselectAll();
+              if (selection.length) {
+                resetSelection();
               } else {
                 selectAll();
               }
@@ -63,7 +61,7 @@ const PanelWithSelection: React.FC<PanelProps> = ({
             {title}
           </Heading>
         </Flex>
-        {selected.length ? select : filters || select}
+        {selection.length ? select : filters || select}
       </Flex>
       {children && <Box p={6}>{children}</Box>}
     </Card>

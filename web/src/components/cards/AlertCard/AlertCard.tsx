@@ -17,7 +17,7 @@
  */
 
 import GenericItemCard from 'Components/GenericItemCard';
-import { Checkbox, Flex, Icon, Link, Text } from 'pouncejs';
+import { Flex, Icon, Link, Text } from 'pouncejs';
 import { Link as RRLink } from 'react-router-dom';
 import SeverityBadge from 'Components/badges/SeverityBadge';
 import React from 'react';
@@ -29,51 +29,30 @@ import { AlertSummaryFull } from 'Source/graphql/fragments/AlertSummaryFull.gene
 import { formatDatetime } from 'Helpers/utils';
 import useAlertDestinations from 'Hooks/useAlertDestinations';
 import useAlertDestinationsDeliverySuccess from 'Hooks/useAlertDestinationsDeliverySuccess';
+import { SelectCheckbox } from 'Components/utils/SelectContext';
 import UpdateAlertDropdown from '../../dropdowns/UpdateAlertDropdown';
 
-interface AlertCardSimpleProps {
+interface AlertCardProps {
   alert: AlertSummaryFull;
   hideRuleButton?: boolean;
-  selectionEnabled?: false | null;
-  selected?: null;
-  onSelect?: null;
-  onDeselect?: null;
+  selectionEnabled?: boolean;
 }
-
-interface AlertCardWithSelectionProps {
-  alert: AlertSummaryFull;
-  hideRuleButton?: boolean;
-  selectionEnabled: true;
-  selected: string[];
-  onSelect: (string) => void;
-  onDeselect: (string) => void;
-}
-
-type AlertCardProps = AlertCardSimpleProps | AlertCardWithSelectionProps;
 
 const AlertCard: React.FC<AlertCardProps> = ({
   alert,
   hideRuleButton = false,
   selectionEnabled = false,
-  selected,
-  onSelect,
-  onDeselect,
 }) => {
   const { alertDestinations, loading: loadingDestinations } = useAlertDestinations({ alert });
   const { allDestinationDeliveredSuccessfully, loading } = useAlertDestinationsDeliverySuccess({
     alert,
   });
 
-  const isAlertSelected = selected && selected.find(a => a === alert.alertId);
   return (
     <GenericItemCard>
       <Flex align="start" pr={2}>
         {selectionEnabled && (
-          <Checkbox
-            checked={!!isAlertSelected}
-            onClick={() => (isAlertSelected ? onDeselect(alert.alertId) : onSelect(alert.alertId))}
-            aria-label="select alert"
-          />
+          <SelectCheckbox id={alert.alertId} aria-label={`select alert ${alert.alertId}`} />
         )}
       </Flex>
       <GenericItemCard.Body>

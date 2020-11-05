@@ -17,6 +17,7 @@
  */
 
 import React from 'react';
+import ReactDOM from 'react-dom';
 import mockDate from 'mockdate';
 import { render, fireEvent, waitFor } from 'test-utils';
 import dayjs from 'dayjs';
@@ -51,6 +52,16 @@ const TestForm = ({ onSubmit, initialValues = {}, ...rest }) => (
   </Box>
 );
 
+beforeAll(() => {
+  (ReactDOM.createPortal as jest.MockedFunction<any>) = jest.fn(element => {
+    return element;
+  });
+});
+
+afterAll(() => {
+  (ReactDOM.createPortal as jest.MockedFunction<any>).mockClear();
+});
+
 beforeEach(() => {
   mockDate.set(new Date('November 03, 2020 15:00:00'));
 });
@@ -74,9 +85,35 @@ describe('FormikDateRangeInput', () => {
     await fireEvent.click(inputFrom);
     await waitFor(() => {
       expect(getByAriaLabel('Last Month')).toBeTruthy();
-      expect(getByAriaLabel('Last Week')).toBeTruthy();
     });
     expect(container).toMatchSnapshot();
+  });
+
+  it('allows UTC formatting by default', async () => {
+    const onSubmit = jest.fn();
+    const { getByAriaLabel, findByLabelText, findByText } = render(
+      <TestForm onSubmit={onSubmit} />
+    );
+    const inputFrom = await findByLabelText('Date End');
+    await fireEvent.click(inputFrom);
+    await waitFor(() => {
+      expect(getByAriaLabel('Last 24 Hours')).toBeTruthy();
+    });
+    const preset = await findByLabelText('Last 24 Hours');
+    await waitFor(() => {
+      fireEvent.click(preset);
+    });
+    const dummyFormSubmit = await findByText('Submit');
+    const submitBtn = await findByText('Apply');
+    await waitFor(() => {
+      fireEvent.click(submitBtn);
+      fireEvent.click(dummyFormSubmit);
+    });
+    expect(onSubmit).toHaveBeenCalled();
+    expect(onSubmit).toHaveBeenCalledWith({
+      start: '2020-11-02T15:00:00Z',
+      end: '2020-11-03T15:00:00Z',
+    });
   });
 
   it('parses the dates in UTC format', async () => {
@@ -98,7 +135,6 @@ describe('FormikDateRangeInput', () => {
     await waitFor(() => {
       fireEvent.click(preset);
     });
-
     await fireEvent.click(submitBtn);
     await waitFor(() => {
       fireEvent.click(dummyFormSubmit);

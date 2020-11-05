@@ -40,8 +40,10 @@ const (
 )
 
 var (
-	ipv4Regex  = regexp.MustCompile(`(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])*`)
-	rowCounter rowid.RowID // number of rows generated in this lambda execution (used to generate p_row_id)
+	ipv4Regex     = regexp.MustCompile(`(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])*`)
+	emailRegex    = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+	hostNameRegex = regexp.MustCompile(`^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$`)
+	rowCounter    rowid.RowID // number of rows generated in this lambda execution (used to generate p_row_id)
 )
 
 // All log parsers should extend from this to get standardized fields (all prefixed with 'p_' as JSON for uniqueness)
@@ -60,11 +62,14 @@ type PantherLog struct {
 	PantherSourceLabel *string            `json:"p_source_label,omitempty" description:"Panther added field with the source label"`
 
 	// optional (any)
-	PantherAnyIPAddresses  *PantherAnyString `json:"p_any_ip_addresses,omitempty" description:"Panther added field with collection of ip addresses associated with the row"`
-	PantherAnyDomainNames  *PantherAnyString `json:"p_any_domain_names,omitempty" description:"Panther added field with collection of domain names associated with the row"`
-	PantherAnySHA1Hashes   *PantherAnyString `json:"p_any_sha1_hashes,omitempty" description:"Panther added field with collection of SHA1 hashes associated with the row"`
-	PantherAnyMD5Hashes    *PantherAnyString `json:"p_any_md5_hashes,omitempty" description:"Panther added field with collection of MD5 hashes associated with the row"`
-	PantherAnySHA256Hashes *PantherAnyString `json:"p_any_sha256_hashes,omitempty" description:"Panther added field with collection of SHA256 hashes of any algorithm associated with the row"`
+	PantherAnyHostNames      *PantherAnyString `json:"p_any_host_names,omitempty" description:"Panther added field with collection of hostnames associated with the row"`
+	PantherAnyUserNames      *PantherAnyString `json:"p_any_user_names,omitempty" description:"Panther added field with collection of usernames associated with the row"`
+	PantherAnyEmailAddresses *PantherAnyString `json:"p_any_email_addresses,omitempty" description:"Panther added field with collection of email addresses associated with the row"`
+	PantherAnyIPAddresses    *PantherAnyString `json:"p_any_ip_addresses,omitempty" description:"Panther added field with collection of ip addresses associated with the row"`
+	PantherAnyDomainNames    *PantherAnyString `json:"p_any_domain_names,omitempty" description:"Panther added field with collection of domain names associated with the row"`
+	PantherAnySHA1Hashes     *PantherAnyString `json:"p_any_sha1_hashes,omitempty" description:"Panther added field with collection of SHA1 hashes associated with the row"`
+	PantherAnyMD5Hashes      *PantherAnyString `json:"p_any_md5_hashes,omitempty" description:"Panther added field with collection of MD5 hashes associated with the row"`
+	PantherAnySHA256Hashes   *PantherAnyString `json:"p_any_sha256_hashes,omitempty" description:"Panther added field with collection of SHA256 hashes of any algorithm associated with the row"`
 }
 
 type PantherAnyString struct { // needed to declare as struct (rather than map) for CF generation
@@ -195,6 +200,62 @@ func (pl *PantherLog) AppendAnyIPAddress(value string) bool {
 		return true
 	}
 	return false
+}
+
+// AppendAnyEmailPtr checks for nils and then adds to the email list
+func (pl *PantherLog) AppendAnyEmailPtr(value *string) bool {
+	if value == nil {
+		return false
+	}
+	return pl.AppendAnyEmail(*value)
+}
+
+// AppendAnyEmail appends email addresses and validates with a regexp
+func (pl *PantherLog) AppendAnyEmail(value string) bool {
+	matchedEmail := emailRegex.Find([]byte(value))
+	if len(matchedEmail) == 0 {
+		return false
+	}
+	if pl.PantherAnyEmailAddresses == nil { // lazy create
+		pl.PantherAnyEmailAddresses = NewPantherAnyString()
+	}
+	AppendAnyString(pl.PantherAnyEmailAddresses, string(matchedEmail))
+	return true
+}
+
+func (pl *PantherLog) AppendAnyHostNamesPtrs(values ...*string) {
+	for _, value := range values {
+		if value != nil {
+			pl.AppendAnyHostNames(*value)
+		}
+	}
+}
+
+func (pl *PantherLog) AppendAnyHostNames(value string) bool {
+	matchedHostName := hostNameRegex.Find([]byte(value))
+	if len(matchedHostName) == 0 {
+		return false
+	}
+	if pl.PantherAnyHostNames == nil { // lazy create
+		pl.PantherAnyHostNames = NewPantherAnyString()
+	}
+	AppendAnyString(pl.PantherAnyHostNames, string(matchedHostName))
+	return true
+}
+
+func (pl *PantherLog) AppendAnyUserNamePtrs(values ...*string) {
+	for _, value := range values {
+		if value != nil {
+			pl.AppendAnyUserNames(*value)
+		}
+	}
+}
+
+func (pl *PantherLog) AppendAnyUserNames(values ...string) {
+	if pl.PantherAnyUserNames == nil { // lazy create
+		pl.PantherAnyUserNames = NewPantherAnyString()
+	}
+	AppendAnyString(pl.PantherAnyUserNames, values...)
 }
 
 func (pl *PantherLog) AppendAnyDomainNamePtrs(values ...*string) {

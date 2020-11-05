@@ -202,6 +202,51 @@ func TestAppendAnyIPV6(t *testing.T) {
 	require.Equal(t, expectedAny, event.PantherAnyIPAddresses)
 }
 
+func TestAppendAnyUserNames(t *testing.T) {
+	event := PantherLog{}
+	require.True(t, event.AppendAnyUserNamePtrs(aws.String("unit_test")))
+	require.True(t, event.AppendAnyEmail("unit_test_secondary"))
+
+	expectedAny := &PantherAnyString{
+		set: map[string]struct{}{
+			"unit_test":           {},
+			"unit_test_secondary": {},
+		},
+	}
+	require.Equal(t, expectedAny, event.PantherAnyUserNames)
+}
+
+func TestAppendAnyEmailAddress(t *testing.T) {
+	event := PantherLog{}
+	require.True(t, event.AppendAnyEmailPtr(aws.String("unit.test@runpanther.io")))
+	require.True(t, event.AppendAnyEmail("unit.test+2@gmail.com"))
+	require.False(t, event.AppendAnyEmail("not-an-email"))
+
+	expectedAny := &PantherAnyString{
+		set: map[string]struct{}{
+			"unit.test@runpanther.io": {},
+			"unit.test+2@gmail.com":   {},
+		},
+	}
+	require.Equal(t, expectedAny, event.PantherAnyEmailAddresses)
+}
+
+func TestAppendAnyHostNames(t *testing.T) {
+	event := PantherLog{}
+	value := "unittest-macbook-pro.local"
+	expectedAny := &PantherAnyString{
+		set: map[string]struct{}{
+			value: {},
+		},
+	}
+	event.AppendAnyHostNames(value)
+	require.Equal(t, expectedAny, event.PantherAnyHostNames)
+
+	event = PantherLog{}
+	event.AppendAnyHostNamesPtrs(&value)
+	require.Equal(t, expectedAny, event.PantherAnyHostNames)
+}
+
 func TestAppendAnyDomainNames(t *testing.T) {
 	event := PantherLog{}
 	value := "a"

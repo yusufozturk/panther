@@ -33,21 +33,19 @@ const TestForm = ({ onSubmit, initialValues = {}, ...rest }) => (
         onSubmit(values);
       }}
     >
-      {() => (
-        <Form>
-          <FormikDateRangeInput
-            alignment="right"
-            withPresets
-            withTime
-            labelStart="Date Start"
-            labelEnd="Date End"
-            nameStart="start"
-            nameEnd="end"
-            {...rest}
-          />
-          <button type="submit">Submit</button>
-        </Form>
-      )}
+      <Form>
+        <FormikDateRangeInput
+          alignment="right"
+          withPresets
+          withTime
+          labelStart="Date Start"
+          labelEnd="Date End"
+          nameStart="start"
+          nameEnd="end"
+          {...rest}
+        />
+        <button type="submit">Submit</button>
+      </Form>
     </Formik>
   </Box>
 );

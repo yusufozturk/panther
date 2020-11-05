@@ -2255,6 +2255,7 @@ func getEnabledDataModels(t *testing.T) {
 			},
 			{ // bulk upload entry
 				ID:            dataModelFromBulkYML.ID,
+				Mappings:      dataModelFromBulkYML.Mappings,
 				ResourceTypes: dataModelFromBulkYML.LogTypes,
 				VersionID:     dataModelFromBulkYML.VersionID,
 			},

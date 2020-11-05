@@ -1,0 +1,1840 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Log Analysis Overview should match snapshot 1`] = `
+.panther-140 {
+  margin-bottom: 24px;
+}
+
+.panther-61 {
+  background-color: #23344e;
+  border-radius: 4px;
+}
+
+.panther-30 {
+  position: relative;
+  padding-left: 8px;
+  padding-right: 16px;
+}
+
+.panther-28 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+
+.panther-25 {
+  z-index: 1;
+  cursor: pointer;
+  color: #f6f6f6;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  background-color: transparent;
+  -webkit-transition: all 0.1s linear;
+  transition: all 0.1s linear;
+}
+
+.panther-24 {
+  font-weight: 400;
+  font-size: 1.125rem;
+  border-bottom: 3px solid;
+  z-index: 5;
+  margin-left: 16px;
+  margin-right: 16px;
+  padding-top: 24px;
+  padding-bottom: 24px;
+  -webkit-transition: border-color 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  transition: border-color 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  border-color: #0081c5;
+}
+
+
+
+.panther-26 {
+  font-weight: 400;
+  font-size: 1.125rem;
+  border-bottom: 3px solid;
+  z-index: 5;
+  margin-left: 16px;
+  margin-right: 16px;
+  padding-top: 24px;
+  padding-bottom: 24px;
+  -webkit-transition: border-color 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  transition: border-color 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  border-color: transparent;
+}
+
+.panther-26:hover {
+  border-color: #3e516b;
+}
+
+.panther-29 {
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  background-color: #3e516b;
+  z-index: 0;
+  left: 0;
+  margin-top: -2px;
+}
+
+.panther-60 {
+  padding: 24px;
+}
+
+.panther-58 {
+  outline: none;
+}
+
+.panther-23 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: end;
+  -ms-flex-pack: end;
+  -webkit-justify-content: flex-end;
+  justify-content: flex-end;
+}
+
+.panther-22 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  max-width: 500px;
+}
+
+.panther-22>*:not(:last-child) {
+  margin-right: 16px;
+}
+
+.panther-8 {
+  width: 150px;
+}
+
+
+
+.panther-4 {
+  position: relative;
+}
+
+.panther-2 {
+  min-height: 47px;
+  position: relative;
+  border: 1px solid;
+  -webkit-transition: border-color 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  transition: border-color 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  background-color: #23344e;
+  border-radius: 4px;
+  border-color: #23344e;
+}
+
+.panther-2:hover {
+  border-color: #0081c5;
+}
+
+.panther-2:focus-within {
+  border-color: #0081c5;
+}
+
+.panther-2:focus-within label {
+  font-weight: 500;
+  -webkit-transform: translate(6px, 4px) scale(0.65);
+  -moz-transform: translate(6px, 4px) scale(0.65);
+  -ms-transform: translate(6px, 4px) scale(0.65);
+  transform: translate(6px, 4px) scale(0.65);
+}
+
+.panther-0 {
+  vertical-align: top;
+  width: 100%;
+  height: 100%;
+  padding-left: 16px;
+  padding-right: 32px;
+  padding-top: 20px;
+  padding-bottom: 8px;
+  position: relative;
+  color: #f6f6f6;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background-color: transparent;
+  border: 0;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.panther-0::-webkit-input-placeholder {
+  opacity: 0;
+  color: #f6f6f6;
+  -webkit-transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  font-weight: 500;
+}
+
+.panther-0::-moz-placeholder {
+  opacity: 0;
+  color: #f6f6f6;
+  -webkit-transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  font-weight: 500;
+}
+
+.panther-0:-ms-input-placeholder {
+  opacity: 0;
+  color: #f6f6f6;
+  -webkit-transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  font-weight: 500;
+}
+
+.panther-0::placeholder {
+  opacity: 0;
+  color: #f6f6f6;
+  -webkit-transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  font-weight: 500;
+}
+
+
+
+.panther-0:focus::-webkit-input-placeholder {
+  opacity: 0.4;
+}
+
+.panther-0:focus::-moz-placeholder {
+  opacity: 0.4;
+}
+
+.panther-0:focus:-ms-input-placeholder {
+  opacity: 0.4;
+}
+
+.panther-0:focus::placeholder {
+  opacity: 0.4;
+}
+
+.panther-0:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px #192231 inset;
+  -webkit-text-fill-color: #f6f6f6;
+  border-radius: 4px;
+}
+
+.panther-1 {
+  pointer-events: none;
+  font-size: 0.875rem;
+  padding-left: 16px;
+  padding-right: 16px;
+  color: #bdbdbd;
+  top: 0;
+  left: 0;
+  position: absolute;
+  transform-origin: center left;
+  -webkit-transform: translate(6px, 4px) scale(0.65);
+  -moz-transform: translate(6px, 4px) scale(0.65);
+  -ms-transform: translate(6px, 4px) scale(0.65);
+  transform: translate(6px, 4px) scale(0.65);
+  -webkit-transition: -webkit-transform 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  transition: transform 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  font-weight: 500;
+}
+
+.panther-3 {
+  display: inline-block;
+  vertical-align: sub;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  color: currentColor;
+  opacity: 1;
+  position: absolute;
+  pointer-events: none;
+  margin-top: auto;
+  margin-bottom: auto;
+  top: 0;
+  bottom: 0;
+  right: 16px;
+}
+
+.panther-20 {
+  position: relative;
+  z-index: 1;
+}
+
+.panther-19 {
+  cursor: pointer;
+}
+
+.panther-16 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.panther-9 {
+  vertical-align: top;
+  width: 100%;
+  height: 100%;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 20px;
+  padding-bottom: 8px;
+  position: relative;
+  color: #f6f6f6;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background-color: transparent;
+  border: 0;
+}
+
+.panther-9::-webkit-input-placeholder {
+  opacity: 0;
+  color: #f6f6f6;
+  -webkit-transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  font-weight: 500;
+}
+
+.panther-9::-moz-placeholder {
+  opacity: 0;
+  color: #f6f6f6;
+  -webkit-transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  font-weight: 500;
+}
+
+.panther-9:-ms-input-placeholder {
+  opacity: 0;
+  color: #f6f6f6;
+  -webkit-transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  font-weight: 500;
+}
+
+.panther-9::placeholder {
+  opacity: 0;
+  color: #f6f6f6;
+  -webkit-transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  transition: opacity 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  font-weight: 500;
+}
+
+
+
+.panther-9:focus::-webkit-input-placeholder {
+  opacity: 0.4;
+}
+
+.panther-9:focus::-moz-placeholder {
+  opacity: 0.4;
+}
+
+.panther-9:focus:-ms-input-placeholder {
+  opacity: 0.4;
+}
+
+.panther-9:focus::placeholder {
+  opacity: 0.4;
+}
+
+.panther-9:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px #192231 inset;
+  -webkit-text-fill-color: #f6f6f6;
+  border-radius: 4px;
+}
+
+.panther-15 {
+  display: inline-block;
+  vertical-align: sub;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: currentColor;
+  margin-left: 16px;
+  margin-right: 16px;
+}
+
+.panther-62 {
+  display: grid;
+  grid-row-gap: 8px;
+  grid-column-gap: 12px;
+  grid-template-columns: repeat(1, 1fr);
+  margin-bottom: 20px;
+}
+
+.panther-57 {
+  height: 272px;
+}
+
+.panther-56 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+}
+
+.panther-44 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  background-color: #1d2a3f;
+  width: 25%;
+  padding: 0;
+  padding-top: 40px;
+  padding-bottom: 16px;
+}
+
+.panther-33 {
+  text-align: center;
+}
+
+.panther-31 {
+  font-weight: 700;
+  font-size: 3.438rem;
+  color: #c82727;
+}
+
+.panther-32 {
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.panther-43 {
+  width: 100%;
+  padding-left: 16px;
+  padding-right: 24px;
+}
+
+.panther-42 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  margin-top: 16px;
+  min-width: 80%;
+}
+
+.panther-34 {
+  font-size: 0.75rem;
+  color: #bdbdbd;
+}
+
+.panther-35 {
+  font-size: 0.75rem;
+  padding-top: 4px;
+  color: #bdbdbd;
+}
+
+.panther-36 {
+  font-size: 0.75rem;
+  padding-top: 16px;
+}
+
+.panther-41 {
+  text-align: end;
+}
+
+.panther-38 {
+  color: #bdbdbd;
+}
+
+.panther-40 {
+  padding-top: 8px;
+  font-weight: 700;
+}
+
+.panther-55 {
+  margin-left: 8px;
+  padding-top: 24px;
+  padding-bottom: 24px;
+  padding-left: 24px;
+  width: 80%;
+  background-color: #1d2a3f;
+}
+
+.panther-54 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  position: relative;
+}
+
+.panther-45 {
+  position: absolute;
+  width: 200px;
+  margin-left: 4px;
+  font-weight: 700;
+}
+
+.panther-52 {
+  position: absolute;
+  padding-left: 210px;
+  padding-right: 50px;
+  width: 100%;
+}
+
+.panther-51 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.panther-48 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  z-index: 5;
+}
+
+.panther-48>*:not(:last-child) {
+  margin-right: 8px;
+}
+
+.panther-46 {
+  border-radius: 40px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 16px;
+  padding-right: 16px;
+  font-size: 0.75rem;
+  background-color: #0081c5;
+  cursor: pointer;
+  color: #f6f6f6;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  -webkit-transition: all 0.1s linear;
+  transition: all 0.1s linear;
+}
+
+.panther-47 {
+  border-radius: 40px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 16px;
+  padding-right: 16px;
+  font-size: 0.75rem;
+  background-color: transparent;
+  cursor: pointer;
+  color: #f6f6f6;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  -webkit-transition: all 0.1s linear;
+  transition: all 0.1s linear;
+}
+
+.panther-47:hover {
+  background-color: #3e516b;
+}
+
+.panther-50 {
+  z-index: 5;
+}
+
+.panther-49 {
+  border-radius: 40px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 16px;
+  padding-right: 16px;
+  font-size: 0.75rem;
+  color: #000000;
+  background-color: #3e516b;
+  cursor: pointer;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  -webkit-transition: all 0.1s linear;
+  transition: all 0.1s linear;
+}
+
+.panther-49:hover {
+  background-color: #0081c5;
+}
+
+.panther-53 {
+  width: 100%;
+  height: 100%;
+}
+
+.panther-85 {
+  display: grid;
+  grid-row-gap: 8px;
+  grid-column-gap: 12px;
+  grid-template-columns: repeat(1, 1fr);
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.panther-80 {
+  height: 289px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 16px;
+  background-color: #1d2a3f;
+}
+
+.panther-139 {
+  display: grid;
+  grid-row-gap: 8px;
+  grid-column-gap: 12px;
+  grid-template-columns: repeat(1, 1fr);
+}
+
+.panther-134 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+
+.panther-134>*:not(:last-child) {
+  margin-bottom: 8px;
+}
+
+.panther-133 {
+  background-color: #1d2a3f;
+  border-radius: 4px;
+  padding: 20px;
+  border-left: 4px solid;
+  border-color: #14b597;
+  overflow: hidden;
+}
+
+.panther-131 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  position: relative;
+  height: 100%;
+}
+
+.panther-130 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.panther-94 {
+  font-weight: 500;
+}
+
+.panther-93 {
+  -webkit-transition: color 0.1s ease-out;
+  transition: color 0.1s ease-out;
+  font-weight: 500;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  color: #7fd3ff;
+}
+
+.panther-93:hover {
+  color: #ace2ff;
+}
+
+.panther-93:focus {
+  color: #ace2ff;
+}
+
+.panther-93:active,
+.panther-93[data-active=true] {
+  color: #11a5f3;
+}
+
+.panther-129 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+
+.panther-129>*:not(:last-child) {
+  margin-right: 32px;
+}
+
+.panther-98 {
+  margin-top: 16px;
+}
+
+.panther-97 {
+  font-size: 0.875rem;
+  font-weight: 500;
+  opacity: 1;
+}
+
+
+
+.panther-96>span {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.panther-95 {
+  width: auto;
+  outline: none;
+  padding-left: 20px;
+  padding-right: 20px;
+  height: 32px;
+  font-size: 0.813rem;
+  -webkit-transition: border-color 100ms cubic-bezier(0.0, 0, 0.2, 1) 0ms,background-color 100ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  transition: border-color 100ms cubic-bezier(0.0, 0, 0.2, 1) 0ms,background-color 100ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  border-radius: 4px;
+  border: 1px solid;
+  border-color: #3e516b;
+  background-color: #3e516b;
+  cursor: pointer;
+  color: #f6f6f6;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+}
+
+.panther-95:hover {
+  background-color: #485b75;
+  border-color: #485b75;
+}
+
+.panther-95:focus {
+  background-color: #485b75;
+  border-color: #93a6c0;
+}
+
+.panther-95:active,
+.panther-95[data-active=true] {
+  background-color: #344761;
+  border-color: #344761;
+}
+
+.panther-99 {
+  color: #bdbdbd;
+  font-size: 0.563rem;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.panther-100 {
+  color: #91eddc;
+}
+
+.panther-112 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+
+.panther-112>*:not(:last-child) {
+  margin-right: 8px;
+}
+
+.panther-105 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.panther-105>*:not(:last-child) {
+  margin-right: 8px;
+}
+
+.panther-109 {
+  width: 12px;
+  height: 12px;
+  background-color: hsl(353, 43%, 63%);
+  border-radius: 99999px;
+}
+
+.panther-110 {
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.panther-128 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: flex-end;
+  -webkit-box-align: flex-end;
+  -ms-flex-align: flex-end;
+  align-items: flex-end;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.panther-128>*:not(:last-child) {
+  margin-right: 8px;
+}
+
+.panther-121 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  cursor: default;
+  width: -webkit-fit-content;
+  width: -moz-content;
+  width: fit-content;
+  min-width: 85px;
+  text-align: center;
+  font-weight: 700;
+  border-radius: 40px;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 16px;
+  padding-right: 16px;
+  border: 1px solid;
+  border-color: #ffa500;
+  background-color: transparent;
+}
+
+.panther-127 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.panther-127>*:not(:last-child) {
+  margin-right: 4px;
+}
+
+.panther-123 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 85px;
+}
+
+.panther-122 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  cursor: default;
+  width: -webkit-fit-content;
+  width: -moz-content;
+  width: fit-content;
+  min-width: 85px;
+  text-align: center;
+  font-weight: 700;
+  border-radius: 40px;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 16px;
+  padding-right: 16px;
+  background-color: #6e3078;
+}
+
+.panther-126 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.panther-125 {
+  outline: none;
+  line-height: 1;
+  height: 24px;
+  width: 24px;
+  -webkit-transition: border-color 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms,background-color 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  transition: border-color 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms,background-color 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  border-radius: 99999px;
+  border: 1px solid;
+  border-color: #3e516b;
+  background-color: transparent;
+  cursor: pointer;
+  color: #f6f6f6;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+}
+
+.panther-125:hover {
+  background-color: #465973;
+  border-color: #465973;
+}
+
+.panther-125:focus {
+  background-color: #465973;
+  border-color: #93a6c0;
+}
+
+.panther-125:active,
+.panther-125[data-active=true] {
+  background-color: #253852;
+  border-color: #253852;
+}
+
+.panther-124 {
+  display: inline-block;
+  vertical-align: sub;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: currentColor;
+}
+
+.panther-104 {
+  font-size: 0.75rem;
+}
+
+<div>
+  <header
+    id="main-header"
+  >
+    <div
+      class="panther-23"
+    >
+      <form
+        action="#"
+      >
+        <div
+          class="panther-22"
+        >
+          <div
+            class="panther-8"
+          >
+            <div
+              class="panther-5"
+            >
+              <div
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-labelledby="downshift-0-label"
+                class="panther-4"
+                role="combobox"
+              >
+                <div
+                  class="panther-4"
+                >
+                  <div
+                    aria-disabled="false"
+                    class="panther-2"
+                  >
+                    <input
+                      aria-autocomplete="list"
+                      aria-disabled="false"
+                      aria-invalid="false"
+                      aria-labelledby="downshift-0-label"
+                      aria-readonly="true"
+                      autocomplete="off"
+                      class="panther-0"
+                      id="downshift-0-input"
+                      name="intervalMinutes"
+                      readonly=""
+                      type="text"
+                      value="3h"
+                    />
+                    <label
+                      class="panther-1"
+                      for="downshift-0-input"
+                      id="downshift-0-label"
+                    >
+                      Interval
+                    </label>
+                  </div>
+                  <svg
+                    class="panther-3"
+                    role="presentation"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M7 10L12 15L17 10H7Z"
+                    />
+                  </svg>
+                </div>
+                <ul
+                  aria-labelledby="downshift-0-label"
+                  class="panther-5"
+                  id="downshift-0-menu"
+                  role="listbox"
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            class="panther-5"
+          >
+            <div
+              class="panther-20"
+            >
+              <div
+                class="panther-19"
+              >
+                <fieldset
+                  class="panther-4"
+                >
+                  <div
+                    class="panther-2"
+                  >
+                    <div
+                      class="panther-16"
+                    >
+                      <div
+                        class="panther-4"
+                      >
+                        <input
+                          aria-invalid="false"
+                          aria-readonly="true"
+                          autocomplete="off"
+                          class="panther-9"
+                          id="fromDate-toDate-from"
+                          name="fromDate-toDate-from"
+                          placeholder="MM/DD/YY HH:mm"
+                          readonly=""
+                          type="text"
+                          value="07/19/20 19:04"
+                        />
+                        <label
+                          class="panther-1"
+                          for="fromDate-toDate-from"
+                        >
+                          Date Start
+                        </label>
+                      </div>
+                      <div
+                        class="panther-4"
+                      >
+                        <input
+                          aria-invalid="false"
+                          aria-readonly="true"
+                          autocomplete="off"
+                          class="panther-9"
+                          id="fromDate-toDate-to"
+                          name="fromDate-toDate-to"
+                          placeholder="MM/DD/YY HH:mm"
+                          readonly=""
+                          type="text"
+                          value="07/22/20 19:04"
+                        />
+                        <label
+                          class="panther-1"
+                          for="fromDate-toDate-to"
+                        >
+                          Date End
+                        </label>
+                      </div>
+                      <svg
+                        class="panther-15"
+                        role="presentation"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M19,4 L18,4 L18,2 L16,2 L16,4 L8,4 L8,2 L6,2 L6,4 L5,4 C3.89,4 3.01,4.9 3.01,6 L3,20 C3,21.1 3.89,22 5,22 L19,22 C20.1,22 21,21.1 21,20 L21,6 C21,4.9 20.1,4 19,4 Z M19,20 L5,20 L5,9 L19,9 L19,20 Z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </header>
+  <article
+    class="panther-140"
+  >
+    <section
+      class="panther-62"
+    >
+      <section
+        class="panther-61"
+      >
+        <div
+          data-orientation="horizontal"
+          data-reach-tabs=""
+        >
+          <div
+            class="panther-30"
+          >
+            <div
+              aria-orientation="horizontal"
+              class="panther-28"
+              data-reach-tab-list=""
+              role="tablist"
+            >
+              <button
+                aria-controls="tabs--19--panel--0"
+                aria-selected="true"
+                class="panther-25"
+                data-orientation="horizontal"
+                data-reach-tab=""
+                data-selected=""
+                id="tabs--19--tab--0"
+                role="tab"
+                tabindex="0"
+                type="button"
+              >
+                <h4
+                  class="panther-24"
+                >
+                  Real-Time Alerts
+                </h4>
+              </button>
+              <button
+                aria-controls="tabs--19--panel--1"
+                aria-selected="false"
+                class="panther-25"
+                data-orientation="horizontal"
+                data-reach-tab=""
+                id="tabs--19--tab--1"
+                role="tab"
+                tabindex="-1"
+                type="button"
+              >
+                <h4
+                  class="panther-26"
+                >
+                  Most Active Rules
+                </h4>
+              </button>
+            </div>
+            <div
+              class="panther-29"
+            />
+          </div>
+          <div
+            class="panther-60"
+          >
+            <div
+              data-reach-tab-panels=""
+            >
+              <div
+                aria-labelledby="tabs--19--tab--0"
+                class="panther-58"
+                data-reach-tab-panel=""
+                id="tabs--19--panel--0"
+                role="tabpanel"
+                tabindex="-1"
+              >
+                <div
+                  class="panther-57"
+                >
+                  <div
+                    class="panther-56"
+                  >
+                    <div
+                      class="panther-44"
+                    >
+                      <div
+                        class="panther-33"
+                      >
+                        <h2
+                          aria-describedby="title"
+                          class="panther-31"
+                        >
+                          72
+                        </h2>
+                        <div
+                          class="panther-32"
+                          id="total-alerts"
+                        >
+                          Total Alerts
+                        </div>
+                      </div>
+                      <div
+                        class="panther-43"
+                      >
+                        <div
+                          class="panther-42"
+                        >
+                          <div
+                            class="panther-5"
+                          >
+                            <p
+                              class="panther-34"
+                            >
+                              Last period
+                            </p>
+                            <p
+                              class="panther-35"
+                            >
+                              Current period
+                            </p>
+                            <p
+                              class="panther-36"
+                            >
+                              No change
+                            </p>
+                          </div>
+                          <div
+                            class="panther-41"
+                          >
+                            <p
+                              class="panther-38"
+                            >
+                              72
+                            </p>
+                            <p
+                              class="panther-38"
+                            >
+                              72
+                            </p>
+                            <p
+                              class="panther-40"
+                            >
+                              0
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="panther-55"
+                    >
+                      <div
+                        class="panther-54"
+                        data-testid="alert-by-severity-chart"
+                      >
+                        <div
+                          class="panther-45"
+                        >
+                          Alert Severity
+                        </div>
+                        <div
+                          class="panther-52"
+                        >
+                          <div
+                            class="panther-51"
+                          >
+                            <div
+                              class="panther-48"
+                            >
+                              <button
+                                class="panther-46"
+                                type="button"
+                              >
+                                Linear
+                              </button>
+                              <button
+                                class="panther-47"
+                                type="button"
+                              >
+                                Logarithmic
+                              </button>
+                            </div>
+                            <div
+                              class="panther-50"
+                            >
+                              <button
+                                class="panther-49"
+                                type="button"
+                              >
+                                RESET
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          _echarts_instance_="ec_1604590410760"
+                          class="panther-53"
+                          style="user-select: none; position: relative;"
+                        >
+                          <div
+                            style="position: relative; width: 100px; height: 100px; padding: 0px; margin: 0px; border-width: 0px;"
+                          >
+                            <canvas
+                              data-zr-dom-id="zr_0"
+                              height="100"
+                              style="position: absolute; left: 0px; top: 0px; width: 100px; height: 100px; user-select: none; padding: 0px; margin: 0px; border-width: 0px;"
+                              width="100"
+                            />
+                          </div>
+                          <div />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                aria-labelledby="tabs--19--tab--1"
+                class="panther-58"
+                data-reach-tab-panel=""
+                hidden=""
+                id="tabs--19--panel--1"
+                role="tabpanel"
+                tabindex="-1"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+    <div
+      class="panther-85"
+    >
+      <section
+        class="panther-61"
+      >
+        <div
+          data-orientation="horizontal"
+          data-reach-tabs=""
+        >
+          <div
+            class="panther-30"
+          >
+            <div
+              aria-orientation="horizontal"
+              class="panther-28"
+              data-reach-tab-list=""
+              role="tablist"
+            >
+              <button
+                aria-controls="tabs--20--panel--0"
+                aria-selected="true"
+                class="panther-25"
+                data-orientation="horizontal"
+                data-reach-tab=""
+                data-selected=""
+                id="tabs--20--tab--0"
+                role="tab"
+                tabindex="0"
+                type="button"
+              >
+                <h4
+                  class="panther-24"
+                >
+                  Events by Log Type
+                </h4>
+              </button>
+              <button
+                aria-controls="tabs--20--panel--1"
+                aria-selected="false"
+                class="panther-25"
+                data-orientation="horizontal"
+                data-reach-tab=""
+                id="tabs--20--tab--1"
+                role="tab"
+                tabindex="-1"
+                type="button"
+              >
+                <h4
+                  class="panther-26"
+                >
+                  Data Latency by Log Type
+                </h4>
+              </button>
+            </div>
+            <div
+              class="panther-29"
+            />
+          </div>
+          <div
+            class="panther-60"
+          >
+            <div
+              data-reach-tab-panels=""
+            >
+              <div
+                aria-labelledby="tabs--20--tab--0"
+                class="panther-58"
+                data-reach-tab-panel=""
+                id="tabs--20--panel--0"
+                role="tabpanel"
+                tabindex="-1"
+              >
+                <div
+                  class="panther-80"
+                >
+                  <div
+                    class="panther-54"
+                    data-testid="events-by-log-type-chart"
+                  >
+                    <div
+                      class="panther-45"
+                    />
+                    <div
+                      class="panther-52"
+                    >
+                      <div
+                        class="panther-51"
+                      >
+                        <div
+                          class="panther-48"
+                        >
+                          <button
+                            class="panther-46"
+                            type="button"
+                          >
+                            Linear
+                          </button>
+                          <button
+                            class="panther-47"
+                            type="button"
+                          >
+                            Logarithmic
+                          </button>
+                        </div>
+                        <div
+                          class="panther-50"
+                        >
+                          <button
+                            class="panther-49"
+                            type="button"
+                          >
+                            RESET
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      _echarts_instance_="ec_1604590410761"
+                      class="panther-53"
+                      style="user-select: none; position: relative;"
+                    >
+                      <div
+                        style="position: relative; width: 100px; height: 100px; padding: 0px; margin: 0px; border-width: 0px;"
+                      >
+                        <canvas
+                          data-zr-dom-id="zr_0"
+                          height="100"
+                          style="position: absolute; left: 0px; top: 0px; width: 100px; height: 100px; user-select: none; padding: 0px; margin: 0px; border-width: 0px;"
+                          width="100"
+                        />
+                      </div>
+                      <div />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                aria-labelledby="tabs--20--tab--1"
+                class="panther-58"
+                data-reach-tab-panel=""
+                hidden=""
+                id="tabs--20--panel--1"
+                role="tabpanel"
+                tabindex="-1"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="panther-139"
+    >
+      <section
+        class="panther-61"
+      >
+        <div
+          data-orientation="horizontal"
+          data-reach-tabs=""
+        >
+          <div
+            class="panther-30"
+          >
+            <div
+              aria-orientation="horizontal"
+              class="panther-28"
+              data-reach-tab-list=""
+              role="tablist"
+            >
+              <button
+                aria-controls="tabs--21--panel--0"
+                aria-selected="true"
+                class="panther-25"
+                data-orientation="horizontal"
+                data-reach-tab=""
+                data-selected=""
+                id="tabs--21--tab--0"
+                role="tab"
+                tabindex="0"
+                type="button"
+              >
+                <h4
+                  class="panther-24"
+                >
+                  Recent Alerts (
+                  1
+                  )
+                </h4>
+              </button>
+              <button
+                aria-controls="tabs--21--panel--1"
+                aria-selected="false"
+                class="panther-25"
+                data-orientation="horizontal"
+                data-reach-tab=""
+                id="tabs--21--tab--1"
+                role="tab"
+                tabindex="-1"
+                type="button"
+              >
+                <h4
+                  class="panther-26"
+                >
+                  High Severity Alerts (
+                  2
+                  )
+                </h4>
+              </button>
+            </div>
+            <div
+              class="panther-29"
+            />
+          </div>
+          <div
+            class="panther-60"
+          >
+            <div
+              data-reach-tab-panels=""
+            >
+              <div
+                aria-labelledby="tabs--21--tab--0"
+                class="panther-58"
+                data-reach-tab-panel=""
+                id="tabs--21--panel--0"
+                role="tabpanel"
+                tabindex="-1"
+              >
+                <div
+                  class="panther-134"
+                >
+                  <section
+                    class="panther-133"
+                  >
+                    <div
+                      class="panther-5"
+                    >
+                      <div
+                        class="panther-131"
+                      >
+                        <div
+                          class="panther-130"
+                        >
+                          <h4
+                            class="panther-94"
+                          >
+                            <a
+                              aria-label="Link to Alert"
+                              class="panther-93"
+                              href="/log-analysis/alerts/f67b8f04-5fac-404a-93a4-38db29f258ba/"
+                            >
+                              indexing
+                            </a>
+                          </h4>
+                          <div
+                            class="panther-129"
+                          >
+                            <dl
+                              class="panther-98"
+                            >
+                              <dd
+                                aria-labelledby="undefinedobject-object"
+                                class="panther-97"
+                              >
+                                <a
+                                  class="panther-96"
+                                  href="/log-analysis/rules/6eb9c948-5a13-4955-bd91-b98801b55bed/"
+                                >
+                                  <span
+                                    aria-label="Link to Rule"
+                                    class="panther-95"
+                                    type="button"
+                                  >
+                                    View Rule
+                                  </span>
+                                </a>
+                              </dd>
+                            </dl>
+                            <dl
+                              class="panther-98"
+                            >
+                              <dt
+                                aria-labelledby="alert-typeobject-object"
+                                class="panther-99"
+                              >
+                                Alert Type
+                              </dt>
+                              <dd
+                                aria-labelledby="alert-typeobject-object"
+                                class="panther-97"
+                              >
+                                <p
+                                  class="panther-100"
+                                >
+                                  Rule Match
+                                </p>
+                              </dd>
+                            </dl>
+                            <dl
+                              class="panther-98"
+                            >
+                              <dt
+                                aria-labelledby="destinationsobject-object"
+                                class="panther-99"
+                              >
+                                Destinations
+                              </dt>
+                              <dd
+                                aria-labelledby="destinationsobject-object"
+                                class="panther-97"
+                              >
+                                <div
+                                  class="panther-105"
+                                >
+                                  <p
+                                    class="panther-104"
+                                  >
+                                    Not configured
+                                  </p>
+                                </div>
+                              </dd>
+                            </dl>
+                            <dl
+                              class="panther-98"
+                            >
+                              <dt
+                                aria-labelledby="log-typesobject-object"
+                                class="panther-99"
+                              >
+                                Log Types
+                              </dt>
+                              <dd
+                                aria-labelledby="log-typesobject-object"
+                                class="panther-97"
+                              >
+                                <div
+                                  class="panther-112"
+                                >
+                                  <div
+                                    class="panther-105"
+                                  >
+                                    <span
+                                      class="panther-109"
+                                    />
+                                    <span
+                                      class="panther-110"
+                                    >
+                                      Costa Rica
+                                    </span>
+                                  </div>
+                                </div>
+                              </dd>
+                            </dl>
+                            <dl
+                              class="panther-98"
+                            >
+                              <dt
+                                aria-labelledby="events670"
+                                class="panther-99"
+                              >
+                                Events
+                              </dt>
+                              <dd
+                                aria-labelledby="events670"
+                                class="panther-97"
+                              >
+                                670
+                              </dd>
+                            </dl>
+                            <dl
+                              class="panther-98"
+                            >
+                              <dt
+                                aria-labelledby="time-created2020-08-08-1215-gmt"
+                                class="panther-99"
+                              >
+                                Time Created
+                              </dt>
+                              <dd
+                                aria-labelledby="time-created2020-08-08-1215-gmt"
+                                class="panther-97"
+                              >
+                                2020-08-08 12:15 GMT
+                              </dd>
+                            </dl>
+                            <div
+                              class="panther-128"
+                            >
+                              <div
+                                aria-atomic="true"
+                                class="panther-121"
+                                role="status"
+                              >
+                                MEDIUM
+                              </div>
+                              <div
+                                class="panther-127"
+                              >
+                                <div
+                                  class="panther-123"
+                                >
+                                  <div
+                                    aria-atomic="true"
+                                    class="panther-122"
+                                    role="status"
+                                  >
+                                    TRIAGED
+                                  </div>
+                                </div>
+                                <div
+                                  aria-controls="menu--22"
+                                  aria-haspopup="true"
+                                  class="panther-126"
+                                  data-reach-menu-button=""
+                                  id="menu-button--menu--22"
+                                  type="button"
+                                >
+                                  <button
+                                    aria-label="Change Alert Status"
+                                    aria-pressed="false"
+                                    class="panther-125"
+                                    type="button"
+                                  >
+                                    <svg
+                                      class="panther-124"
+                                      role="presentation"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="M7 10L12 15L17 10H7Z"
+                                      />
+                                    </svg>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+              </div>
+              <div
+                aria-labelledby="tabs--21--tab--1"
+                class="panther-58"
+                data-reach-tab-panel=""
+                hidden=""
+                id="tabs--21--panel--1"
+                role="tabpanel"
+                tabindex="-1"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </article>
+  <footer
+    id="footer"
+  />
+</div>
+`;

@@ -1299,6 +1299,15 @@ definitions:
       modifiedGlobals:
         type: integer
         minimum: 0
+      totalDataModels:
+        type: integer
+        minimum: 0
+      newDataModels:
+        type: integer
+        minimum: 0
+      modifiedDataModels:
+        type: integer
+        minimum: 0
     required:
       - totalPolicies
       - newPolicies
@@ -1309,6 +1318,9 @@ definitions:
       - totalGlobals
       - newGlobals
       - modifiedGlobals
+      - totalDataModels
+      - newDataModels
+      - modifiedDataModels
 
   ##### TestPolicy / TestRule #####
   TestPolicy:

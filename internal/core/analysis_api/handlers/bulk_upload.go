@@ -89,6 +89,10 @@ func BulkUpload(request *events.APIGatewayProxyRequest) *events.APIGatewayProxyR
 		ModifiedGlobals: aws.Int64(0),
 		NewGlobals:      aws.Int64(0),
 		TotalGlobals:    aws.Int64(0),
+
+		ModifiedDataModels: aws.Int64(0),
+		NewDataModels:      aws.Int64(0),
+		TotalDataModels:    aws.Int64(0),
 	}
 
 	var response *events.APIGatewayProxyResponse
@@ -131,6 +135,13 @@ func BulkUpload(request *events.APIGatewayProxyRequest) *events.APIGatewayProxyR
 				*counts.NewGlobals++
 			} else if result.changeType == updatedItem {
 				*counts.ModifiedGlobals++
+			}
+		case typeDataModel:
+			*counts.TotalDataModels++
+			if result.changeType == newItem {
+				*counts.NewDataModels++
+			} else if result.changeType == updatedItem {
+				*counts.ModifiedDataModels++
 			}
 		}
 	}
@@ -224,6 +235,7 @@ func extractZipFile(input *models.BulkUpload) (map[models.ID]*tableItem, error) 
 			DisplayName:   models.DisplayName(config.DisplayName),
 			Enabled:       models.Enabled(config.Enabled),
 			ID:            models.ID(config.PolicyID),
+			Mappings:      make([]*models.Mapping, len(config.Mappings)),
 			OutputIds:     models.OutputIds(config.OutputIds),
 			Reference:     models.Reference(config.Reference),
 			ResourceTypes: config.ResourceTypes,
@@ -238,6 +250,13 @@ func extractZipFile(input *models.BulkUpload) (map[models.ID]*tableItem, error) 
 		}
 
 		typeNormalizeTableItem(&analysisItem, config)
+
+		for i, mapping := range config.Mappings {
+			analysisItem.Mappings[i], err = buildMapping(mapping)
+			if err != nil {
+				return nil, err
+			}
+		}
 
 		for i, test := range config.Tests {
 			// A test can specify a resource and a resource type or a log and a log type.
@@ -265,7 +284,8 @@ func extractZipFile(input *models.BulkUpload) (map[models.ID]*tableItem, error) 
 			if err := validateUploadedPolicy(policy, input.UserID); err != nil {
 				return nil, err
 			}
-		} else {
+		} else if policy.Type != typeDataModel {
+			// it is ok for DataModels to be missing python body
 			return nil, fmt.Errorf("policy %s is missing a body", policy.ID)
 		}
 	}
@@ -306,6 +326,13 @@ func typeNormalizeTableItem(item *tableItem, config analysis.Config) {
 			item.ID = "panther"
 		}
 	}
+
+	if item.Type == string(models.AnalysisTypeDATAMODEL) {
+		item.ID = models.ID(config.DataModelID)
+		if len(config.ResourceTypes) == 0 {
+			item.ResourceTypes = config.LogTypes
+		}
+	}
 }
 
 func buildRuleTest(test analysis.Test) (*models.UnitTest, error) {
@@ -334,6 +361,14 @@ func buildPolicyTest(test analysis.Test) (*models.UnitTest, error) {
 	}, nil
 }
 
+func buildMapping(mapping analysis.Mapping) (*models.Mapping, error) {
+	return &models.Mapping{
+		Name:   models.SourceName(mapping.Name),
+		Field:  models.Field(mapping.Field),
+		Method: models.Method(mapping.Method),
+	}, nil
+}
+
 func readZipFile(zf *zip.File) ([]byte, error) {
 	f, err := zf.Open()
 	if err != nil {
@@ -349,11 +384,11 @@ func readZipFile(zf *zip.File) ([]byte, error) {
 
 // Ensure that the uploaded policy is valid according to the API spec for a Policy
 func validateUploadedPolicy(item *tableItem, userID models.UserID) error {
-	if item.Type != typePolicy && item.Type != typeRule && item.Type != typeGlobal {
+	if item.Type != typePolicy && item.Type != typeRule && item.Type != typeGlobal && item.Type != typeDataModel {
 		return fmt.Errorf("policy ID %s is invalid: unknown analysis type %s", item.ID, item.Type)
 	}
 
-	if item.Type == typeGlobal {
+	if item.Type == typeGlobal || item.Type == typeDataModel {
 		item.Severity = models.SeverityINFO
 	}
 

@@ -230,7 +230,23 @@ var (
 		LogTypes:    []string{"Box.Events"},
 		Mappings:    []*models.Mapping{},
 	}
-	dataModels = [2]*models.DataModel{dataModel, dataModelTwo}
+	dataModels           = [2]*models.DataModel{dataModel, dataModelTwo}
+	dataModelFromBulkYML = &models.DataModel{
+		Description: "",
+		Enabled:     true,
+		ID:          "Some.Events.DataModel",
+		LogTypes:    []string{"Some.Events"},
+		Mappings: []*models.Mapping{
+			{
+				Name:  "source_ip",
+				Field: "ipAddress",
+			},
+			{
+				Name:  "dest_ip",
+				Field: "destAddress",
+			},
+		},
+	}
 )
 
 func TestMain(m *testing.M) {
@@ -1714,6 +1730,10 @@ func bulkUploadSuccess(t *testing.T) {
 		ModifiedGlobals: aws.Int64(0),
 		NewGlobals:      aws.Int64(0),
 		TotalGlobals:    aws.Int64(0),
+
+		ModifiedDataModels: aws.Int64(0),
+		NewDataModels:      aws.Int64(1),
+		TotalDataModels:    aws.Int64(1),
 	}
 	require.Equal(t, expected, result.Payload)
 
@@ -1834,6 +1854,20 @@ func bulkUploadSuccess(t *testing.T) {
 	assert.Equal(t, expectedNewRule, getRule.Payload)
 	// Checking if the body contains the provide `rule` function (the body contains licence information that we are not interested in)
 	assert.Contains(t, getRule.Payload.Body, "def rule(event):\n    return True\n")
+
+	// Verify newly created DataModel
+	getDataModel, err := apiClient.Operations.GetDataModel(&operations.GetDataModelParams{
+		DataModelID: string(dataModelFromBulkYML.ID),
+		HTTPClient:  httpClient,
+	})
+	require.NoError(t, err)
+	// setting updated values
+	dataModelFromBulkYML.CreatedAt = getDataModel.Payload.CreatedAt
+	dataModelFromBulkYML.CreatedBy = getDataModel.Payload.CreatedBy
+	dataModelFromBulkYML.LastModified = getDataModel.Payload.LastModified
+	dataModelFromBulkYML.LastModifiedBy = getDataModel.Payload.LastModifiedBy
+	dataModelFromBulkYML.VersionID = getDataModel.Payload.VersionID
+	assert.Equal(t, dataModelFromBulkYML, getDataModel.Payload)
 }
 
 func listNotFound(t *testing.T) {
@@ -2099,7 +2133,7 @@ func listDataModels(t *testing.T) {
 	expected := &models.DataModelList{
 		Paging: &models.Paging{
 			ThisPage:   aws.Int64(1),
-			TotalItems: aws.Int64(2),
+			TotalItems: aws.Int64(3),
 			TotalPages: aws.Int64(1),
 		},
 		DataModels: []*models.DataModelSummary{
@@ -2114,6 +2148,12 @@ func listDataModels(t *testing.T) {
 				ID:           dataModelTwo.ID,
 				LastModified: result.Payload.DataModels[1].LastModified, // this is changed
 				LogTypes:     dataModelTwo.LogTypes,
+			},
+			{ // bulk upload entry
+				Enabled:      dataModelFromBulkYML.Enabled,
+				ID:           dataModelFromBulkYML.ID,
+				LastModified: result.Payload.DataModels[2].LastModified,
+				LogTypes:     dataModelFromBulkYML.LogTypes,
 			},
 		},
 	}
@@ -2211,13 +2251,18 @@ func getEnabledDataModels(t *testing.T) {
 				Body:          dataModel.Body,
 				ID:            dataModel.ID,
 				ResourceTypes: dataModel.LogTypes,
-				VersionID:     result.Payload.Policies[0].VersionID, // this is set
+				VersionID:     dataModel.VersionID,
+			},
+			{ // bulk upload entry
+				ID:            dataModelFromBulkYML.ID,
+				ResourceTypes: dataModelFromBulkYML.LogTypes,
+				VersionID:     dataModelFromBulkYML.VersionID,
 			},
 			{
 				Body:          dataModelTwo.Body,
 				ID:            dataModelTwo.ID,
 				ResourceTypes: dataModelTwo.LogTypes,
-				VersionID:     result.Payload.Policies[1].VersionID, // this is set
+				VersionID:     dataModelTwo.VersionID,
 			},
 		},
 	}
@@ -2317,7 +2362,12 @@ func deleteSuccess(t *testing.T) {
 }
 
 func deleteDataModel(t *testing.T) {
-	for _, model := range dataModels {
+	allDataModels := make([]*models.DataModel, len(dataModels))
+	for i, model := range dataModels {
+		allDataModels[i] = model
+	}
+	allDataModels = append(allDataModels, dataModelFromBulkYML)
+	for _, model := range allDataModels {
 		result, err := apiClient.Operations.DeletePolicies(&operations.DeletePoliciesParams{
 			Body: &models.DeletePolicies{
 				Policies: []*models.DeleteEntry{

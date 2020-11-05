@@ -30,17 +30,18 @@ import withSEO from 'Hoc/withSEO';
 import useTrackPageView from 'Hooks/useTrackPageView';
 import { PageViewEnum } from 'Helpers/analytics';
 import AlertCard from 'Components/cards/AlertCard/AlertCard';
-import Panel from 'Components/Panel';
+import PanelWithSelection from 'Components/PanelWithSelection';
+import useMultiselect from 'Hooks/useMultiselect';
 import { useListAlerts } from './graphql/listAlerts.generated';
-import ListAlertsActions from './ListAlertBreadcrumbFilters';
+import ListAlertBreadcrumbFilters from './ListAlertBreadcrumbFilters';
 import ListAlertFilters from './ListAlertFilters';
+import ListAlertSelection from './ListAlertSelection';
 import ListAlertsPageSkeleton from './Skeleton';
 import ListAlertsPageEmptyDataFallback from './EmptyDataFallback';
 
 const ListAlerts = () => {
   useTrackPageView(PageViewEnum.ListAlerts);
   const { requestParams } = useRequestParamsWithoutPagination<ListAlertsInput>();
-
   const { loading, error, data, fetchMore } = useListAlerts({
     fetchPolicy: 'cache-and-network',
     variables: {
@@ -50,7 +51,7 @@ const ListAlerts = () => {
       },
     },
   });
-
+  const { addItem, selected, removeItem, resetSelection, selectAll } = useMultiselect();
   const alertItems = data?.alerts.alertSummaries || [];
   const lastEvaluatedKey = data?.alerts.lastEvaluatedKey || null;
   const hasNextPage = !!data?.alerts?.lastEvaluatedKey;
@@ -123,13 +124,27 @@ const ListAlerts = () => {
           />
         </Box>
       )}
-      <ListAlertsActions />
-      <Panel title="Alerts" actions={<ListAlertFilters />}>
+      <ListAlertBreadcrumbFilters />
+      <PanelWithSelection
+        title="Alerts"
+        filters={<ListAlertFilters />}
+        select={<ListAlertSelection selected={selected} />}
+        selected={selected}
+        deselectAll={resetSelection}
+        selectAll={() => selectAll(alertItems.map(a => a.alertId))}
+      >
         <Card as="section" position="relative">
           <Box position="relative">
             <Flex direction="column" spacing={2}>
               {alertItems.map(alert => (
-                <AlertCard key={alert.alertId} alert={alert} />
+                <AlertCard
+                  key={alert.alertId}
+                  alert={alert}
+                  selectionEnabled
+                  selected={selected}
+                  onSelect={addItem}
+                  onDeselect={removeItem}
+                />
               ))}
             </Flex>
             {hasNextPage && (
@@ -139,7 +154,7 @@ const ListAlerts = () => {
             )}
           </Box>
         </Card>
-      </Panel>
+      </PanelWithSelection>
     </ErrorBoundary>
   );
 };

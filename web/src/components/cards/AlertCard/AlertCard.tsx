@@ -17,7 +17,7 @@
  */
 
 import GenericItemCard from 'Components/GenericItemCard';
-import { Flex, Icon, Link, Text } from 'pouncejs';
+import { Checkbox, Flex, Icon, Link, Text } from 'pouncejs';
 import { Link as RRLink } from 'react-router-dom';
 import SeverityBadge from 'Components/badges/SeverityBadge';
 import React from 'react';
@@ -31,18 +31,51 @@ import useAlertDestinations from 'Hooks/useAlertDestinations';
 import useAlertDestinationsDeliverySuccess from 'Hooks/useAlertDestinationsDeliverySuccess';
 import UpdateAlertDropdown from '../../dropdowns/UpdateAlertDropdown';
 
-interface AlertCardProps {
+interface AlertCardSimpleProps {
   alert: AlertSummaryFull;
   hideRuleButton?: boolean;
+  selectionEnabled?: false | null;
+  selected?: null;
+  onSelect?: null;
+  onDeselect?: null;
 }
 
-const AlertCard: React.FC<AlertCardProps> = ({ alert, hideRuleButton = false }) => {
+interface AlertCardWithSelectionProps {
+  alert: AlertSummaryFull;
+  hideRuleButton?: boolean;
+  selectionEnabled: true;
+  selected: string[];
+  onSelect: (string) => void;
+  onDeselect: (string) => void;
+}
+
+type AlertCardProps = AlertCardSimpleProps | AlertCardWithSelectionProps;
+
+const AlertCard: React.FC<AlertCardProps> = ({
+  alert,
+  hideRuleButton = false,
+  selectionEnabled = false,
+  selected,
+  onSelect,
+  onDeselect,
+}) => {
   const { alertDestinations, loading: loadingDestinations } = useAlertDestinations({ alert });
   const { allDestinationDeliveredSuccessfully, loading } = useAlertDestinationsDeliverySuccess({
     alert,
   });
+
+  const isAlertSelected = selected && selected.find(a => a === alert.alertId);
   return (
     <GenericItemCard>
+      <Flex align="start" pr={2}>
+        {selectionEnabled && (
+          <Checkbox
+            checked={!!isAlertSelected}
+            onClick={() => (isAlertSelected ? onDeselect(alert.alertId) : onSelect(alert.alertId))}
+            aria-label="select alert"
+          />
+        )}
+      </Flex>
       <GenericItemCard.Body>
         <GenericItemCard.Heading>
           <Link

@@ -22,6 +22,7 @@ import useRequestParamsWithoutPagination from 'Hooks/useRequestParamsWithoutPagi
 import { DEFAULT_LARGE_PAGE_SIZE } from 'Source/constants';
 import { ListAlertsInput } from 'Generated/schema';
 import ErrorBoundary from 'Components/ErrorBoundary';
+import NoResultsFound from 'Components/NoResultsFound';
 import { extractErrorMessage } from 'Helpers/utils';
 import ListAlertsPageEmptyDataFallback from 'Pages/ListAlerts/EmptyDataFallback/EmptyDataFallback';
 import AlertCard from 'Components/cards/AlertCard/AlertCard';
@@ -103,8 +104,9 @@ const RuleAlertsListing: React.FC<Required<Pick<ListAlertsInput, 'type' | 'ruleI
     );
   }
 
-  const hasAnyAlerts = data?.alerts?.alertSummaries?.length > 0;
-  const hasMoreAlerts = !!data?.alerts.lastEvaluatedKey;
+  const { alertSummaries, lastEvaluatedKey } = data.alerts;
+  const hasAnyAlerts = alertSummaries.length > 0;
+  const hasMoreAlerts = !!lastEvaluatedKey;
 
   return (
     <ErrorBoundary>
@@ -114,9 +116,15 @@ const RuleAlertsListing: React.FC<Required<Pick<ListAlertsInput, 'type' | 'ruleI
       <Card as="article" p={6}>
         {hasAnyAlerts && (
           <Flex direction="column" spacing={2}>
-            {data.alerts.alertSummaries.map(alert => (
-              <AlertCard hideRuleButton key={alert.alertId} alert={alert} />
-            ))}
+            {hasAnyAlerts ? (
+              alertSummaries.map(alert => (
+                <AlertCard hideRuleButton key={alert.alertId} alert={alert} />
+              ))
+            ) : (
+              <Box my={8}>
+                <NoResultsFound />
+              </Box>
+            )}
           </Flex>
         )}
         {!hasAnyAlerts && <ListAlertsPageEmptyDataFallback />}

@@ -1830,7 +1830,7 @@ definitions:
   field:
     description: field name used to map data in a DataModel
     type: string
-    pattern: '[a-zA-Z0-9\-\. ]{1,200}'
+    pattern: '[a-zA-Z0-9@\-\.\,\$\[\]\(\)\*\?]{1,200}' # support JSONPath
 
   id:
     description: User-specified unique rule/policy ID

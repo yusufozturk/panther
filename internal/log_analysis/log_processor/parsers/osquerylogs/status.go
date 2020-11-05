@@ -82,5 +82,5 @@ func (p *StatusParser) LogType() string {
 
 func (event *Status) updatePantherFields(p *StatusParser) {
 	event.SetCoreFields(p.LogType(), (*timestamp.RFC3339)(event.CalendarTime), event)
-	event.AppendAnyDomainNamePtrs(event.HostIdentifier)
+	event.AppendAnyHostNamesPtr(event.HostIdentifier)
 }

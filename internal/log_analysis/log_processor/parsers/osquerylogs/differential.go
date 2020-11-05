@@ -84,7 +84,7 @@ func (p *DifferentialParser) LogType() string {
 
 func (event *Differential) updatePantherFields(p *DifferentialParser) {
 	event.SetCoreFields(p.LogType(), (*timestamp.RFC3339)(event.CalendarTime), event)
-	event.AppendAnyDomainNamePtrs(event.HostIdentifier)
+	event.AppendAnyHostNamesPtr(event.HostIdentifier)
 
 	event.AppendAnyIPAddress(event.Columns["local_address"])
 	event.AppendAnyIPAddress(event.Columns["remote_address"])
@@ -94,4 +94,6 @@ func (event *Differential) updatePantherFields(p *DifferentialParser) {
 	if host := event.Columns["host"]; !event.AppendAnyIPAddress(host) {
 		event.AppendAnyDomainNames(host)
 	}
+
+	event.AppendAnyUserNames(event.Columns["username"])
 }

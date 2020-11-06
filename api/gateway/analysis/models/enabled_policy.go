@@ -44,7 +44,7 @@ type EnabledPolicy struct {
 	ID ID `json:"id,omitempty"`
 
 	// mappings
-	Mappings Mappings `json:"mappings,omitempty"`
+	Mappings DataModelMappings `json:"mappings,omitempty"`
 
 	// output ids
 	OutputIds OutputIds `json:"outputIds,omitempty"`

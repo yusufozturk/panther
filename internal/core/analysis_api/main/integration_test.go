@@ -220,7 +220,7 @@ var (
 		Enabled:     true,
 		ID:          "DataModelTypeAnalysis",
 		LogTypes:    []string{"OneLogin.Events"},
-		Mappings:    []*models.Mapping{},
+		Mappings:    []*models.DataModelMapping{},
 	}
 	dataModelTwo = &models.DataModel{
 		Body:        "def get_source_ip(event): return 'source_ip'\n",
@@ -228,7 +228,7 @@ var (
 		Enabled:     true,
 		ID:          "SecondDataModelTypeAnalysis",
 		LogTypes:    []string{"Box.Events"},
-		Mappings:    []*models.Mapping{},
+		Mappings:    []*models.DataModelMapping{},
 	}
 	dataModels           = [2]*models.DataModel{dataModel, dataModelTwo}
 	dataModelFromBulkYML = &models.DataModel{
@@ -236,7 +236,7 @@ var (
 		Enabled:     true,
 		ID:          "Some.Events.DataModel",
 		LogTypes:    []string{"Some.Events"},
-		Mappings: []*models.Mapping{
+		Mappings: []*models.DataModelMapping{
 			{
 				Name:  "source_ip",
 				Field: "ipAddress",
@@ -1160,7 +1160,7 @@ func createDataModelFail(t *testing.T) {
 		Enabled:     true,
 		ID:          "AnotherDataModelTypeAnalysis",
 		LogTypes:    []string{"OneLogin.Events"},
-		Mappings:    []*models.Mapping{},
+		Mappings:    []*models.DataModelMapping{},
 	}
 	result, err := apiClient.Operations.CreateDataModel(&operations.CreateDataModelParams{
 		Body: &models.UpdateDataModel{
@@ -1182,7 +1182,7 @@ func createDataModelFail(t *testing.T) {
 
 	// This should fail because it attempts to add a mapping with both
 	// a field and a method
-	mappings := []*models.Mapping{
+	mappings := []*models.DataModelMapping{
 		{
 			Name:   "source_ip",
 			Field:  "src_ip",

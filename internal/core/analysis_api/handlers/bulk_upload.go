@@ -235,7 +235,7 @@ func extractZipFile(input *models.BulkUpload) (map[models.ID]*tableItem, error) 
 			DisplayName:   models.DisplayName(config.DisplayName),
 			Enabled:       models.Enabled(config.Enabled),
 			ID:            models.ID(config.PolicyID),
-			Mappings:      make([]*models.Mapping, len(config.Mappings)),
+			Mappings:      make([]*models.DataModelMapping, len(config.Mappings)),
 			OutputIds:     models.OutputIds(config.OutputIds),
 			Reference:     models.Reference(config.Reference),
 			ResourceTypes: config.ResourceTypes,
@@ -358,8 +358,8 @@ func buildPolicyTest(test analysis.Test) (*models.UnitTest, error) {
 	}, nil
 }
 
-func buildMapping(mapping analysis.Mapping) *models.Mapping {
-	return &models.Mapping{
+func buildMapping(mapping analysis.Mapping) *models.DataModelMapping {
+	return &models.DataModelMapping{
 		Name:   models.SourceName(mapping.Name),
 		Field:  models.Field(mapping.Field),
 		Method: models.Method(mapping.Method),

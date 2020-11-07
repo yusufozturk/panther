@@ -17,6 +17,7 @@
 import json
 import os
 import tempfile
+import traceback
 from dataclasses import dataclass
 from importlib import util as import_util
 from pathlib import Path
@@ -58,6 +59,15 @@ class RuleResult:
 
     alert_context: Optional[str] = None
     alert_context_exception: Optional[Exception] = None
+
+    def error_message(self) -> Optional[str]:
+        """Returns formatted error message with traceback"""
+        if self.rule_exception is not None:
+            trace = traceback.format_tb(self.rule_exception.__traceback__)
+            # we only take last 2 elements of trace which will show the rule file name and line of the error, for example:
+            #    division by zero: File "/tmp/rules/AlwaysFail.py", line 4, in rule 1/0
+            return str(self.rule_exception) + ": " + "".join(trace[len(trace) - 1:]).strip().replace("\n", "")
+        return None
 
     @property
     def errored(self) -> bool:

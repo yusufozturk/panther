@@ -18,15 +18,102 @@ package main
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import (
-	"github.com/aws/aws-lambda-go/lambda"
+/**
+ * Copyright (C) 2020 Panther Labs Inc
+ *
+ * Panther Enterprise is licensed under the terms of a commercial license available from
+ * Panther Labs Inc ("Panther Commercial License") by contacting contact@runpanther.com.
+ * All use, distribution, and/or modification of this software, whether commercial or non-commercial,
+ * falls under the Panther Commercial License to the extent it is permitted.
+ */
 
-	"github.com/panther-labs/panther/internal/log_analysis/datacatalog_updater/process"
+import (
+	"context"
+
+	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/request"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/athena"
+	"github.com/aws/aws-sdk-go/service/glue"
+	lambdaclient "github.com/aws/aws-sdk-go/service/lambda"
+	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/kelseyhightower/envconfig"
+	"go.uber.org/zap"
+
+	"github.com/panther-labs/panther/internal/core/logtypesapi"
+	"github.com/panther-labs/panther/internal/log_analysis/datacatalog_updater/datacatalog"
+	"github.com/panther-labs/panther/internal/log_analysis/log_processor/logtypes"
+	"github.com/panther-labs/panther/internal/log_analysis/log_processor/registry"
+	"github.com/panther-labs/panther/pkg/awsretry"
+	"github.com/panther-labs/panther/pkg/lambdalogger"
 )
 
 // The panther-datacatalog-updater lambda is responsible for managing Glue partitions as data is created.
 
+const (
+	maxRetries = 20 // setting Max Retries to a higher number - we'd like to retry VERY hard before failing.
+)
+
 func main() {
-	process.Setup()
-	lambda.Start(process.Handle)
+	config := struct {
+		AthenaWorkgroup     string `required:"true" split_words:"true"`
+		SyncWorkersPerTable int    `default:"10" split_words:"true"`
+		QueueURL            string `required:"true" split_words:"true"`
+		CompactorQueueURL   string `required:"true" split_words:"true"`
+		ProcessedDataBucket string `split_words:"true"`
+		SnowflakeEnabled    bool   `split_words:"true"`
+		Debug               bool   `split_words:"true"`
+	}{}
+	envconfig.MustProcess("", &config)
+
+	logger := lambdalogger.Config{
+		Debug:     config.Debug,
+		Namespace: "log_analysis",
+		Component: "datacatalog_updater",
+	}.MustBuild()
+
+	// For compatibility in case some part of the code still uses zap.L()
+	zap.ReplaceGlobals(logger)
+
+	awsSession := session.Must(session.NewSession()) // use default retries for fetching creds, avoids hangs!
+	clientsSession := awsSession.Copy(
+		request.WithRetryer(
+			aws.NewConfig().WithMaxRetries(maxRetries),
+			awsretry.NewConnectionErrRetryer(maxRetries),
+		),
+	)
+
+	lambdaClient := lambdaclient.New(clientsSession)
+
+	logtypesAPI := &logtypesapi.LogTypesAPILambdaClient{
+		LambdaName: logtypesapi.LambdaName,
+		LambdaAPI:  lambdaClient,
+	}
+
+	resolver := logtypes.ChainResolvers(
+		registry.NativeLogTypesResolver(),
+	)
+
+	handler := datacatalog.LambdaHandler{
+		CompactorQueueURL:   config.CompactorQueueURL,
+		ProcessedDataBucket: config.ProcessedDataBucket,
+		QueueURL:            config.QueueURL,
+		AthenaWorkgroup:     config.AthenaWorkgroup,
+		ListAvailableLogTypes: func(ctx context.Context) ([]string, error) {
+			reply, err := logtypesAPI.ListAvailableLogTypes(ctx)
+			if err != nil {
+				return nil, err
+			}
+			return reply.LogTypes, nil
+		},
+		GlueClient:   glue.New(clientsSession),
+		LambdaClient: lambdaClient,
+		Resolver:     resolver,
+		AthenaClient: athena.New(clientsSession),
+		SQSClient:    sqs.New(clientsSession),
+		Logger:       logger,
+	}
+
+	lambda.StartHandler(&handler)
 }

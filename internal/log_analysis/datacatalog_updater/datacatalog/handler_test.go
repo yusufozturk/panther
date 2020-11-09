@@ -1,4 +1,4 @@
-package process
+package datacatalog
 
 /**
  * Panther is a Cloud-Native SIEM for the Modern Security Team.
@@ -18,6 +18,15 @@ package process
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * Copyright (C) 2020 Panther Labs Inc
+ *
+ * Panther Enterprise is licensed under the terms of a commercial license available from
+ * Panther Labs Inc ("Panther Commercial License") by contacting contact@runpanther.com.
+ * All use, distribution, and/or modification of this software, whether commercial or non-commercial,
+ * falls under the Panther Commercial License to the extent it is permitted.
+ */
+
 import (
 	"context"
 	"errors"
@@ -26,6 +35,7 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/glue"
+	"github.com/aws/aws-sdk-go/service/sqs"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -33,11 +43,14 @@ import (
 
 	"github.com/panther-labs/panther/internal/log_analysis/awsglue"
 	"github.com/panther-labs/panther/internal/log_analysis/log_processor/registry"
-	"github.com/panther-labs/panther/internal/log_analysis/notify"
 	"github.com/panther-labs/panther/pkg/testutils"
 )
 
 var (
+	handler          = LambdaHandler{}
+	mockSqsClient    *testutils.SqsMock
+	mockLambdaClient *testutils.LambdaMock
+
 	mockGlueClient *testutils.GlueMock
 
 	// dummy data for columns
@@ -68,30 +81,67 @@ var (
 	}
 )
 
+func getEvent(t *testing.T, s3Keys ...string) *events.SQSEvent {
+	result := events.SQSEvent{Records: []events.SQSMessage{}}
+	for _, s3Key := range s3Keys {
+		serialized, err := jsoniter.MarshalToString(events.S3Event{
+			Records: []events.S3EventRecord{
+				{
+					S3: events.S3Entity{
+						Bucket: events.S3Bucket{
+							Name: "bucket",
+						},
+						Object: events.S3Object{
+							Key:  s3Key,
+							Size: 0,
+						},
+					},
+				},
+			},
+		})
+		require.NoError(t, err)
+		event := events.SQSMessage{
+			Body: serialized,
+		}
+		result.Records = append(result.Records, event)
+	}
+	return &result
+}
+
+// nolint:lll
 func TestProcessSuccess(t *testing.T) {
 	initProcessTest()
 
 	mockGlueClient.On("GetTable", mock.Anything).Return(testGetTableOutput, nil).Once()
 	mockGlueClient.On("CreatePartition", mock.Anything).Return(&glue.CreatePartitionOutput{}, nil).Once()
+	mockSqsClient.On("SendMessageBatch", mock.Anything).Return(&sqs.SendMessageBatchOutput{}, nil).Once()
 
-	assert.NoError(t, handleSQSEvent(getEvent(t, "rules/table/year=2020/month=02/day=26/hour=15/rule_id=Rule.Id/item.json.gz")))
+	assert.NoError(t, handler.HandleSQSEvent(context.Background(), getEvent(t, "rules/table/year=2020/month=02/day=26/hour=15/rule_id=Rule.Id/item.json.gz")))
 	mockGlueClient.AssertExpectations(t)
+	mockSqsClient.AssertExpectations(t)
 }
 
+// nolint:lll
 func TestProcessSuccessAlreadyCreatedPartition(t *testing.T) {
 	initProcessTest()
 
 	// We should attempt to create the partition only once. We shouldn't try to re-create it a second time
 	mockGlueClient.On("GetTable", mock.Anything).Return(testGetTableOutput, nil).Once()
 	mockGlueClient.On("CreatePartition", mock.Anything).Return(&glue.CreatePartitionOutput{}, nil).Once()
+	mockSqsClient.On("SendMessageBatch", mock.Anything).Return(&sqs.SendMessageBatchOutput{}, nil).Once()
+
+	// Second call should still send message to q
+	mockSqsClient.On("SendMessageBatch", mock.Anything).Return(&sqs.SendMessageBatchOutput{}, nil).Once()
 
 	// First object should invoke Glue API
-	assert.NoError(t, handleSQSEvent(getEvent(t, "rules/table/year=2020/month=02/day=26/hour=15/rule_id=Rule.Id/item.json.gz")))
+	assert.NoError(t, handler.HandleSQSEvent(context.Background(), getEvent(t, "rules/table/year=2020/month=02/day=26/hour=15/rule_id=Rule.Id/item.json.gz")))
 	// Second object is in the same partition as the first one. It shouldn't invoke the Glue API since the partition is already created.
-	assert.NoError(t, handleSQSEvent(getEvent(t, "rules/table/year=2020/month=02/day=26/hour=15/rule_id=Rule.Id/new_item.json.gz")))
+	assert.NoError(t, handler.HandleSQSEvent(context.Background(), getEvent(t, "rules/table/year=2020/month=02/day=26/hour=15/rule_id=Rule.Id/new_item.json.gz")))
 	mockGlueClient.AssertExpectations(t)
+	mockSqsClient.AssertExpectations(t)
 }
 
+// nolint:lll
 func TestProcessSuccessDontPopulateCacheOnFailure(t *testing.T) {
 	initProcessTest()
 
@@ -102,41 +152,49 @@ func TestProcessSuccessDontPopulateCacheOnFailure(t *testing.T) {
 	// Second glue operation succeeds
 	mockGlueClient.On("GetTable", mock.Anything).Return(testGetTableOutput, nil).Once()
 	mockGlueClient.On("CreatePartition", mock.Anything).Return(&glue.CreatePartitionOutput{}, nil).Once()
+	mockSqsClient.On("SendMessageBatch", mock.Anything).Return(&sqs.SendMessageBatchOutput{}, nil).Once()
 
 	// First invocation fails
-	assert.Error(t, handleSQSEvent(getEvent(t, "rules/table/year=2020/month=02/day=26/hour=15/rule_id=Rule.Id/item.json.gz")))
+	assert.Error(t, handler.HandleSQSEvent(context.Background(), getEvent(t, "rules/table/year=2020/month=02/day=26/hour=15/rule_id=Rule.Id/item.json.gz")))
 	// Second invocation succeeds
-	assert.NoError(t, handleSQSEvent(getEvent(t, "rules/table/year=2020/month=02/day=26/hour=15/rule_id=Rule.Id/item.json.gz")))
+	assert.NoError(t, handler.HandleSQSEvent(context.Background(), getEvent(t, "rules/table/year=2020/month=02/day=26/hour=15/rule_id=Rule.Id/item.json.gz")))
 	mockGlueClient.AssertExpectations(t)
+	mockSqsClient.AssertExpectations(t)
 }
 
+// nolint:lll
 func TestProcessGlueFailure(t *testing.T) {
 	initProcessTest()
 
 	mockGlueClient.On("GetTable", mock.Anything).Return(testGetTableOutput, nil).Once()
 	mockGlueClient.On("CreatePartition", mock.Anything).Return(&glue.CreatePartitionOutput{}, errors.New("error")).Once()
 
-	assert.Error(t, handleSQSEvent(getEvent(t, "rules/table/year=2020/month=02/day=26/hour=15/rule_id=Rule.Id/item.json.gz")))
+	assert.Error(t, handler.HandleSQSEvent(context.Background(), getEvent(t, "rules/table/year=2020/month=02/day=26/hour=15/rule_id=Rule.Id/item.json.gz")))
 	mockGlueClient.AssertExpectations(t)
 }
 
 func TestProcessInvalidS3Key(t *testing.T) {
 	initProcessTest()
 	//Invalid keys should just be ignored
-	assert.NoError(t, handleSQSEvent(getEvent(t, "test")))
+	err := handler.HandleSQSEvent(context.Background(), getEvent(t, "test"))
+	assert.NoError(t, err)
 }
 
 // initProcessTest is run at the start of each test to create new mocks and reset state
 func initProcessTest() {
-	partitionPrefixCache = make(map[string]struct{})
+	handler.partitionsCreated = make(map[string]string)
 	mockGlueClient = &testutils.GlueMock{
 		LogTables: generateLogTablesMock(registry.AvailableLogTypes()...),
 	}
-	glueClient = mockGlueClient
-	logtypesResolver = registry.NativeLogTypesResolver()
-	listAvailableLogTypes = func(_ context.Context) ([]string, error) {
+	handler.GlueClient = mockGlueClient
+	mockSqsClient = &testutils.SqsMock{}
+	handler.SQSClient = mockSqsClient
+	handler.Resolver = registry.NativeLogTypesResolver()
+	handler.ListAvailableLogTypes = func(_ context.Context) ([]string, error) {
 		return registry.AvailableLogTypes(), nil
 	}
+	mockLambdaClient = &testutils.LambdaMock{}
+	handler.LambdaClient = mockLambdaClient
 }
 
 func generateLogTablesMock(logTypes ...string) (tables []*glue.TableData) {
@@ -150,18 +208,4 @@ func generateLogTablesMock(logTypes ...string) (tables []*glue.TableData) {
 		}
 	}
 	return
-}
-
-func getEvent(t *testing.T, s3Keys ...string) events.SQSEvent {
-	result := events.SQSEvent{Records: []events.SQSMessage{}}
-	for _, s3Key := range s3Keys {
-		s3Notification := notify.NewS3ObjectPutNotification("bucket", s3Key, 0)
-		serialized, err := jsoniter.MarshalToString(s3Notification)
-		require.NoError(t, err)
-		event := events.SQSMessage{
-			Body: serialized,
-		}
-		result.Records = append(result.Records, event)
-	}
-	return result
 }

@@ -18,49 +18,19 @@ package datacatalog
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * Copyright (C) 2020 Panther Labs Inc
- *
- * Panther Enterprise is licensed under the terms of a commercial license available from
- * Panther Labs Inc ("Panther Commercial License") by contacting contact@runpanther.com.
- * All use, distribution, and/or modification of this software, whether commercial or non-commercial,
- * falls under the Panther Commercial License to the extent it is permitted.
- */
-
 import (
 	"context"
-	"strconv"
-	"time"
 
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/sqs"
-	"github.com/aws/aws-sdk-go/service/sqs/sqsiface"
-	"github.com/pkg/errors"
 	"go.uber.org/multierr"
 	"go.uber.org/zap"
 
 	"github.com/panther-labs/panther/internal/log_analysis/awsglue"
-	"github.com/panther-labs/panther/pkg/awsbatch/sqsbatch"
 	"github.com/panther-labs/panther/pkg/lambdalogger"
-	"github.com/panther-labs/panther/pkg/stringset"
 )
 
 func (h *LambdaHandler) HandleS3Event(ctx context.Context, event *events.S3Event) (err error) {
 	logger := lambdalogger.FromContext(ctx)
-	// At the end of processing the messages ensure any notifications are sent to the compactor
-	defer func() {
-		partitions := h.resetBatchS3Partitions()
-		if sendErr := sendCompactorBatch(ctx, h.SQSClient, h.CompactorQueueURL, partitions); sendErr != nil {
-			logger.Error("failed to send compactor notifications",
-				zap.Error(err),
-				zap.String("queueURL", h.CompactorQueueURL),
-				zap.Strings("partitions", partitions),
-			)
-			// Make sure any error sending the compactor notification is reported as well
-			err = multierr.Append(err, sendErr)
-		}
-	}()
 	if len(event.Records) == 0 { // indications of a bug someplace
 		logger.Warn("no s3 event notifications in message", zap.Any("message", &event))
 		return
@@ -84,7 +54,6 @@ func (h *LambdaHandler) HandleS3EventRecord(ctx context.Context, event *events.S
 	}
 	partitionURL := partition.GetPartitionLocation()
 	if _, created := h.partitionsCreated[partitionURL]; created {
-		h.addBatchS3Partition(partitionURL)
 		return nil
 	}
 	partitionTime := partition.GetTime()
@@ -98,42 +67,5 @@ func (h *LambdaHandler) HandleS3EventRecord(ctx context.Context, event *events.S
 	}
 	h.partitionsCreated[partitionURL] = partitionURL
 
-	// Store partition URL to notify compactor
-	h.addBatchS3Partition(partitionURL)
 	return nil
-}
-
-func (h *LambdaHandler) addBatchS3Partition(partition string) {
-	h.batchS3Partitions = stringset.Append(h.batchS3Partitions, partition)
-}
-func (h *LambdaHandler) resetBatchS3Partitions() (partitions []string) {
-	partitions, h.batchS3Partitions = h.batchS3Partitions, h.batchS3Partitions[:0]
-	return
-}
-
-func sendCompactorBatch(_ context.Context, sqsAPI sqsiface.SQSAPI, queueURL string, partitions []string) error {
-	if len(partitions) == 0 {
-		return nil
-	}
-	batch := newCompactorBatch(queueURL, partitions...)
-	_, err := sqsbatch.SendMessageBatch(sqsAPI, time.Minute, batch)
-	if err != nil {
-		return errors.Wrap(err, "failed to send compactor notifications")
-	}
-	return nil
-}
-
-func newCompactorBatch(queueURL string, partitions ...string) *sqs.SendMessageBatchInput {
-	batch := sqs.SendMessageBatchInput{
-		QueueUrl: aws.String(queueURL),
-	}
-	groupID := aws.String("partitions")
-	for i, partitionURL := range partitions {
-		batch.Entries = append(batch.Entries, &sqs.SendMessageBatchRequestEntry{
-			Id:             aws.String(strconv.Itoa(i)),
-			MessageBody:    aws.String(partitionURL),
-			MessageGroupId: groupID,
-		})
-	}
-	return &batch
 }

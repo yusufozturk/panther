@@ -18,15 +18,6 @@ package datacatalog
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * Copyright (C) 2020 Panther Labs Inc
- *
- * Panther Enterprise is licensed under the terms of a commercial license available from
- * Panther Labs Inc ("Panther Commercial License") by contacting contact@runpanther.com.
- * All use, distribution, and/or modification of this software, whether commercial or non-commercial,
- * falls under the Panther Commercial License to the extent it is permitted.
- */
-
 import (
 	"context"
 
@@ -34,7 +25,6 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/service/athena/athenaiface"
 	"github.com/aws/aws-sdk-go/service/glue/glueiface"
-	"github.com/aws/aws-sdk-go/service/lambda/lambdaiface"
 	"github.com/aws/aws-sdk-go/service/sqs/sqsiface"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/errors"
@@ -46,20 +36,16 @@ import (
 )
 
 type LambdaHandler struct {
-	CompactorQueueURL     string
 	ProcessedDataBucket   string
 	AthenaWorkgroup       string
 	QueueURL              string
 	ListAvailableLogTypes func(ctx context.Context) ([]string, error)
 	GlueClient            glueiface.GlueAPI
-	LambdaClient          lambdaiface.LambdaAPI
 	Resolver              logtypes.Resolver
 	AthenaClient          athenaiface.AthenaAPI
 	SQSClient             sqsiface.SQSAPI
 	Logger                *zap.Logger
 
-	// S3 Partition URLs for each request
-	batchS3Partitions []string
 	// Glue partitions known to have been created. (use map[string]string where key == value for map size)
 	partitionsCreated map[string]string
 }

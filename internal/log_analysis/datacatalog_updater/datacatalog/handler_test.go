@@ -18,15 +18,6 @@ package datacatalog
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * Copyright (C) 2020 Panther Labs Inc
- *
- * Panther Enterprise is licensed under the terms of a commercial license available from
- * Panther Labs Inc ("Panther Commercial License") by contacting contact@runpanther.com.
- * All use, distribution, and/or modification of this software, whether commercial or non-commercial,
- * falls under the Panther Commercial License to the extent it is permitted.
- */
-
 import (
 	"context"
 	"errors"
@@ -47,10 +38,8 @@ import (
 )
 
 var (
-	handler          = LambdaHandler{}
-	mockSqsClient    *testutils.SqsMock
-	mockLambdaClient *testutils.LambdaMock
-
+	handler        = LambdaHandler{}
+	mockSqsClient  *testutils.SqsMock
 	mockGlueClient *testutils.GlueMock
 
 	// dummy data for columns
@@ -114,11 +103,9 @@ func TestProcessSuccess(t *testing.T) {
 
 	mockGlueClient.On("GetTable", mock.Anything).Return(testGetTableOutput, nil).Once()
 	mockGlueClient.On("CreatePartition", mock.Anything).Return(&glue.CreatePartitionOutput{}, nil).Once()
-	mockSqsClient.On("SendMessageBatch", mock.Anything).Return(&sqs.SendMessageBatchOutput{}, nil).Once()
 
 	assert.NoError(t, handler.HandleSQSEvent(context.Background(), getEvent(t, "rules/table/year=2020/month=02/day=26/hour=15/rule_id=Rule.Id/item.json.gz")))
 	mockGlueClient.AssertExpectations(t)
-	mockSqsClient.AssertExpectations(t)
 }
 
 // nolint:lll
@@ -130,15 +117,11 @@ func TestProcessSuccessAlreadyCreatedPartition(t *testing.T) {
 	mockGlueClient.On("CreatePartition", mock.Anything).Return(&glue.CreatePartitionOutput{}, nil).Once()
 	mockSqsClient.On("SendMessageBatch", mock.Anything).Return(&sqs.SendMessageBatchOutput{}, nil).Once()
 
-	// Second call should still send message to q
-	mockSqsClient.On("SendMessageBatch", mock.Anything).Return(&sqs.SendMessageBatchOutput{}, nil).Once()
-
 	// First object should invoke Glue API
 	assert.NoError(t, handler.HandleSQSEvent(context.Background(), getEvent(t, "rules/table/year=2020/month=02/day=26/hour=15/rule_id=Rule.Id/item.json.gz")))
 	// Second object is in the same partition as the first one. It shouldn't invoke the Glue API since the partition is already created.
 	assert.NoError(t, handler.HandleSQSEvent(context.Background(), getEvent(t, "rules/table/year=2020/month=02/day=26/hour=15/rule_id=Rule.Id/new_item.json.gz")))
 	mockGlueClient.AssertExpectations(t)
-	mockSqsClient.AssertExpectations(t)
 }
 
 // nolint:lll
@@ -152,14 +135,12 @@ func TestProcessSuccessDontPopulateCacheOnFailure(t *testing.T) {
 	// Second glue operation succeeds
 	mockGlueClient.On("GetTable", mock.Anything).Return(testGetTableOutput, nil).Once()
 	mockGlueClient.On("CreatePartition", mock.Anything).Return(&glue.CreatePartitionOutput{}, nil).Once()
-	mockSqsClient.On("SendMessageBatch", mock.Anything).Return(&sqs.SendMessageBatchOutput{}, nil).Once()
 
 	// First invocation fails
 	assert.Error(t, handler.HandleSQSEvent(context.Background(), getEvent(t, "rules/table/year=2020/month=02/day=26/hour=15/rule_id=Rule.Id/item.json.gz")))
 	// Second invocation succeeds
 	assert.NoError(t, handler.HandleSQSEvent(context.Background(), getEvent(t, "rules/table/year=2020/month=02/day=26/hour=15/rule_id=Rule.Id/item.json.gz")))
 	mockGlueClient.AssertExpectations(t)
-	mockSqsClient.AssertExpectations(t)
 }
 
 // nolint:lll
@@ -193,8 +174,6 @@ func initProcessTest() {
 	handler.ListAvailableLogTypes = func(_ context.Context) ([]string, error) {
 		return registry.AvailableLogTypes(), nil
 	}
-	mockLambdaClient = &testutils.LambdaMock{}
-	handler.LambdaClient = mockLambdaClient
 }
 
 func generateLogTablesMock(logTypes ...string) (tables []*glue.TableData) {
